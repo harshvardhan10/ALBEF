@@ -7,7 +7,7 @@
 
 import argparse
 import os
-import ruamel_yaml as yaml
+import yaml
 import numpy as np
 import random
 import time
@@ -122,8 +122,12 @@ def main(args, config):
     model = model.to(device)   
         
     arg_opt = utils.AttrDict(config['optimizer'])
-    optimizer = create_optimizer(arg_opt, model)
+    arg_opt["lr"] = float(arg_opt["lr"])
+    optimizer = create_optimizer(arg_opt, model)  # Make sure LR is a float (YAML may give it as a string)
     arg_sche = utils.AttrDict(config['schedular'])
+    arg_sche["lr"] = float(arg_sche["lr"])
+    arg_sche["warmup_lr"] = float(arg_sche["warmup_lr"])
+    arg_sche["min_lr"] = float(arg_sche["min_lr"])
     lr_scheduler, _ = create_scheduler(arg_sche, optimizer)  
 
     
@@ -194,7 +198,9 @@ if __name__ == '__main__':
     parser.add_argument('--distributed', default=True, type=bool)
     args = parser.parse_args()
 
-    config = yaml.load(open(args.config, 'r'), Loader=yaml.Loader)
+    # config = yaml.load(open(args.config, 'r'), Loader=yaml.Loader)
+    with open(args.config, "r") as f:
+        config = yaml.safe_load(f)
 
     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 

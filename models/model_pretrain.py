@@ -149,7 +149,15 @@ class ALBEF(nn.Module):
         # select a negative image for each text
         image_embeds_neg = []    
         for b in range(bs):
-            neg_idx = torch.multinomial(weights_t2i[b], 1).item()
+            # pick negative index safely
+            probs = weights_t2i[b]
+            probs_sum = probs.sum()
+            if probs_sum <= 0:
+                probs = torch.ones_like(probs)
+                probs_sum = probs.sum()
+            probs = probs / probs_sum
+
+            neg_idx = torch.multinomial(probs, 1).item()
             image_embeds_neg.append(image_embeds[neg_idx])
         image_embeds_neg = torch.stack(image_embeds_neg,dim=0)   
 
@@ -157,7 +165,15 @@ class ALBEF(nn.Module):
         text_embeds_neg = []
         text_atts_neg = []
         for b in range(bs):
-            neg_idx = torch.multinomial(weights_i2t[b], 1).item()
+            # pick negative index safely
+            probs = weights_t2i[b]
+            probs_sum = probs.sum()
+            if probs_sum <= 0:
+                probs = torch.ones_like(probs)
+                probs_sum = probs.sum()
+            probs = probs / probs_sum
+
+            neg_idx = torch.multinomial(probs, 1).item()
             text_embeds_neg.append(text_embeds[neg_idx])
             text_atts_neg.append(text.attention_mask[neg_idx])
         text_embeds_neg = torch.stack(text_embeds_neg,dim=0)   
@@ -281,9 +297,19 @@ def concat_all_gather(tensor):
     """
     Performs all_gather operation on the provided tensors.
     *** Warning ***: torch.distributed.all_gather has no gradient.
+
+    In non-distributed / single-process mode, just returns the input tensor.
     """
-    tensors_gather = [torch.ones_like(tensor)
-        for _ in range(torch.distributed.get_world_size())]
+    if not torch.distributed.is_available() or not torch.distributed.is_initialized():
+        # Not using distributed training – nothing to gather
+        return tensor
+
+    world_size = torch.distributed.get_world_size()
+    if world_size == 1:
+        # Single process in a distributed-aware setup
+        return tensor
+
+    tensors_gather = [torch.ones_like(tensor) for _ in range(world_size)]
     torch.distributed.all_gather(tensors_gather, tensor, async_op=False)
 
     output = torch.cat(tensors_gather, dim=0)
