@@ -16,8 +16,8 @@ temp: 0.07
 mlm_probability: 0.15
 
 # queue for contrastive features
-# reduced from 65536 -> 4096 to fit 10GB VRAM
-queue_size: 4096
+# reduced from 65536 -> 4608 to fit 10GB VRAM (queue_size must be divisible by global batch_size)
+queue_size: 4608
 
 momentum: 0.995
 alpha: 0.4
