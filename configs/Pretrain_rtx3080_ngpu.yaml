@@ -1,0 +1,38 @@
+train_file: ['data/mimic_cxr.json']
+
+# each train_file (json) contains a python list where each item is
+# {'image': img_path, 'caption': text or list_of_text }
+bert_config: 'configs/config_bert.json'
+
+# --- model & training size ---
+image_res: 224          # down from 256 to save VRAM
+vision_width: 768
+embed_dim: 256
+
+# batch_size PER GPU
+batch_size: 3           # 4 GPUs -> global batch = 12
+
+temp: 0.07
+mlm_probability: 0.15
+
+# queue for contrastive features
+# reduced from 65536 -> 4096 to fit 10GB VRAM
+queue_size: 4096
+
+momentum: 0.995
+alpha: 0.4
+
+optimizer:
+  opt: adamW
+  lr: 1e-4
+  weight_decay: 0.02
+
+schedular:
+  sched: cosine
+  lr: 1e-4
+  epochs: 30
+  min_lr: 1e-5
+  decay_rate: 1
+  warmup_lr: 1e-5
+  warmup_epochs: 5
+  cooldown_epochs: 0
