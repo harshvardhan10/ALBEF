@@ -10,7 +10,7 @@ vision_width: 768
 embed_dim: 256
 
 # batch_size PER GPU
-batch_size: 3           # 4 GPUs -> global batch = 12
+batch_size: 3           # 6 GPUs -> global batch = 18
 
 temp: 0.07
 mlm_probability: 0.15
