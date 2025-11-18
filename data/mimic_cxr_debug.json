@@ -1,0 +1,1413 @@
+[
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000032/s50414267/02aa804e-bde0afdd-112c0b34-7bc16630-4e384014.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000032/s53189527/2a2277a9-b0ded155-c0de8eb9-c124d10e-82c5caab.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000032/s53911762/68b5c4b1-227d0485-9cc38c3f-7b84ab51-4b472714.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000032/s56699142/ea030e7a-2e3b1346-bc518786-7a8fd698-f673b44c.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000764/s57375967/096052b7-d256dc40-453a102b-fa7d01c6-1b22c6b4.jpg",
+    "caption": [
+      "Consolidation",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000898/s50771383/2a280266-c8bae121-54d75383-cac046f4-ca37aa16.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000898/s54205396/b75df1bd-0f22d631-52d73526-2ae7b85a-d843b39d.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000935/s50578979/d0b71acc-b5a62046-bbb5f6b8-7b173b85-65cdf738.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Pneumonia",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000935/s51178377/9b314ad7-fbcb0422-6db62dfc-732858d0-a5527d8b.jpg",
+    "caption": [
+      "Lung Opacity",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000935/s55697293/c50494f1-90e2bff5-e9189550-1a4562fd-6ab5204c.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000935/s56164612/8e3f2822-0c1d4b71-2a265bbf-5b96e531-ccf5fa30.jpg",
+    "caption": [
+      "Lung Lesion",
+      "Lung Opacity"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000935/s56522600/f1adcae3-2921c0a8-5d9652f9-4191ecd7-f2a96f35.jpg",
+    "caption": [
+      "Fracture"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000935/s58219844/88498b37-c21dc7ba-bc202800-b517a62d-f7ac5bcf.jpg",
+    "caption": [
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000980/s50985099/6ad03ed1-97ee17ee-9cf8b320-f7011003-cd93b42d.jpg",
+    "caption": [
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000980/s51967283/943486a3-b3fa9ff7-50f5a769-7a62fcbb-f39b6da4.jpg",
+    "caption": [
+      "Lung Lesion",
+      "Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000980/s54577367/cfb03587-782edf6c-1bf392e1-98196cd5-365d69e8.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000980/s54935705/6ad819bb-bae74eb9-7b663e90-b8deabd7-57f8054a.jpg",
+    "caption": [
+      "Edema",
+      "uncertain Consolidation",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000980/s54980801/a75a1fbe-802065ad-717eb7c1-e2ce3552-646276a6.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000980/s57861150/5aa15ba6-55f5e96e-39cea686-7c3b28b2-b8c97a88.jpg",
+    "caption": [
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000980/s58206436/54affd39-8bf24209-232bac8a-df6c277a-398ee8a5.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Edema",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000980/s58636672/c7526473-7b7214ee-a5d58d12-29d1f67f-9f4edf00.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10000980/s59988438/925b9496-a956d7b2-05185e52-bb33313b-c06ee522.jpg",
+    "caption": [
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001038/s58224503/28fad2ac-d6001216-b4f72c5b-2d4d452e-17b6c9a5.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001122/s53957785/07b9ddda-9a4a1e1a-4495463d-4c77d947-ed368713.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001176/s53186264/1fe73f8e-036bd24e-4578c891-33c1746e-864884a7.jpg",
+    "caption": [
+      "Lung Opacity",
+      "uncertain Atelectasis"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001176/s54684191/3b8b1b7d-054490d5-385641e7-ff43d2c8-9505f058.jpg",
+    "caption": [
+      "Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001217/s52067803/a917c883-720a5bbf-02c84fc6-98ad00ac-c562ff80.jpg",
+    "caption": [
+      "Atelectasis"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001217/s58913004/5e54fc9c-37c49834-9ac3b915-55811712-9d959d26.jpg",
+    "caption": [
+      "uncertain Cardiomegaly",
+      "uncertain Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001401/s50225296/0009a9fb-eb905e90-824cad7c-16d40468-007f0038.jpg",
+    "caption": [
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001401/s51065211/8061113f-c019f3ae-fd1b7c54-33e8690d-be838099.jpg",
+    "caption": [
+      "Atelectasis"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001401/s55350604/d9db838d-4612fd1e-e45b40a9-3ea30033-26efd8e4.jpg",
+    "caption": [
+      "Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001401/s56534136/d69651ae-dc7bacca-a05efc02-1d5882cd-001c77c4.jpg",
+    "caption": [
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001401/s57492692/a83c7ff9-2d42639c-6ddebd0e-6b67809b-38210026.jpg",
+    "caption": [
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001401/s58747570/19e55bee-714bb193-0968d683-5bf655a5-7b5caba9.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001851/s59664767/edb88e4a-c04f1be7-aefcf3e0-8889542d-692ff7fd.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s50279568/3892f17f-8fa034e8-e9b81865-01c48bbb-b9452626.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s50376803/469d0d94-3dad5068-efac76ef-a28cc502-68fe6275.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Support Devices",
+      "uncertain Lung Opacity"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s50712381/7b25b3ed-e780a527-319cb7b3-02d5d071-f1cddee9.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Edema",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s50807032/ebf48d65-7e780cd5-59118fba-50977097-3720cc7e.jpg",
+    "caption": [
+      "Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s51181158/96bfb531-d6621042-58ea2067-b155e38f-f76e305b.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s51817555/d5f12914-f14ffd99-3ff2ee54-6f0cbd0c-4c411a2c.jpg",
+    "caption": [
+      "Lung Opacity"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s52060840/ee31086f-cbf22f9d-9553d506-2bcd4167-0e1e17bf.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s53109065/1e583282-042438d1-4c0d5389-f3c06b76-e9a29eaa.jpg",
+    "caption": [
+      "Atelectasis"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s53268982/9f5446a9-46ea84a3-6806d8b7-2c0f6d4d-38799159.jpg",
+    "caption": [
+      "Lung Opacity",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s53894864/a6617202-f5a8661d-78eb1442-037bf3e4-3dd8967f.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s54000534/4ee6a7f9-915c4c58-7dd1082b-6d03b302-aef0b6d9.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s54369281/3fc658da-23a5d1b2-68e913fd-bf919f75-b7113290.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s54579606/7f23b996-22544258-fcf2fbc3-f8dbf8e7-b6c0e4c5.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s54828594/7561a64e-145a404e-f12d8f04-3b19c4e1-3de6e5a0.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s55333410/5b135035-4708084f-3bb6d230-9db72889-2aa90c14.jpg",
+    "caption": [
+      "Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s55893591/8d4eb7a8-0d3c4f7e-fed33834-ef1c6ffd-e01d0967.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s56308417/f8d7008c-ed9b419b-7f0c85b0-acf404a4-5afe3f3d.jpg",
+    "caption": [
+      "Lung Opacity",
+      "uncertain Atelectasis",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s56349965/79863f89-595bf19b-3c7b514a-42969d9b-eff42368.jpg",
+    "caption": [
+      "Atelectasis"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s56722923/c1ad3e27-62d05ef8-95018fe3-b8bcfe4b-bbba0e1f.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Edema",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s57156853/9fd47edd-07087209-b901811e-3e9e5f50-f382f611.jpg",
+    "caption": [
+      "Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s57166219/7f885b34-699f595b-36446207-4f146366-55dfb63f.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s57839849/1f413a3b-78c5a4aa-978ff5ff-f72a424c-b3a51b92.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s58196907/00dccb6d-d0c6f3d3-96277b9f-0ee6d7aa-08abfc1f.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s58350684/7f4e7b8d-cacf5a8f-067353ea-f006ed1c-947dc749.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s58788638/dae10c54-dcb7bb1f-428bb377-af3b739e-9b16e579.jpg",
+    "caption": [
+      "Atelectasis"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s59066712/66ee3842-a927ac25-a5df697e-f1f36b1f-201b2172.jpg",
+    "caption": [
+      "Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s59212874/4a327635-ff0c1380-58766d70-6080047d-3f3d124f.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s59305618/9b1a8a51-2b8e4a04-1719059d-aa6bc888-7ace612b.jpg",
+    "caption": [
+      "Lung Opacity",
+      "Support Devices",
+      "uncertain Edema",
+      "uncertain Pleural Effusion",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s59635781/547c0b6b-72739eeb-3c33bc3e-3aa73d13-a9a54bd5.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10001884/s59984865/2d8a8525-19d0c810-045e1619-ef196132-cd4f1710.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002013/s52163036/1e647043-eed3576e-3123c170-780cb897-93a89502.jpg",
+    "caption": [
+      "Atelectasis",
+      "Cardiomegaly",
+      "Enlarged Cardiomediastinum",
+      "Pleural Effusion",
+      "Pneumothorax"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002013/s52535468/0c27f551-2cc6bf3e-a2e2cabd-97973771-40f1e6ce.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002013/s54573731/9ca8f84e-92fac212-e60ac49d-01779362-caa16791.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002013/s55608920/a9e7e982-731d9238-7fedf108-9bdd8ac3-b32f0606.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002013/s55941092/ab37274f-b4c1fc04-e2ff24b4-4a130ba3-cd167968.jpg",
+    "caption": [
+      "uncertain Fracture"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002013/s55969846/75a4feeb-09da971a-8852f2d6-5eb13992-42d9a50c.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002013/s57741292/48edbd44-ca2376ca-059a9f55-3fc8abd1-e13e4b76.jpg",
+    "caption": [
+      "Atelectasis",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002013/s58054149/81bca127-0c416084-67f8033c-ecb26476-6d1ecf60.jpg",
+    "caption": [
+      "Atelectasis",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002131/s52823782/051b7911-cb00aec9-0b309188-89803662-303ec278.jpg",
+    "caption": [
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002157/s56373033/3c659977-44aefeb8-cdc200a8-24ea059e-9dd6758c.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002177/s50520012/2833b85f-3bb4273f-cffd3794-2bf2cd57-7ddb3f5f.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s50027225/e8c44648-ff02beea-3d5ff638-dec79b01-7df71a69.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s50292543/7f51d06c-dad16fe6-ff21a632-edc5a3e6-ffa387bf.jpg",
+    "caption": [
+      "Atelectasis",
+      "Pleural Effusion",
+      "Support Devices",
+      "uncertain Edema",
+      "uncertain Lung Opacity"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s50444997/85b903ac-bfc4d6cd-491d2a72-18e7c16e-23d2cafa.jpg",
+    "caption": [
+      "Atelectasis",
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s50862960/38f6981f-10343eb8-7c974e21-458d5218-f29f1617.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s51574899/4e39ddbc-47422ff9-3de977e6-924e3c52-4cac3943.jpg",
+    "caption": [
+      "Atelectasis",
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Support Devices",
+      "uncertain Enlarged Cardiomediastinum"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s52460896/54c2ed5c-f4fbc20d-3bf4c783-283c3878-e9eb320d.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s54020701/40a4d537-de28a3ab-aa746c28-750aea7d-2965bcdb.jpg",
+    "caption": [
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s54831516/852306b6-02fc04aa-82d30dbf-0c2dd18d-5c9ef054.jpg",
+    "caption": [
+      "Edema",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s55758034/3bea0373-0d10dd77-1cac5b90-651be924-d343b184.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s56100138/06c9ad0d-eba8bb4c-7f1216e8-3164684d-4a4b228d.jpg",
+    "caption": [
+      "Edema",
+      "Lung Opacity",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s56597576/d98d5096-a32483d3-669ed39b-bc81eafb-5e251563.jpg",
+    "caption": [
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s56836542/471418ab-0bfd6700-6bb770d0-07f7f6a3-2ce2d9c2.jpg",
+    "caption": [
+      "Atelectasis",
+      "Edema",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s57064083/217e6a56-b4a78227-a2acc34d-3b571d4a-27b9746a.jpg",
+    "caption": [
+      "Atelectasis",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s57321224/bdf7f3f9-17832c70-9048e935-65663ff2-13f0814e.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s57506266/e325a8d1-1d6b0dca-404efabc-204c6bbd-599788f0.jpg",
+    "caption": [
+      "Atelectasis",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s57887188/3dc1b72b-7d6efa14-1f9db998-e46ff2db-2cb7375e.jpg",
+    "caption": [
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Pneumonia",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s57961288/0780573c-30edcc44-42f1084d-e77f7ebf-8a7dd236.jpg",
+    "caption": [
+      "Support Devices",
+      "uncertain Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s58601917/b5f871e6-fc68f8fa-7580a463-b7674531-c7033269.jpg",
+    "caption": [
+      "Atelectasis",
+      "Pleural Effusion",
+      "Support Devices",
+      "uncertain Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s58658824/12622d34-1a419a0d-6809a110-318f0fb1-eb8635e6.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s58838312/08ee3bce-a3ed7087-0af8769d-de0d3535-1318d234.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Support Devices",
+      "uncertain Pneumothorax"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s58851198/7254cc41-a1055fd0-f387a81f-1f60ec41-4ae4ac3e.jpg",
+    "caption": [
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s59015983/cc0b5db2-cc391879-a10b0ccf-5e554f89-37f1cf99.jpg",
+    "caption": [
+      "Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s59098825/2337617e-d39e1d86-bc30b1cf-fa45dcb5-b7ac1695.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s59258773/fa771fa1-d9571d07-bff8f655-327734a7-6e10b29d.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s59414737/d999236f-95dcb8b7-a4d20a3f-be538f50-ce13a08e.jpg",
+    "caption": [
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s59659695/51b5892c-e54ed6e6-59ff70db-fd0b8509-1792398e.jpg",
+    "caption": [
+      "Consolidation",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002428/s59891001/df59ff50-56f1fd83-f3664b8b-8e2c67dd-d5f0d039.jpg",
+    "caption": [
+      "Atelectasis",
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Support Devices",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002430/s53254222/4873aa08-977bfd31-fb492e64-6ef432d1-3f12cbe3.jpg",
+    "caption": [
+      "Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002430/s56345275/d5fc1956-e9a3e73b-3bc726aa-db2717c4-5905815c.jpg",
+    "caption": [
+      "Lung Opacity"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002557/s50547046/e45d57af-62690e1a-9bdf2d66-d10e02de-e9794fc4.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002559/s52212843/06e3e705-7d20dcc5-21be668e-587b1be1-158ba455.jpg",
+    "caption": [
+      "uncertain Edema",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002559/s59849480/25423a5e-8c27af51-c2c840f3-b498f42b-8ef8e461.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002661/s53368584/599b85f2-1459d013-e1a5ac24-9f73ad92-aaf0dc22.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10002930/s55885481/84c6ecc4-fd81e31d-1e879d18-13024211-35de54ad.jpg",
+    "caption": [
+      "Atelectasis"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s50543252/3f4a324f-7967a6b4-91edf0c8-94fbefd4-32402065.jpg",
+    "caption": [
+      "Atelectasis",
+      "Lung Opacity",
+      "Pneumonia",
+      "uncertain Consolidation"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s51117233/12c55f31-e7040e5b-8b29b8fb-895e1662-73f91c8b.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s53098685/c584b5c4-b5b1dad6-a6f30167-c0411948-46379f73.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s53934356/0f5314bd-785b969d-9c2ad2e0-74f0dc6d-2512f690.jpg",
+    "caption": [
+      "Atelectasis"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s55487822/c25b9023-9cd26369-dbe2b67b-c250ef52-b772137e.jpg",
+    "caption": [
+      "Consolidation",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s55931751/2cd42271-f25135f4-17a199ca-31015e49-c2eb87cb.jpg",
+    "caption": [
+      "Lung Lesion",
+      "Lung Opacity"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s57194088/32bd8fcd-5b37c860-010840d7-71d0e461-ebf379cf.jpg",
+    "caption": [
+      "Lung Opacity",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s58505074/9f0a463b-dbbe3f8e-d5cf30af-9452e738-5465e7bf.jpg",
+    "caption": [
+      "Atelectasis",
+      "Lung Opacity",
+      "Pneumonia",
+      "uncertain Enlarged Cardiomediastinum"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s59339276/4a25692b-e596ad27-5bc2eba3-e518093c-623f4d6a.jpg",
+    "caption": [
+      "Consolidation",
+      "Edema",
+      "Support Devices",
+      "uncertain Enlarged Cardiomediastinum"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s59730608/a664e3c4-97f37598-e008ddb5-674d8b24-8a49114f.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003019/s59829602/2e8d620b-9087dba8-7eb82882-f166fd11-c19b90de.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003052/s58630288/21560cb5-ffe886be-2a234166-47975293-e3a97d3f.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003299/s50536653/69c64be9-ed77fb62-7fad1785-d91de463-0fbf5c4b.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "uncertain Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003299/s57344656/f5414268-e553a141-39841839-4f303c85-d94d1190.jpg",
+    "caption": [
+      "Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s50100991/c1981851-eee51654-80b71d01-2ee65952-4c70c720.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Pneumothorax",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s50183258/ff09036b-78ea1c52-9c0523c6-caea3000-ce5e237f.jpg",
+    "caption": [
+      "Atelectasis",
+      "Cardiomegaly",
+      "Edema",
+      "Pleural Effusion",
+      "Pneumothorax",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s50805197/fc09630f-022d31c2-408b148f-95c499df-e8a6b18e.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Pneumothorax",
+      "Support Devices",
+      "uncertain Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s51127691/e730732b-c35b3296-bd65ed0a-92becc50-25be5475.jpg",
+    "caption": [
+      "Pneumothorax",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s51345654/01275cbe-a2f95d71-0374e495-68b16452-ebdcb789.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Edema",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s51777274/67eafcfb-841cb6fa-38d704c7-29fc44fc-bb89535e.jpg",
+    "caption": [
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s52181745/756dfe88-62a0c1fe-a870730a-6fdd89b1-6a736464.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Edema",
+      "Support Devices",
+      "uncertain Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s52207536/5a907c47-9d944216-c8477dd2-95d08914-13239bec.jpg",
+    "caption": [
+      "Atelectasis",
+      "Cardiomegaly",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s52437868/2f6a5fc9-40af95f8-d8762332-f56005ea-b5f85cc2.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s52822559/7a6f7a0e-452b83e5-d8388f3b-c424f2e2-83d372bd.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s52941169/828dd9de-ee245eb4-e8513715-9218b1f9-081a1742.jpg",
+    "caption": [
+      "Consolidation",
+      "Enlarged Cardiomediastinum",
+      "Lung Lesion",
+      "Lung Opacity",
+      "Support Devices",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s53341253/19b74f79-7ad317b1-887496c3-2645db29-48245a51.jpg",
+    "caption": [
+      "Atelectasis",
+      "Cardiomegaly",
+      "Pneumothorax",
+      "Support Devices",
+      "uncertain Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s53352321/781cba72-5bec94f8-f81af7f6-9d86b38c-2ed9428d.jpg",
+    "caption": [
+      "Atelectasis",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s53661694/2c814e99-aa096010-bd722059-5a35bd69-a902e44e.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s54050001/3b191b31-281da65a-f45c123b-56184341-737ae783.jpg",
+    "caption": [
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s54341551/581a33ce-5bd61881-2963542f-46481b71-4f98753d.jpg",
+    "caption": [
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s55177950/df9394ad-02389c41-a06dc228-9ddc338e-305ab921.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Support Devices",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s55549081/d74edd6a-7b3a85fe-733bde07-d46f005c-3124091c.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "Support Devices",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s56185120/7eea27b8-a4127ebb-b814b969-61d6fe59-2a1bd17e.jpg",
+    "caption": [
+      "Atelectasis",
+      "Cardiomegaly",
+      "Pleural Effusion",
+      "Pneumothorax",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s56466802/dcdc4bd9-4301b111-2a65a814-ee8e7bc5-7f0b9a5a.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s56915166/ac2ffb82-9d47c79b-8b57d37e-265a1ffc-aa74a8aa.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Pneumothorax",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s57147097/71884ebf-2fa1b333-d288ddba-2a9d832b-c9f4f79b.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s57607776/9f35bf94-77c36356-bfb8e0cf-398b6e0f-eea5cf93.jpg",
+    "caption": [
+      "Edema",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s58534470/11b6ac54-65f50afa-38228a29-8a18a28e-c51e103a.jpg",
+    "caption": [
+      "Consolidation",
+      "Edema",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s58633368/76d89c24-6ce3add5-caa6f160-1a250075-4a608ab7.jpg",
+    "caption": [
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s58820563/4057348e-68278864-98cc1e88-41ae8009-264cb3bf.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Pleural Effusion",
+      "Pneumothorax",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s58983613/78b25180-ff33317d-92a10132-dffdc0b1-e7234a43.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003400/s59336915/60b87cf4-16cae318-9e395a6c-8627d25c-9a39a71a.jpg",
+    "caption": [
+      "uncertain Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003412/s59172281/80c12354-2327c69b-c6a88d0a-c1c5aa86-c45e4c46.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003502/s50084553/70d7e600-373c1311-929f5ff9-23ee3621-ff551ff9.jpg",
+    "caption": [
+      "Atelectasis",
+      "Edema",
+      "Pleural Effusion",
+      "uncertain Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003502/s51180958/1fa79752-9ddaf5b5-2120ae82-9fec50d6-51f48d1f.jpg",
+    "caption": [
+      "Atelectasis",
+      "Cardiomegaly",
+      "uncertain Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003502/s52139270/550e6f3b-f008c1d0-8d2dee2a-649b30f4-101a98cc.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Edema",
+      "Pleural Effusion",
+      "uncertain Consolidation",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003502/s52309364/e0275ad1-1e6a7451-c3960f5f-1267a188-547b73a1.jpg",
+    "caption": [
+      "Edema",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003502/s53282957/eb2fabb7-4bbc8aab-d7371282-08e5bcb5-de2e430a.jpg",
+    "caption": [
+      "Atelectasis",
+      "Edema",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003502/s53836463/371aaea8-195e21b2-ba5a2856-54803ecf-1b72d88b.jpg",
+    "caption": [
+      "Edema",
+      "uncertain Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003502/s57641661/b410634d-0e4278d7-9c9b3561-8f5e5fc4-34a6aac8.jpg",
+    "caption": [
+      "Pleural Effusion",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003502/s57812613/1efa55e3-0a3856d9-421024b8-408fa7e5-81d83c1e.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003637/s51371378/4c028244-47499ecc-3fab489b-15ec1e76-47055a4d.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003637/s51461467/519a3958-182826e9-f754780d-7b562169-e2421aec.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003637/s57024735/f6119cd4-a5ef793e-db8543a2-f8d4a0e1-8c8aeb54.jpg",
+    "caption": [
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10003956/s53245562/dc29d33e-bcf77ecf-c4fca6b6-8ea2ed29-d71aee14.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004235/s52379321/3813b9b6-88d998b4-941e767b-601ba7c1-98f61102.jpg",
+    "caption": [
+      "Atelectasis",
+      "Enlarged Cardiomediastinum",
+      "Support Devices",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004235/s52604377/5b05c3da-4f8f9c06-7b8c4faf-4c12d978-6cb22b83.jpg",
+    "caption": [
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004235/s52962553/d71a4931-5c0832b8-ae60fd56-1e3658d3-a392959a.jpg",
+    "caption": [
+      "Edema",
+      "Lung Opacity",
+      "Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004235/s54234360/2af702f0-3c2b86f3-82e2112b-7f449f3d-dde1c122.jpg",
+    "caption": [
+      "Lung Opacity",
+      "Pneumonia",
+      "uncertain Atelectasis",
+      "uncertain Enlarged Cardiomediastinum",
+      "uncertain Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004235/s57318275/606ea60e-f3c5c58e-68fd84ca-db4e599b-127aa53e.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Edema",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004235/s57921415/f9c51c13-4a226906-c3daea10-5b1e4027-ae2ed354.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Lung Opacity",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004235/s58604118/c24939ff-cf96a7e2-dcc4a608-a9f63b02-2b64eca1.jpg",
+    "caption": [
+      "Edema",
+      "Lung Opacity",
+      "uncertain Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004235/s59895508/125cdd3f-57f5c50a-e59e5476-64c27621-f211c385.jpg",
+    "caption": [
+      "Lung Opacity",
+      "uncertain Edema",
+      "uncertain Enlarged Cardiomediastinum"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004322/s57662923/8159799c-7615c0ba-9676dd65-8b0cd6ed-96872c8f.jpg",
+    "caption": [
+      "Lung Opacity",
+      "uncertain Atelectasis",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004457/s55439624/ad41d9ed-37ff140e-afe872af-224a8477-f98ac392.jpg",
+    "caption": [
+      "Atelectasis",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004720/s59238247/a631cd7c-8da83d3e-b01eff09-adbbd532-d35221b8.jpg",
+    "caption": [
+      "Fracture"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10004749/s56644724/2134c2ee-d0accf09-60867899-ebfd91cb-740492f2.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005001/s50691028/b01a2f02-4bab6c03-9b0df7ab-561a30be-1285a049.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005024/s53950795/cdd1bd42-770fcd05-16836b10-98a10e4a-f7b45ac2.jpg",
+    "caption": [
+      "Edema",
+      "Pleural Effusion",
+      "uncertain Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005024/s59581256/28100fe4-a1120f36-8cf2f843-ffbc3edd-9e337f7a.jpg",
+    "caption": [
+      "Atelectasis",
+      "Lung Lesion",
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Pneumonia"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005329/s50611575/be0031db-71027bcc-0fb3a0fa-71fddcaf-8b8a89b7.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005368/s54510564/5f4d8dbd-5b3fabc2-57368426-c8a47b2a-25c294da.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005368/s56689183/220537f0-2e10b49c-84818e74-b832aa0a-7055102a.jpg",
+    "caption": [
+      "Pneumothorax"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005368/s57426090/ec9280da-2f8b1181-d3d259a5-ba262147-675f5d0d.jpg",
+    "caption": [
+      "Pneumothorax"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005749/s53170451/5f683bbb-2313fd5d-86cbea5c-705ffd10-69cb9156.jpg",
+    "caption": [
+      "Atelectasis",
+      "Cardiomegaly",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005749/s54040624/6c4e7b61-c870af38-2e4c1516-d6881840-7a65250e.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005749/s54060141/f0cc7528-a372f2c6-c052cb5b-e6c0943d-60606558.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005749/s57249718/deaec8ac-d2929f28-2b1287f9-7292e301-4a97c6c4.jpg",
+    "caption": [
+      "Atelectasis",
+      "Pleural Effusion"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005749/s58865310/0a730e3b-e27980ec-5e8cd08f-e09488be-ebe3c89e.jpg",
+    "caption": [
+      "Cardiomegaly",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005749/s59735352/c0fabcc0-d992f499-b7a8fa49-58bc6411-cb804475.jpg",
+    "caption": [
+      "Atelectasis",
+      "Pleural Effusion",
+      "uncertain Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005858/s58425702/fd95fcb1-d91fbd94-9b980db7-616ee57b-cb02e6ae.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005858/s58867217/ea456eab-3764cace-e84e626e-1a68bce8-c4dc6d25.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005866/s55665483/6039e5db-d35aed7c-106102aa-126d200e-a262c646.jpg",
+    "caption": [
+      "Consolidation",
+      "Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005866/s56175428/5d612499-b20019dc-d3324174-33b669e4-95ced958.jpg",
+    "caption": [
+      "Atelectasis",
+      "Lung Opacity",
+      "Pleural Effusion",
+      "Support Devices",
+      "uncertain Edema"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005866/s57648366/5053834b-b1bea04f-680aec42-45abe415-c2d097ba.jpg",
+    "caption": [
+      "uncertain Cardiomegaly"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10005866/s59391422/4a985010-1425fdc1-f649f309-8b269e24-6d85c760.jpg",
+    "caption": [
+      "Atelectasis",
+      "Cardiomegaly",
+      "Pleural Effusion",
+      "Support Devices"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10006023/s51026004/7dc2a3a2-36441843-57a19575-082a406f-fcc1dbe3.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10006431/s54868252/f8d6407e-70cf4b5b-e12632cb-d67fe3af-bbd07662.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10006457/s57608640/0d985d10-36a2a165-ddc49c96-8b8466c9-df947f57.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  },
+  {
+    "image": "/home/woody/iwi5/iwi5362h/data/mimic_cxr/extracted/2.1.0/files/p10/p10006457/s58626380/60101926-bfaf22bb-35b27bc8-b3ed9868-1e38a4e1.jpg",
+    "caption": [
+      "No Finding"
+    ]
+  }
+]
