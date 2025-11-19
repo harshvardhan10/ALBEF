@@ -17,10 +17,10 @@ def create_dataset(dataset, config):
     
     pretrain_transform = transforms.Compose([                        
             transforms.RandomResizedCrop(config['image_res'],scale=(0.2, 1.0), interpolation=Image.BICUBIC),
-            # transforms.RandomHorizontalFlip(),
+            transforms.RandomHorizontalFlip(),
             RandomAugment(2,7,isPIL=True,augs=[
                 'Identity','AutoContrast','Equalize','Brightness','Sharpness',
-                # 'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'Rotate'
+                'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'Rotate'
             ]),
             transforms.ToTensor(),
             normalize,
@@ -30,7 +30,7 @@ def create_dataset(dataset, config):
             # transforms.RandomHorizontalFlip(),
             RandomAugment(2,7,isPIL=True,augs=[
                 'Identity','AutoContrast','Equalize','Brightness','Sharpness',
-                # 'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'Rotate'
+                'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'Rotate'
             ]),
             transforms.ToTensor(),
             normalize,
@@ -71,11 +71,11 @@ def create_dataset(dataset, config):
     elif dataset=='grounding':
         train_transform = transforms.Compose([                        
                 transforms.Resize((config['image_res'],config['image_res']),interpolation=Image.BICUBIC),
-                # transforms.RandomHorizontalFlip(),
+                transforms.RandomHorizontalFlip(),
                 RandomAugment(2,7,isPIL=True,augs=[
                     'Identity','AutoContrast','Equalize',
                     'Brightness','Sharpness',
-                    # 'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'Rotate'
+                    'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'Rotate'
                 ]),
                 transforms.ToTensor(),
                 normalize,
