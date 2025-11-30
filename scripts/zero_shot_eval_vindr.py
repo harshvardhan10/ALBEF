@@ -1,10 +1,10 @@
-#!/usr/bin/env python
 """
+
 Zero-shot evaluation of ALBEF checkpoints on VinDr-CXR (classification).
 
 What it does:
 - Loads one or more ALBEF checkpoints (pretrained on MIMIC).
-- Builds multi-prompt text embeddings for each VinDr label.
+- Builds multi-prompt text embeddings for each VinDr label (via src.py).
 - Runs zero-shot classification on the VinDr test set (image-level labels).
 - Computes:
     - Per-label ROC–AUC
@@ -12,28 +12,25 @@ What it does:
     - Per-label F1 (classification, global threshold)
     - Macro and micro F1
     - mAP@10 (mean average precision at 10, multilabel classification)
-
-Localization metrics (IoU@0.5, FROC) are NOT implemented here yet; you will plug
-them in later once you have pseudo-bounding boxes from heatmaps.
 """
 
 import argparse
 import json
 from pathlib import Path
 
-import yaml
 import numpy as np
-import torch
-import torch.nn.functional as F
-import torch.backends.cudnn as cudnn
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
-from PIL import Image
 import pandas as pd
+from PIL import Image
 from sklearn.metrics import roc_auc_score, f1_score
+import torch
+from torch.utils.data import Dataset, DataLoader
 
-from models.model_pretrain import ALBEF
-from models.tokenization_bert import BertTokenizer
+from src import (
+    build_model_and_tokenizer,
+    get_image_transform,
+    get_label_text_embeddings,
+    get_image_embeddings,
+)
 
 
 # ==========================
@@ -66,7 +63,10 @@ class VinDrClassificationDataset(Dataset):
             self.df = self.df.iloc[:max_images].reset_index(drop=True)
 
         self.num_labels = len(self.label_cols)
-        print(f"[VinDrClassificationDataset] Using {len(self.df)} images, {self.num_labels} labels")
+        print(
+            f"[VinDrClassificationDataset] Using {len(self.df)} images, "
+            f"{self.num_labels} labels"
+        )
 
     def __len__(self):
         return len(self.df)
@@ -85,96 +85,6 @@ class VinDrClassificationDataset(Dataset):
 
 
 # ==========================
-# Prompts & Feature Extraction
-# ==========================
-
-def build_prompts_for_label(label: str):
-    """
-    Multi-prompt template expansion for a single VinDr label.
-
-    Special case:
-      - For "No finding" only use the bare label, because
-        templates like "There is evidence of No finding" doesn't make sense.
-    """
-    # Normalize label a bit for text
-    clean_label = label.replace("_", " ")
-
-    # Special-case: No finding
-    if clean_label.strip().lower() == "no finding":
-        return ["No finding"]
-
-    templates = [
-        "{label}",
-        "A chest X-ray showing {label}.",
-        "Chest radiograph demonstrating {label}.",
-        "There is evidence of {label}.",
-        "Findings are consistent with {label}.",
-    ]
-    return [t.format(label=clean_label) for t in templates]
-
-
-def get_label_text_embeddings(model, tokenizer, labels, device, max_length=32):
-    """
-    Compute one embedding per label by averaging over multiple prompts.
-    Returns:
-        label_embs: torch.Tensor of shape (L, D)
-    """
-    all_prompts = []
-    label_ranges = []  # list of (start_idx, end_idx) in all_prompts for each label
-
-    for label in labels:
-        prompts = build_prompts_for_label(label)
-        start = len(all_prompts)
-        all_prompts.extend(prompts)
-        end = len(all_prompts)
-        label_ranges.append((start, end))
-
-    print(f"[Text] Total prompts: {len(all_prompts)} for {len(labels)} labels")
-
-    tokenized = tokenizer(
-        all_prompts,
-        padding=True,
-        truncation=True,
-        max_length=max_length,
-        return_tensors="pt",
-    )
-    tokenized = {k: v.to(device) for k, v in tokenized.items()}
-
-    with torch.no_grad():
-        # Use the inner BertModel with mode="text" (no cross-attention)
-        text_output = model.text_encoder.bert(
-            input_ids=tokenized["input_ids"],
-            attention_mask=tokenized["attention_mask"],
-            return_dict=True,
-            mode="text",
-        )
-        cls = text_output.last_hidden_state[:, 0, :]  # (P, 768)
-        feats = model.text_proj(cls)                  # (P, D)
-        feats = F.normalize(feats, dim=-1)           # (P, D)
-
-    # Average prompts per label
-    label_embs = []
-    for (start, end) in label_ranges:
-        label_embs.append(feats[start:end].mean(dim=0))
-    label_embs = torch.stack(label_embs, dim=0)      # (L, D)
-
-    return label_embs
-
-
-def get_image_embeddings(model, images):
-    """
-    images: (B, 3, H, W) on device
-    returns: (B, D) normalized image embeddings
-    """
-    with torch.no_grad():
-        image_embeds = model.visual_encoder(images)   # (B, num_patches+1, 768)
-        image_cls = image_embeds[:, 0, :]             # (B, 768)
-        image_feat = model.vision_proj(image_cls)     # (B, D)
-        image_feat = F.normalize(image_feat, dim=-1)
-    return image_feat
-
-
-# ==========================
 # Metrics
 # ==========================
 
@@ -188,14 +98,6 @@ def compute_map_at_k(y_true, scores, k=10):
       - Compute "AP@k" as the average of precisions at ranks where the label is positive,
         normalized by min(#positives, k).
     Then average AP@k over all samples that have at least one positive label.
-
-    Args:
-        y_true:  (N, L) binary array
-        scores:  (N, L) float scores (higher = more likely positive)
-        k:       top-k cutoff (default: 10)
-
-    Returns:
-        mAP@k (float) or None if no sample has a positive.
     """
     y_true = np.asarray(y_true)
     scores = np.asarray(scores)
@@ -231,7 +133,12 @@ def compute_map_at_k(y_true, scores, k=10):
     return float(np.mean(ap_list))
 
 
-def compute_classification_metrics(y_true, scores, label_names, threshold=0.5):
+def compute_classification_metrics(
+        y_true,
+        scores,
+        label_names,
+        threshold=0.5
+):
     """
     y_true:  (N, L) 0/1
     scores:  (N, L) continuous similarities (higher = more positive)
@@ -300,41 +207,17 @@ def compute_classification_metrics(y_true, scores, label_names, threshold=0.5):
 
 
 # ==========================
-# Localization metrics stub
-# ==========================
-
-def compute_localization_metrics_stub():
-    """
-    Placeholder for future work:
-    - IoU=0.5
-    - FROC
-
-    Will need:
-      - Ground truth boxes from VinDr: annotations_test.csv
-      - Predicted boxes from the heatmap → bbox pipeline, e.g.:
-          pred_boxes[image_id][label] = list of (x1, y1, x2, y2, score)
-
-    Then:
-      - Compute IoU between predicted and GT boxes,
-      - Derive TP/FP/FN per IoU threshold,
-      - Compute per-label AP, then mAP,
-      - Compute FROC: sensitivity vs FP/image.
-    """
-    return None
-
-
-# ==========================
 # Main evaluation logic
 # ==========================
 
 def evaluate_checkpoint(
     ckpt_path,
-    config,
+    config_path,
     csv_path,
     images_root,
     batch_size,
     num_workers,
-    device,
+    device_str,
     output_dir,
     max_images=None,
     threshold=0.5,
@@ -343,21 +226,20 @@ def evaluate_checkpoint(
     Runs zero-shot classification evaluation for a single checkpoint.
     Returns a metrics dict.
     """
-
     print(f"\n========== Evaluating checkpoint: {ckpt_path} ==========")
     ckpt_path = Path(ckpt_path)
     ckpt_name = ckpt_path.stem
 
-    # ----- Dataset & DataLoader -----
-    normalize = transforms.Normalize(
-        (0.48145466, 0.4578275, 0.40821073),
-        (0.26862954, 0.26130258, 0.27577711),
+    # Build model + tokenizer + config from shared src.py helper
+    model, tokenizer, config, device = build_model_and_tokenizer(
+        config_path=config_path,
+        ckpt_path=str(ckpt_path),
+        device=device_str,
     )
-    test_transform = transforms.Compose([
-        transforms.Resize((config["image_res"], config["image_res"])),
-        transforms.ToTensor(),
-        normalize,
-    ])
+
+    # Dataset & DataLoader
+    image_res = config["image_res"]
+    test_transform = get_image_transform(image_res)
 
     dataset = VinDrClassificationDataset(
         csv_path=csv_path,
@@ -376,28 +258,18 @@ def evaluate_checkpoint(
         drop_last=False,
     )
 
-    # ----- Model -----
-    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
-
-    print("[Model] Building ALBEF...")
-    model = ALBEF(
-        config=config,
-        text_encoder="bert-base-uncased",
+    # Text embeddings (multi-prompt per label; shared code with localization)
+    label_embs = get_label_text_embeddings(
+        model=model,
         tokenizer=tokenizer,
-        init_deit=False,   # load from checkpoint
+        labels=label_names,
+        device=device,
+        max_length=32,
     )
-    checkpoint = torch.load(ckpt_path, map_location="cpu")
-    msg = model.load_state_dict(checkpoint["model"], strict=False)
-    print("[Model] State dict loaded:", msg)
-
-    model.to(device)
-    model.eval()
-
-    # ----- Text embeddings (multi-prompt per label) -----
-    label_embs = get_label_text_embeddings(model, tokenizer, label_names, device)
     label_embs = label_embs.to(device)  # (L, D)
+    print("[Text] Label embeddings shape:", label_embs.shape)
 
-    # ----- Inference loop -----
+    # Inference loop
     all_scores = []
     all_labels = []
     all_ids = []
@@ -405,28 +277,26 @@ def evaluate_checkpoint(
     with torch.no_grad():
         for i, (images, labels, image_ids) in enumerate(data_loader):
             images = images.to(device, non_blocking=True)    # (B,3,H,W)
-            labels = labels.numpy().astype(np.float32)       # (B,L)
+            labels_np = labels.numpy().astype(np.float32)     # (B,L)
 
-            image_embs = get_image_embeddings(model, images) # (B,D)
-
-            # cosine similarities: (B, L)
-            sims = image_embs @ label_embs.t()
+            image_embs = get_image_embeddings(model, images)  # (B,D)
+            sims = image_embs @ label_embs.t()                # (B, L)
             scores = sims.cpu().numpy()
 
             all_scores.append(scores)
-            all_labels.append(labels)
+            all_labels.append(labels_np)
             all_ids.extend(list(image_ids))
 
             if (i + 1) % 10 == 0 or (i + 1) == len(data_loader):
                 print(f"[Eval] Processed {i+1}/{len(data_loader)} batches")
 
-    all_scores = np.vstack(all_scores)   # (N,L)
-    all_labels = np.vstack(all_labels)   # (N,L)
+    all_scores = np.vstack(all_scores)   # (N, L)
+    all_labels = np.vstack(all_labels)   # (N, L)
 
     print("Scores shape:", all_scores.shape)
     print("Labels shape:", all_labels.shape)
 
-    # ----- Classification metrics -----
+    # Classification metrics
     cls_metrics = compute_classification_metrics(
         y_true=all_labels,
         scores=all_scores,
@@ -434,16 +304,11 @@ def evaluate_checkpoint(
         threshold=threshold,
     )
 
-    # ----- Localization metrics -----
-    # loc_metrics = compute_localization_metrics_stub() # TODO
-
-    # ----- Aggregate -----
     results = {
         "checkpoint": str(ckpt_path),
         "num_images": int(all_scores.shape[0]),
         "label_names": list(label_names),
         "classification": cls_metrics,
-        # "localization": loc_metrics,
         "threshold": float(threshold),
     }
 
@@ -459,7 +324,9 @@ def evaluate_checkpoint(
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Zero-shot VinDr-CXR evaluation for ALBEF checkpoints")
+    parser = argparse.ArgumentParser(
+        description="Zero-shot VinDr-CXR evaluation for ALBEF checkpoints"
+    )
 
     parser.add_argument("--config", type=str, default="configs/Pretrain.yaml")
     parser.add_argument("--checkpoints", type=str, nargs="+", required=True,
@@ -484,34 +351,22 @@ def parse_args():
 def main():
     args = parse_args()
 
-    # Device
-    device = torch.device(args.device if torch.cuda.is_available() else "cpu")
-    print(f"[Device] Using: {device}")
-
-    cudnn.benchmark = True
-
-    # Load config
-    with open(args.config, "r") as f:
-        config = yaml.safe_load(f)
-
-    # Evaluate each checkpoint
     all_results = {}
     for ckpt in args.checkpoints:
         res = evaluate_checkpoint(
             ckpt_path=ckpt,
-            config=config,
+            config_path=args.config,
             csv_path=args.labels_csv,
             images_root=args.images_root,
             batch_size=args.batch_size,
             num_workers=args.num_workers,
-            device=device,
+            device_str=args.device,
             output_dir=args.output_dir,
             max_images=args.max_images,
             threshold=args.threshold,
         )
         all_results[Path(ckpt).name] = res
 
-    # Save combined results
     combined_path = Path(args.output_dir) / "vindr_zero_shot_all_checkpoints.json"
     with open(combined_path, "w") as f:
         json.dump(all_results, f, indent=2)
