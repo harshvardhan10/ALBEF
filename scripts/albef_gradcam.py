@@ -27,14 +27,27 @@ def _backward_hook(module, grad_input, grad_output):
 
 
 def _get_last_vit_block(model) -> torch.nn.Module:
+    """
+    Pick a ViT block from ALBEF.visual_encoder for Grad-CAM.
+    For ALBEF, visual_encoder.blocks is a ModuleList of 12 Block's (0..11).
+    Choosing blocks[-3] (i.e. index 9) to be slightly earlier than the last block,
+    which tends to give better spatial localization.
+    """
     ve = model.visual_encoder
-    if hasattr(ve, "blocks"):            # timm VisionTransformer style
-        return ve.blocks[-1]
-    if hasattr(ve, "encoder") and hasattr(ve.encoder, "layer"):  # BERT style
-        return ve.encoder.layer[-1]
+
+    if hasattr(ve, "blocks"):
+        n_blocks = len(ve.blocks)  # should be 12
+        if n_blocks >= 3:
+            idx = n_blocks - 3     # 10th block     
+        else:
+            idx = n_blocks - 1     # fallback to last block
+
+        print(f"[Grad-CAM] Using visual_encoder.blocks[{idx}] for CAM")
+        return ve.blocks[idx]
+
     raise AttributeError(
-        "Could not find ViT blocks in model.visual_encoder. "
-        "Expected attributes 'blocks' or 'encoder.layer'."
+        "visual_encoder has no 'blocks' attribute; this Grad-CAM helper "
+        "assumes a ViT-like visual encoder with .blocks."
     )
 
 
