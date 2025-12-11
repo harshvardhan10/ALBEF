@@ -38,32 +38,44 @@ def register_albef_crossattn_gradcam_hooks(model) -> List[torch.utils.hooks.Remo
     """
     Register hooks on ALL cross-attention layers in model.text_encoder.
 
-    You will likely need to adapt the exact module path below
-    depending on how ALBEF is implemented in your codebase.
-    Typical pattern (ALBEF official):
-      model.text_encoder.bert.encoder.layer[i].crossattention.attn_drop
+    For ALBEF, cross-attn lives in:
+      model.text_encoder.bert.encoder.layer[i].crossattention.self.dropout
+
+    Hook the dropout *on the cross-attention* so that its forward output
+    is the attention probabilities (after dropout) with shape (B, heads, T_text, N_img).
     """
     handles: List[torch.utils.hooks.RemovableHandle] = []
 
-    te = model.text_encoder
+    te = model.text_encoder  # BertForMaskedLM
+    encoder = te.bert.encoder  # BertEncoder
 
-    # Inspect your model to confirm this path:
-    # print(te) once and adjust as needed.
-    encoder = te.bert.encoder
+    num_layers = len(encoder.layer)
+    hooked_layers = []
+
     for layer_idx, layer in enumerate(encoder.layer):
-        # assume layer has .crossattention.attn_drop
-        attn_drop = layer.crossattention.attn_drop
+        # Only some layers (6–11) have crossattention
+        if hasattr(layer, "crossattention"):
+            # crossattention is a BertAttention; its .self is BertSelfAttention
+            sa = layer.crossattention.self
+            dropout = sa.dropout  # this is applied to attention_probs
 
-        h_fwd = attn_drop.register_forward_hook(_cross_attn_forward_hook(layer_idx))
-        if hasattr(attn_drop, "register_full_backward_hook"):
-            h_bwd = attn_drop.register_full_backward_hook(_cross_attn_backward_hook(layer_idx))
-        else:
-            h_bwd = attn_drop.register_backward_hook(_cross_attn_backward_hook(layer_idx))
+            h_fwd = dropout.register_forward_hook(_cross_attn_forward_hook(layer_idx))
 
-        handles.extend([h_fwd, h_bwd])
+            # Backward hook API differs slightly between PyTorch versions
+            if hasattr(dropout, "register_full_backward_hook"):
+                h_bwd = dropout.register_full_backward_hook(_cross_attn_backward_hook(layer_idx))
+            else:
+                h_bwd = dropout.register_backward_hook(_cross_attn_backward_hook(layer_idx))
 
-    print(f"[CrossAttn-GradCAM] Registered cross-attention hooks on {len(encoder.layer)} layers.")
+            handles.extend([h_fwd, h_bwd])
+            hooked_layers.append(layer_idx)
+
+    print(
+        f"[CrossAttn-GradCAM] Registered hooks on cross-attention dropout "
+        f"for layers: {hooked_layers} (total {len(handles)} hooks)."
+    )
     return handles
+
 
 
 def remove_albef_crossattn_gradcam_hooks(handles: List[torch.utils.hooks.RemovableHandle]):
