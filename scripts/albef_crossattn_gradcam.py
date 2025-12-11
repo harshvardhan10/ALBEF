@@ -187,17 +187,17 @@ def generate_albef_crossattn_gradcam(
     image_embeds.requires_grad_(False)
 
     # Forward through text_encoder with encoder_hidden_states
-    text_outputs = model.text_encoder(
+    bert_out = model.text_encoder.bert(
         input_ids=input_ids,
         attention_mask=attention_mask,
         encoder_hidden_states=image_embeds,
         encoder_attention_mask=image_atts,
         return_dict=True,
-        output_attentions=False,  # we rely on hooks for attentions
     )
+    sequence_output = bert_out.last_hidden_state  # (1, T, 768)
+    multimodal_cls = sequence_output[:, 0, :]  # (1, 768)
 
     # ITM head: use [CLS] of multimodal text output
-    multimodal_cls = text_outputs.last_hidden_state[:, 0, :]  # (1, hidden_dim)
     itm_logits = model.itm_head(multimodal_cls)               # (1, 2) match / not-match
     match_logit = itm_logits[:, 1].squeeze(0)                 # scalar
 
