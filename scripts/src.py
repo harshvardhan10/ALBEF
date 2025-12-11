@@ -184,3 +184,31 @@ def get_image_embeddings(model: ALBEF, images: torch.Tensor) -> torch.Tensor:
         image_feat = model.vision_proj(image_cls)     # (B, D)
         image_feat = torch.nn.functional.normalize(image_feat, dim=-1)
     return image_feat
+
+
+def get_label_text_inputs(tokenizer, labels, max_length):
+    """
+    Build tokenized text inputs for each label prompt.
+    Returns:
+        input_ids_dict:  label -> input_ids tensor (1, T)
+        attention_mask_dict: label -> attention_mask tensor (1, T)
+    """
+    input_ids_dict = {}
+    attention_mask_dict = {}
+
+    def make_prompt(label):
+        return f"This chest X-ray shows {label.lower()}."
+
+    for label in labels:
+        text = make_prompt(label)
+        enc = tokenizer(
+            text,
+            padding="max_length",
+            truncation=True,
+            max_length=max_length,
+            return_tensors="pt",
+        )
+        input_ids_dict[label] = enc["input_ids"]
+        attention_mask_dict[label] = enc["attention_mask"]
+
+    return input_ids_dict, attention_mask_dict
