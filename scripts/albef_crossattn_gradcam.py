@@ -94,7 +94,7 @@ def _compute_crossattn_cam(
     text_token_mask: torch.Tensor = None,
 ) -> torch.Tensor:
     """
-    Build image-token relevance from gradient-weighted cross-attention.
+    Build image-patch relevance from gradient-weighted cross-attention.
 
     _cross_attn_maps[layer_idx]:  (B, heads, T_text, N_img)
     _cross_attn_grads[layer_idx]: (B, heads, T_text, N_img)
@@ -103,8 +103,10 @@ def _compute_crossattn_cam(
       - For each layer l:
           grad_attn = ReLU(A_l * G_l)
           aggregate over heads and text tokens -> (B, N_img)
-      - Sum across layers.
-      - Return (N_img,) for batch size 1.
+      - Sum across layers -> relevance over ALL image tokens (CLS + patches)
+      - Drop CLS token (index 0), keep only patch tokens
+      - Normalize to [0,1]
+      - Reshape patch tokens to (H', W') and return (H', W')
     """
     global _cross_attn_maps, _cross_attn_grads
 
@@ -115,8 +117,9 @@ def _compute_crossattn_cam(
     any_attn = _cross_attn_maps[layer_indices[0]]
     B, H, T_text, N_img = any_attn.shape
     assert B == 1, "This helper assumes batch size 1."
-    assert N_img == num_img_tokens, "Mismatch in number of image tokens."
+    assert N_img == num_img_tokens, f"Mismatch in number of image tokens: {N_img} vs {num_img_tokens}"
 
+    # Relevance for ALL image tokens (CLS + patches)
     relevance = torch.zeros(N_img, device=device)
 
     for l in layer_indices:
@@ -137,14 +140,27 @@ def _compute_crossattn_cam(
 
         relevance = relevance + grad_attn_mean[0]
 
-    # normalize to [0,1]
-    relevance = relevance - relevance.min()
-    if relevance.max() > 0:
-        relevance = relevance / (relevance.max() + 1e-6)
-    else:
-        relevance = torch.zeros_like(relevance)
+    # ---- Drop CLS token (index 0) -> keep only patch tokens ----
+    patch_relevance = relevance[1:]  # (N_patches,)
 
-    return relevance  # (N_img,)
+    # ---- Normalize to [0,1] over patches ----
+    patch_relevance = patch_relevance - patch_relevance.min()
+    if patch_relevance.max() > 0:
+        patch_relevance = patch_relevance / (patch_relevance.max() + 1e-6)
+    else:
+        patch_relevance = torch.zeros_like(patch_relevance)
+
+    # ---- Reshape patches to square grid ----
+    num_patches = patch_relevance.shape[0]
+    grid = int(num_patches ** 0.5)
+    if grid * grid != num_patches:
+        raise ValueError(
+            f"Cannot reshape {num_patches} patch tokens into square grid "
+            f"(expected perfect square, got {num_patches})."
+        )
+
+    cam = patch_relevance.view(grid, grid)  # (H', W')
+    return cam
 
 
 def generate_albef_crossattn_gradcam(
@@ -160,13 +176,13 @@ def generate_albef_crossattn_gradcam(
 
     Steps:
       1. visual_encoder(image) -> image_embeds
-      2. text_encoder in multimodal mode:
+      2. text_encoder.bert in multimodal mode:
          - encoder_hidden_states=image_embeds
          - encoder_attention_mask=image_atts
       3. ITM logits via model.itm_head
       4. Backprop from 'match' logit to cross-attention maps
       5. Compute gradient-weighted cross-attention relevance over image tokens
-      6. Reshape to (H', W')
+      6. Drop CLS, reshape patch tokens to (H', W') and return
     """
     global _cross_attn_maps, _cross_attn_grads
     _cross_attn_maps.clear()
@@ -177,16 +193,16 @@ def generate_albef_crossattn_gradcam(
     input_ids = input_ids.to(device)
     attention_mask = attention_mask.to(device)
 
-    # ---- Forward ----
+    # ---- Forward: visual encoder ----
     with torch.no_grad():
         image_embeds = model.visual_encoder(img_tensor)   # (1, N_img, C)
     image_atts = torch.ones(image_embeds.size()[:-1], dtype=torch.long, device=device)
 
-    # Enable gradients for multimodal part
-    image_embeds = image_embeds.detach()  # we don't need grads w.r.t. visual encoder
+    # We do not need gradients w.r.t. visual encoder itself
+    image_embeds = image_embeds.detach()
     image_embeds.requires_grad_(False)
 
-    # Forward through text_encoder with encoder_hidden_states
+    # ---- Forward: multimodal BERT encoder (text + image) ----
     bert_out = model.text_encoder.bert(
         input_ids=input_ids,
         attention_mask=attention_mask,
@@ -194,30 +210,22 @@ def generate_albef_crossattn_gradcam(
         encoder_attention_mask=image_atts,
         return_dict=True,
     )
-    sequence_output = bert_out.last_hidden_state  # (1, T, 768)
-    multimodal_cls = sequence_output[:, 0, :]  # (1, 768)
+    sequence_output = bert_out.last_hidden_state  # (1, T_text, 768)
+    multimodal_cls = sequence_output[:, 0, :]     # (1, 768)
 
-    # ITM head: use [CLS] of multimodal text output
-    itm_logits = model.itm_head(multimodal_cls)               # (1, 2) match / not-match
-    match_logit = itm_logits[:, 1].squeeze(0)                 # scalar
+    # ---- ITM head: match logit ----
+    itm_logits = model.itm_head(multimodal_cls)   # (1, 2)
+    match_logit = itm_logits[:, 1].squeeze(0)    # scalar
 
-    # ---- Backward ----
+    # ---- Backward: triggers cross-attn hooks ----
     model.zero_grad()
     match_logit.backward(retain_graph=False)
 
-    # ---- Compute CAM ----
-    B, N_img, _ = image_embeds.shape
-    relevance = _compute_crossattn_cam(
-        num_img_tokens=N_img,
+    # ---- Compute CAM over patch tokens ----
+    cam = _compute_crossattn_cam(
+        num_img_tokens=image_embeds.shape[1],  # includes CLS; CLS will be dropped inside
         device=device,
         text_token_mask=text_token_mask,
-    )  # (N_img,)
+    )  # (H', W')
 
-    # reshape to (H', W')
-    num_patches = relevance.shape[0]
-    grid = int(num_patches ** 0.5)
-    if grid * grid != num_patches:
-        raise ValueError(f"Cannot reshape {num_patches} tokens into square grid.")
-
-    cam = relevance.view(grid, grid)  # (H', W')
     return cam.cpu().float()
