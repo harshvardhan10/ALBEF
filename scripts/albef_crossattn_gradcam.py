@@ -92,6 +92,7 @@ def _compute_crossattn_cam(
     num_img_tokens: int,
     device: torch.device,
     text_token_mask: torch.Tensor = None,
+    layers_to_use: list[int]  = None,
 ) -> torch.Tensor:
     """
     Build image-patch relevance from gradient-weighted cross-attention.
@@ -110,9 +111,17 @@ def _compute_crossattn_cam(
     """
     global _cross_attn_maps, _cross_attn_grads
 
-    layer_indices = sorted(_cross_attn_maps.keys())
-    if not layer_indices:
+    all_layers = sorted(_cross_attn_maps.keys())
+    if not all_layers:
         raise RuntimeError("No cross-attention maps captured. Did you call forward+backward?")
+
+    if layers_to_use is None:
+        layer_indices = all_layers
+    else:
+        layer_indices = [l for l in layers_to_use if l in _cross_attn_maps]
+        if not layer_indices:
+            raise RuntimeError(f"Requested layers {layers_to_use} not found in cross-attn maps. "
+                               f"Available: {all_layers}")
 
     any_attn = _cross_attn_maps[layer_indices[0]]
     B, H, T_text, N_img = any_attn.shape
@@ -170,6 +179,7 @@ def generate_albef_crossattn_gradcam(
     attention_mask: torch.Tensor, # (1,T_text)
     device: torch.device,
     text_token_mask: torch.Tensor = None,
+    layers_to_use: list[int] = None,
 ) -> torch.Tensor:
     """
     Cross-attention-based Grad-CAM for one (image, label-text prompt).
@@ -226,6 +236,7 @@ def generate_albef_crossattn_gradcam(
         num_img_tokens=image_embeds.shape[1],  # includes CLS; CLS will be dropped inside
         device=device,
         text_token_mask=text_token_mask,
+        layers_to_use=layers_to_use
     )  # (H', W')
 
     return cam.cpu().float()

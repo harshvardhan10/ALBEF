@@ -117,6 +117,7 @@ def main():
                 attention_mask=attn_mask,
                 device=device,
                 text_token_mask=text_token_mask,
+                layers_to_use=None
             )
 
             cam_up = upsample_cam(cam_patch, target_size=image_res)
