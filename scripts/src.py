@@ -195,6 +195,7 @@ def get_label_text_inputs(tokenizer, labels, max_length):
     """
     input_ids_dict = {}
     attention_mask_dict = {}
+    token_mask_dict = {}
 
     def make_prompt(label):
         return f"This chest X-ray shows {label.lower()}."
@@ -211,4 +212,57 @@ def get_label_text_inputs(tokenizer, labels, max_length):
         input_ids_dict[label] = enc["input_ids"]
         attention_mask_dict[label] = enc["attention_mask"]
 
-    return input_ids_dict, attention_mask_dict
+        token_mask = build_text_token_mask(
+            tokenizer=tokenizer,
+            label=label,
+            input_ids=input_ids_dict[label],
+            attention_mask=attention_mask_dict[label],
+        )  # (T,)
+        token_mask_dict[label] = token_mask
+
+    return input_ids_dict, attention_mask_dict, token_mask_dict
+
+
+def build_text_token_mask(
+    tokenizer,
+    label: str,
+    input_ids: torch.Tensor,
+    attention_mask: torch.Tensor,
+) -> torch.Tensor:
+    """
+    Build a 1D mask over text tokens for Grad-CAM aggregation.
+
+    - label: e.g. "Cardiomegaly"
+    - input_ids: (1, T)
+    - attention_mask: (1, T)
+
+    Returns:
+        mask: (T,) with 1.0 on the sub-token positions corresponding to the label word(s),
+              0.0 elsewhere. If no match is found, falls back to attention_mask (no padding).
+    """
+    # Tokenize the label in isolation to get its subword sequence
+    label_tokens = tokenizer.tokenize(label.lower())
+    if not label_tokens:
+        # If something goes wrong, just use attention_mask (no padding)
+        return attention_mask[0].float()
+
+    # Convert the prompt's IDs back to tokens
+    prompt_tokens = tokenizer.convert_ids_to_tokens(input_ids[0])
+
+    T = len(prompt_tokens)
+    L = len(label_tokens)
+    mask = torch.zeros(T, dtype=torch.float)
+
+    # Try to find the label_tokens as a contiguous subsequence in the prompt_tokens
+    found = False
+    for i in range(T - L + 1):
+        if prompt_tokens[i : i + L] == label_tokens:
+            mask[i : i + L] = 1.0
+            found = True
+            break
+
+    if not found:
+        # Fallback: use attention_mask (ignore padding, treat all non-pad as relevant)
+        mask = attention_mask[0].float()
+
+    return mask

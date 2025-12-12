@@ -86,7 +86,7 @@ def main():
         print(f"[Data] Restricting to labels: {label_cols}")
 
     # ---- Precompute text inputs per label ----
-    input_ids_dict, attn_mask_dict = get_label_text_inputs(
+    input_ids_dict, attn_mask_dict, token_mask_dict = get_label_text_inputs(
         tokenizer=tokenizer,
         labels=label_cols,
         max_length=args.max_text_len,
@@ -106,8 +106,9 @@ def main():
 
         heatmaps = {}
         for label in label_cols:
-            input_ids = input_ids_dict[label]      # (1,T)
-            attn_mask = attn_mask_dict[label]      # (1,T)
+            input_ids = input_ids_dict[label]          # (1,T)
+            attn_mask = attn_mask_dict[label]          # (1,T)
+            text_token_mask = token_mask_dict[label]   # (1,T)
 
             cam_patch = generate_albef_crossattn_gradcam(
                 model=model,
@@ -115,7 +116,7 @@ def main():
                 input_ids=input_ids,
                 attention_mask=attn_mask,
                 device=device,
-                text_token_mask=None,  # optionally focus on label token
+                text_token_mask=text_token_mask,
             )
 
             cam_up = upsample_cam(cam_patch, target_size=image_res)
