@@ -133,7 +133,7 @@ def _compute_crossattn_cam(
         # text_token_mask: (T_text,) with 1.0 for tokens to keep
         if text_token_mask is not None:
             mask = text_token_mask.view(1, 1, T_text, 1)  # (1,1,T_text,1)
-            grad_attn = grad_attn * mask
+            grad_attn = grad_attn * mask.to(device)
 
         # aggregate over heads and text tokens -> (1, N_img)
         grad_attn_mean = grad_attn.mean(dim=1).sum(dim=1)  # (1, N_img)
