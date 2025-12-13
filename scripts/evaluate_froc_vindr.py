@@ -163,8 +163,11 @@ def load_gt_boxes_scaled(
     out = []
     for _, r in df.iterrows():
         label = str(r["class_name"])
+        if label.lower() == "no finding":
+            continue
         image_id = str(r["image_id"])
         if image_id not in meta:
+            print(f"[WARN] image_id={image_id} not found in meta CSV; skipping.")
             continue
 
         orig_h, orig_w = meta[image_id]
