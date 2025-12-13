@@ -88,8 +88,6 @@ def cam_to_boxes(cam: np.ndarray,
 
     Returns list of (box_xyxy, score).
     """
-    cam = normalize_cam_01(cam)
-
     # dedupe identical boxes across thresholds, keep max score
     best_by_box: Dict[Tuple[int, int, int, int], float] = {}
 

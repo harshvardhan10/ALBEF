@@ -312,7 +312,7 @@ def generate_albef_crossattn_gradcam(
 
     cam_raw = patch_relevance_raw.view(grid, grid)
 
-    # cam_vis: your requested normalization
+    # cam_vis: normalized
     cam_vis = normalize_cam_vis_from_raw(patch_relevance_raw).view(grid, grid)
 
     return {
