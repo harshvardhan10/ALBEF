@@ -1,0 +1,29 @@
+label,sens@0.10,sens@0.25,sens@0.50,num_gt_boxes,num_preds,curve_csv
+Aortic enlargement,0.06334841628959276,0.07692307692307693,0.18552036199095023,221,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Aortic_enlargement.csv
+Atelectasis,0.020833333333333332,0.14583333333333334,0.17708333333333334,96,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Atelectasis.csv
+COPD,0.0,0.0,0.0,0,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_COPD.csv
+Calcification,0.04741379310344827,0.06896551724137931,0.1206896551724138,232,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Calcification.csv
+Cardiomegaly,0.041935483870967745,0.06774193548387097,0.1935483870967742,310,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Cardiomegaly.csv
+Clavicle fracture,0.0,0.0,0.0,2,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Clavicle_fracture.csv
+Consolidation,0.031746031746031744,0.05555555555555555,0.1349206349206349,126,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Consolidation.csv
+Edema,0.0,0.0,0.0,0,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Edema.csv
+Emphysema,0.0,0.0,0.0,4,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Emphysema.csv
+Enlarged PA,0.0,0.0,0.0,9,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Enlarged_PA.csv
+ILD,0.04430379746835443,0.08227848101265822,0.11392405063291139,316,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_ILD.csv
+Infiltration,0.0379746835443038,0.0379746835443038,0.08860759493670886,79,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Infiltration.csv
+Lung Opacity,0.010526315789473684,0.05263157894736842,0.05263157894736842,95,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Lung_Opacity.csv
+Lung cavity,0.1,0.1,0.2,10,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Lung_cavity.csv
+Lung cyst,0.0,0.0,0.3333333333333333,3,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Lung_cyst.csv
+Lung tumor,0.0,0.0,0.0,0,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Lung_tumor.csv
+Mediastinal shift,0.05,0.05,0.2,20,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Mediastinal_shift.csv
+No finding,0.0,0.0,0.0,0,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_No_finding.csv
+Nodule/Mass,0.02097902097902098,0.07342657342657342,0.13986013986013987,286,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Nodule_Mass.csv
+Other disease,0.0,0.0,0.0,0,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Other_disease.csv
+Other lesion,0.03571428571428571,0.13392857142857142,0.1875,112,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Other_lesion.csv
+Pleural effusion,0.09558823529411764,0.13970588235294118,0.3014705882352941,136,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Pleural_effusion.csv
+Pleural thickening,0.04583333333333333,0.06666666666666667,0.17083333333333334,240,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Pleural_thickening.csv
+Pneumonia,0.0,0.0,0.0,0,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Pneumonia.csv
+Pneumothorax,0.08,0.08,0.2,25,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Pneumothorax.csv
+Pulmonary fibrosis,0.030726256983240222,0.08659217877094973,0.11452513966480447,358,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Pulmonary_fibrosis.csv
+Rib fracture,0.11764705882352941,0.11764705882352941,0.17647058823529413,17,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Rib_fracture.csv
+Tuberculosis,0.0,0.0,0.0,0,3000,/home/woody/iwi5/iwi5362h/ALBEF/results/zero_shot_vindr_results/froc_top_1/froc_curve_Tuberculosis.csv
