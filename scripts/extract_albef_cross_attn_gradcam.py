@@ -1,5 +1,3 @@
-# extract_albef_crossattn_gradcam_vindr.py
-
 import argparse
 from pathlib import Path
 
@@ -16,6 +14,7 @@ from albef_crossattn_gradcam import (
     register_albef_crossattn_gradcam_hooks,
     remove_albef_crossattn_gradcam_hooks,
     generate_albef_crossattn_gradcam,
+    enable_crossattn_attention_saving
 )
 from albef_gradcam import upsample_cam
 
@@ -81,6 +80,9 @@ def main():
     image_res = config["image_res"]
     transform = get_image_transform(image_res)
     model.eval()
+
+    # Enable attention_map/attn_gradients storage for the grounding layers
+    enable_crossattn_attention_saving(model, layers=layers_to_use)
 
     # ---- Hooks (needed for fallback mode) ----
     handles = register_albef_crossattn_gradcam_hooks(model)

@@ -319,3 +319,22 @@ def generate_albef_crossattn_gradcam(
         "cam_raw": cam_raw.detach().cpu().float(),
         "cam_vis": cam_vis.detach().cpu().float(),
     }
+
+
+def enable_crossattn_attention_saving(model, layers=None):
+    """
+    Turn on saving attention maps + gradients for cross-attention self-attn modules.
+    layers: list of layer indices to enable (e.g. [8,9,10,11]); if None, enable all cross-attn layers.
+    """
+    encoder = model.text_encoder.bert.encoder
+    enabled = []
+    for i, layer in enumerate(encoder.layer):
+        if not hasattr(layer, "crossattention"):
+            continue
+        if layers is not None and i not in layers:
+            continue
+        sa = layer.crossattention.self  # BertSelfAttention
+        sa.save_attention = True
+        enabled.append(i)
+    print(f"[CrossAttn-GradCAM] Enabled save_attention for layers: {enabled}")
+    return enabled
