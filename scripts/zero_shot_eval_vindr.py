@@ -1,19 +1,3 @@
-"""
-
-Zero-shot evaluation of ALBEF checkpoints on VinDr-CXR (classification).
-
-What it does:
-- Loads one or more ALBEF checkpoints (pretrained on MIMIC).
-- Builds multi-prompt text embeddings for each VinDr label (via src.py).
-- Runs zero-shot classification on the VinDr test set (image-level labels).
-- Computes:
-    - Per-label ROC–AUC
-    - Macro and micro ROC–AUC
-    - Per-label F1 (classification, global threshold)
-    - Macro and micro F1
-    - mAP@10 (mean average precision at 10, multilabel classification)
-"""
-
 import argparse
 import json
 from pathlib import Path
@@ -73,7 +57,7 @@ class VinDrClassificationDataset(Dataset):
 
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
-        image_id = row[self.id_col]
+        image_id = str(row[self.id_col])
         img_path = self.images_root / f"{image_id}.png"
         img = Image.open(img_path).convert("RGB")
         if self.transform is not None:
@@ -89,16 +73,6 @@ class VinDrClassificationDataset(Dataset):
 # ==========================
 
 def compute_map_at_k(y_true, scores, k=10):
-    """
-    Compute mAP@k for multilabel classification.
-
-    For each sample:
-      - Rank labels by score (descending).
-      - Consider top-k labels.
-      - Compute "AP@k" as the average of precisions at ranks where the label is positive,
-        normalized by min(#positives, k).
-    Then average AP@k over all samples that have at least one positive label.
-    """
     y_true = np.asarray(y_true)
     scores = np.asarray(scores)
     N, L = y_true.shape
@@ -133,21 +107,7 @@ def compute_map_at_k(y_true, scores, k=10):
     return float(np.mean(ap_list))
 
 
-def compute_classification_metrics(
-        y_true,
-        scores,
-        label_names,
-        threshold=0.5
-):
-    """
-    y_true:  (N, L) 0/1
-    scores:  (N, L) continuous similarities (higher = more positive)
-
-    Computes:
-      - per-label ROC–AUC + macro/micro AUC
-      - per-label F1 + macro/micro F1 (using a global threshold)
-      - mAP@10 (multilabel classification)
-    """
+def compute_classification_metrics(y_true, scores, label_names, threshold=0.5):
     y_true = np.asarray(y_true)
     scores = np.asarray(scores)
     N, L = y_true.shape
@@ -160,7 +120,6 @@ def compute_classification_metrics(
     auc_values = []
     for j, label in enumerate(label_names):
         y = y_true[:, j]
-        # need both classes present
         if len(np.unique(y)) < 2:
             per_label_auc[label] = None
             continue
@@ -174,13 +133,13 @@ def compute_classification_metrics(
     metrics["per_label_auc"] = per_label_auc
     metrics["macro_auc"] = float(np.mean(auc_values)) if len(auc_values) > 0 else None
 
-    # micro-AUC: flatten all labels
+    # micro-AUC
     try:
         metrics["micro_auc"] = float(roc_auc_score(y_true.ravel(), scores.ravel()))
     except ValueError:
         metrics["micro_auc"] = None
 
-    # ----- F1 (using a global threshold) -----
+    # ----- F1 (global threshold) -----
     y_pred = (scores >= threshold).astype(int)
 
     per_label_f1 = {}
@@ -194,16 +153,65 @@ def compute_classification_metrics(
         f1 = f1_score(y, y_hat)
         per_label_f1[label] = float(f1)
         f1_values.append(f1)
+
     metrics["per_label_f1"] = per_label_f1
     metrics["macro_f1"] = float(np.mean(f1_values)) if len(f1_values) > 0 else None
-
-    # micro-F1 (flatten)
     metrics["micro_f1"] = float(f1_score(y_true.ravel(), y_pred.ravel()))
 
-    # ----- mAP@10 (multilabel classification) -----
+    # ----- mAP@10 -----
     metrics["map_at_10"] = compute_map_at_k(y_true, scores, k=10)
 
     return metrics
+
+
+# ==========================
+# Saving helpers
+# ==========================
+
+def save_scores_npz(out_path: Path,
+                    image_ids: list,
+                    label_names: list,
+                    scores: np.ndarray,
+                    y_true: np.ndarray = None):
+    """
+    Compact, fast load for downstream:
+      - image_ids (N,)
+      - label_names (L,)
+      - scores (N,L)
+      - y_true (optional) (N,L)
+    """
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "image_ids": np.asarray(image_ids, dtype=object),
+        "label_names": np.asarray(label_names, dtype=object),
+        "scores": np.asarray(scores, dtype=np.float32),
+    }
+    if y_true is not None:
+        payload["y_true"] = np.asarray(y_true, dtype=np.float32)
+    np.savez_compressed(out_path, **payload)
+    print(f"[Output] Saved per-image scores (npz): {out_path}")
+
+
+def save_scores_csv(out_path: Path,
+                    image_ids: list,
+                    label_names: list,
+                    scores: np.ndarray,
+                    y_true: np.ndarray = None):
+    """
+    Human-readable wide CSV:
+      columns: image_id, score::<label_1>, ..., score::<label_L>
+      optionally also y::<label> columns.
+    """
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    df = pd.DataFrame(scores, columns=[f"score::{lb}" for lb in label_names])
+    df.insert(0, "image_id", image_ids)
+
+    if y_true is not None:
+        ydf = pd.DataFrame(y_true, columns=[f"y::{lb}" for lb in label_names])
+        df = pd.concat([df, ydf], axis=1)
+
+    df.to_csv(out_path, index=False)
+    print(f"[Output] Saved per-image scores (csv): {out_path}")
 
 
 # ==========================
@@ -221,23 +229,19 @@ def evaluate_checkpoint(
     output_dir,
     max_images=None,
     threshold=0.5,
+    save_scores: bool = True,
+    save_scores_csv_flag: bool = False,
 ):
-    """
-    Runs zero-shot classification evaluation for a single checkpoint.
-    Returns a metrics dict.
-    """
     print(f"\n========== Evaluating checkpoint: {ckpt_path} ==========")
     ckpt_path = Path(ckpt_path)
     ckpt_name = ckpt_path.stem
 
-    # Build model + tokenizer + config from shared src.py helper
     model, tokenizer, config, device = build_model_and_tokenizer(
         config_path=config_path,
         ckpt_path=str(ckpt_path),
         device=device_str,
     )
 
-    # Dataset & DataLoader
     image_res = config["image_res"]
     test_transform = get_image_transform(image_res)
 
@@ -258,7 +262,6 @@ def evaluate_checkpoint(
         drop_last=False,
     )
 
-    # Text embeddings (multi-prompt per label; shared code with localization)
     label_embs = get_label_text_embeddings(
         model=model,
         tokenizer=tokenizer,
@@ -267,25 +270,24 @@ def evaluate_checkpoint(
         max_length=32,
     )
     label_embs = label_embs.to(device)  # (L, D)
-    print("[Text] Label embeddings shape:", label_embs.shape)
+    print("[Text] Label embeddings shape:", tuple(label_embs.shape))
 
-    # Inference loop
     all_scores = []
     all_labels = []
     all_ids = []
 
     with torch.no_grad():
         for i, (images, labels, image_ids) in enumerate(data_loader):
-            images = images.to(device, non_blocking=True)    # (B,3,H,W)
-            labels_np = labels.numpy().astype(np.float32)     # (B,L)
+            images = images.to(device, non_blocking=True)
+            labels_np = labels.numpy().astype(np.float32)
 
-            image_embs = get_image_embeddings(model, images)  # (B,D)
+            image_embs = get_image_embeddings(model, images)  # (B,D) normalized
             sims = image_embs @ label_embs.t()                # (B, L)
-            scores = sims.cpu().numpy()
+            scores = sims.cpu().numpy().astype(np.float32)
 
             all_scores.append(scores)
             all_labels.append(labels_np)
-            all_ids.extend(list(image_ids))
+            all_ids.extend(list(map(str, image_ids)))
 
             if (i + 1) % 10 == 0 or (i + 1) == len(data_loader):
                 print(f"[Eval] Processed {i+1}/{len(data_loader)} batches")
@@ -293,10 +295,10 @@ def evaluate_checkpoint(
     all_scores = np.vstack(all_scores)   # (N, L)
     all_labels = np.vstack(all_labels)   # (N, L)
 
-    print("Scores shape:", all_scores.shape)
-    print("Labels shape:", all_labels.shape)
+    print("[Eval] Scores shape:", all_scores.shape)
+    print("[Eval] Labels shape:", all_labels.shape)
+    print("[Eval] Num image_ids:", len(all_ids))
 
-    # Classification metrics
     cls_metrics = compute_classification_metrics(
         y_true=all_labels,
         scores=all_scores,
@@ -310,11 +312,37 @@ def evaluate_checkpoint(
         "label_names": list(label_names),
         "classification": cls_metrics,
         "threshold": float(threshold),
+        "scores_file_npz": None,
+        "scores_file_csv": None,
     }
 
-    # Save JSON
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    # ---- Save per-image per-label scores ----
+    if save_scores:
+        scores_npz_path = output_dir / f"vindr_zero_shot_scores_{ckpt_name}.npz"
+        save_scores_npz(
+            out_path=scores_npz_path,
+            image_ids=all_ids,
+            label_names=label_names,
+            scores=all_scores,
+            y_true=all_labels,
+        )
+        results["scores_file_npz"] = str(scores_npz_path)
+
+        if save_scores_csv_flag:
+            scores_csv_path = output_dir / f"vindr_zero_shot_scores_{ckpt_name}.csv"
+            save_scores_csv(
+                out_path=scores_csv_path,
+                image_ids=all_ids,
+                label_names=label_names,
+                scores=all_scores,
+                y_true=all_labels,
+            )
+            results["scores_file_csv"] = str(scores_csv_path)
+
+    # ---- Save JSON metrics ----
     out_path = output_dir / f"vindr_zero_shot_{ckpt_name}.json"
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2)
@@ -338,12 +366,17 @@ def parse_args():
     parser.add_argument("--output_dir", type=str, default="vindr_zero_shot_results")
 
     parser.add_argument("--batch_size", type=int, default=64)
-    parser.add_argument("--num_workers", type=int, default=4)
+    parser.add_argument("--num_workers", type=int, default=8)
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--threshold", type=float, default=0.5,
                         help="Global threshold used for F1 computation")
     parser.add_argument("--max_images", type=int, default=None,
                         help="Optional: limit number of images for quick debugging")
+
+    parser.add_argument("--save_scores", action="store_true",
+                        help="Save per-image per-label scores as .npz (recommended)")
+    parser.add_argument("--save_scores_csv", action="store_true",
+                        help="Also save per-image per-label scores as wide CSV (optional)")
 
     return parser.parse_args()
 
@@ -364,6 +397,8 @@ def main():
             output_dir=args.output_dir,
             max_images=args.max_images,
             threshold=args.threshold,
+            save_scores=args.save_scores,
+            save_scores_csv_flag=args.save_scores_csv,
         )
         all_results[Path(ckpt).name] = res
 
