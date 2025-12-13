@@ -10,6 +10,7 @@ FROC evaluation for VinDr-CXR CAM heatmaps with quadrant-based matching.
 
 import argparse
 import os
+import re
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -309,6 +310,26 @@ def evaluate_froc_for_label(
     return curve, sens_at
 
 
+def safe_filename(name: str) -> str:
+    """
+    Convert a label string into a filesystem-safe filename stem.
+    Replaces path separators and other unsafe characters with underscores.
+    """
+    name = str(name)
+
+    # Replace slashes explicitly first (most important)
+    name = name.replace("/", "_").replace("\\", "_")
+
+    # Replace anything not alnum, dash, underscore, dot with underscore
+    name = re.sub(r"[^A-Za-z0-9._-]+", "_", name)
+
+    # Collapse multiple underscores
+    name = re.sub(r"_+", "_", name).strip("_")
+
+    # Avoid empty
+    return name if name else "label"
+
+
 # ---------------------------
 # Main
 # ---------------------------
@@ -327,10 +348,10 @@ def main():
     parser.add_argument("--target_size", type=int, default=256)
 
     # Threshold policy (20 thresholds by default)
-    parser.add_argument("--n_thr_low", type=int, default=6)
+    # parser.add_argument("--n_thr_low", type=int, default=6)
     parser.add_argument("--n_thr_high", type=int, default=14)
-    parser.add_argument("--thr_low_min", type=float, default=0.10)
-    parser.add_argument("--thr_low_max", type=float, default=0.30)
+    # parser.add_argument("--thr_low_min", type=float, default=0.10)
+    # parser.add_argument("--thr_low_max", type=float, default=0.30)
     parser.add_argument("--thr_high_min", type=float, default=0.35)
     parser.add_argument("--thr_high_max", type=float, default=0.95)
 
@@ -362,10 +383,12 @@ def main():
     print(f"[Labels] Evaluating {len(labels)} labels from: {labels_csv}")
 
     # Thresholds (default 20)
-    thresholds = np.concatenate([
-        np.linspace(args.thr_low_min, args.thr_low_max, args.n_thr_low),
-        np.linspace(args.thr_high_min, args.thr_high_max, args.n_thr_high),
-    ]).astype(np.float32)
+    # thresholds = np.concatenate([
+    #     np.linspace(args.thr_low_min, args.thr_low_max, args.n_thr_low),
+    #     np.linspace(args.thr_high_min, args.thr_high_max, args.n_thr_high),
+    # ]).astype(np.float32)
+
+    thresholds = np.linspace(args.thr_high_min, args.thr_high_max, args.n_thr_high).astype(np.float32)
 
     # Define test set (N images) from image_labels_test.csv
     image_ids = load_image_ids(labels_csv)
@@ -409,7 +432,8 @@ def main():
         n_pred = sum(1 for p in predictions if p["label"] == label)
 
         # Save per-label curve for plotting
-        curve_path = output_dir / f"froc_curve_{label.replace(' ', '_')}.csv"
+        label_stem = safe_filename(label)
+        curve_path = output_dir / f"froc_curve_{label_stem}.csv"
         pd.DataFrame(curve, columns=["fp_per_image", "sensitivity"]).to_csv(curve_path, index=False)
 
         rows.append({
