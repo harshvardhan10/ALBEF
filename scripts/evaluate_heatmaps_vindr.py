@@ -30,54 +30,10 @@ import numpy as np
 import pandas as pd
 import torch
 
-
-# ------------------ Helpers ------------------
-
-
-def load_meta(meta_csv):
-    """
-    Load VinDr meta CSV with columns: image_id, dim0, dim1
-    Returns dict: image_id -> (orig_height, orig_width)
-    """
-    df = pd.read_csv(meta_csv)
-    return {r["image_id"]: (int(r["dim0"]), int(r["dim1"])) for _, r in df.iterrows()}
-
-
-def scale_box_to_256(r, orig_h, orig_w, target_size=256):
-    """
-    Scale a GT box from original resolution to target_size x target_size space.
-
-    r: DataFrame row with x_min, y_min, x_max, y_max in original px.
-    Returns (x_min_256, y_min_256, x_max_256, y_max_256) as ints, clamped to [0, target_size-1].
-    """
-    scale_x = float(target_size) / float(orig_w)
-    scale_y = float(target_size) / float(orig_h)
-
-    x_min = r["x_min"] * scale_x
-    y_min = r["y_min"] * scale_y
-    x_max = r["x_max"] * scale_x
-    y_max = r["y_max"] * scale_y
-
-    # convert to int indices for slicing heatmaps
-    x_min_i = int(np.floor(x_min))
-    y_min_i = int(np.floor(y_min))
-    x_max_i = int(np.ceil(x_max))
-    y_max_i = int(np.ceil(y_max))
-
-    # clamp
-    x_min_i = max(0, min(target_size - 1, x_min_i))
-    y_min_i = max(0, min(target_size - 1, y_min_i))
-    x_max_i = max(0, min(target_size, x_max_i))
-    y_max_i = max(0, min(target_size, y_max_i))
-
-    # ensure at least 1 pixel in each dimension
-    if x_max_i <= x_min_i:
-        x_max_i = min(target_size, x_min_i + 1)
-    if y_max_i <= y_min_i:
-        y_max_i = min(target_size, y_min_i + 1)
-
-    return x_min_i, y_min_i, x_max_i, y_max_i
-
+from src import (
+    load_meta,
+    scale_box_to_256
+)
 
 def compute_box_stats_for_heatmap(
     heatmap: np.ndarray,
