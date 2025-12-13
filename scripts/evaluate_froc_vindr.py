@@ -1,10 +1,6 @@
-#!/usr/bin/env python3
 """
-evaluate_froc_vindr.py
-
 FROC evaluation for VinDr-CXR CAM heatmaps with quadrant-based matching.
 
-Definition (as per supervisor):
 - FP rate = total false positives over entire dataset / number of test images (FP/image)
 - Sensitivity reported at FP/image = {0.10, 0.25, 0.50}
 - A TP occurs if the CENTER of the predicted box lies in the SAME QUADRANT
@@ -19,6 +15,7 @@ Assumptions:
 """
 
 import argparse
+import os
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -163,8 +160,8 @@ def load_gt_boxes_scaled(
     out = []
     for _, r in df.iterrows():
         label = str(r["class_name"])
-        if label not in labels_keep:
-            continue
+        # if label not in labels_keep:
+        #     continue
 
         image_id = str(r["image_id"])
         if image_id not in meta:
@@ -322,8 +319,9 @@ def main():
                         help="annotations_test.csv (GT boxes in original coords)")
     parser.add_argument("--meta_csv", type=str, required=True,
                         help="test_meta.csv with columns: image_id, dim0, dim1")
-    parser.add_argument("--labels", type=str, nargs="+", required=True,
-                        help='Labels to evaluate, e.g. "Cardiomegaly" "Pleural effusion"')
+    parser.add_argument("--output_dir", type=str, required=True)
+    # parser.add_argument("--labels", type=str, nargs="+", required=True,
+    #                     help='Labels to evaluate, e.g. "Cardiomegaly" "Pleural effusion"')
     parser.add_argument("--target_size", type=int, default=256)
 
     # Threshold policy (20 thresholds by default)
@@ -351,6 +349,9 @@ def main():
     labels_csv = Path(args.labels_csv)
     ann_csv = Path(args.ann_csv)
     meta_csv = Path(args.meta_csv)
+    output_dir = Path(args.output_dir)
+
+    os.makedirs(output_dir, exist_ok=True)
 
     # Thresholds (default 20)
     thresholds = np.concatenate([
@@ -413,14 +414,14 @@ def main():
             "num_preds": sum(1 for p in predictions if p["label"] == label),
         })
 
-        # Save per-label curve for plotting later (optional)
-        curve_path = heatmaps_dir / f"froc_curve_{label.replace(' ', '_')}.csv"
+        # Save per-label curve for plotting
+        curve_path = output_dir / f"froc_curve_{label.replace(' ', '_')}.csv"
         pd.DataFrame(curve, columns=["fp_per_image", "sensitivity"]).to_csv(curve_path, index=False)
         print(f"  Saved curve: {curve_path}")
 
     # Save summary
     out_df = pd.DataFrame(rows)
-    out_path = heatmaps_dir / "froc_summary.csv"
+    out_path = output_dir / "froc_summary.csv"
     out_df.to_csv(out_path, index=False)
     print(f"\n[Saved] Summary: {out_path}")
 
