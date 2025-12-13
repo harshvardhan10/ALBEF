@@ -6,12 +6,6 @@ FROC evaluation for VinDr-CXR CAM heatmaps with quadrant-based matching.
 - A TP occurs if the CENTER of the predicted box lies in the SAME QUADRANT
   as the CENTER of a GT bounding box (within the same image and label).
 - One-to-one matching: each GT box can be matched at most once.
-
-Assumptions:
-- Heatmaps are saved as:  <heatmaps_dir>/<image_id>.pt
-- Each .pt file contains a dict: {label_name: Tensor(256,256)} (or numpy array)
-- GT annotations CSV contains columns: image_id, class_name, x_min, y_min, x_max, y_max (original pixel coords)
-- Meta CSV (test_meta.csv) contains columns: image_id, dim0, dim1 (orig H, orig W)
 """
 
 import argparse
@@ -40,9 +34,9 @@ def quadrant_of_point(x: float, y: float, center: float = 128.0) -> int:
     """
     if x < center and y < center:
         return 0
-    if x >= center > y:
+    if x >= center and y < center:
         return 1
-    if x < center <= y:
+    if x < center and y >= center:
         return 2
     return 3
 
@@ -81,7 +75,7 @@ def cam_to_boxes(cam: np.ndarray,
                  thresholds: np.ndarray,
                  min_area: int = 10,
                  connectivity: int = 2,
-                 top_k: int=1) -> List[Tuple[Tuple[int, int, int, int], float]]:
+                 top_k: int = 1) -> List[Tuple[Tuple[int, int, int, int], float]]:
     """
     Convert one CAM (256x256) into a pool of candidate predicted boxes by:
       - thresholding CAM >= t for multiple thresholds
@@ -89,6 +83,7 @@ def cam_to_boxes(cam: np.ndarray,
       - bounding box per component
       - score per box = max CAM inside component
       - deduplicate identical boxes (keep best score)
+      - keep top_k boxes per image per label (by score) to control FP explosion
 
     Returns list of (box_xyxy, score).
     """
@@ -144,10 +139,18 @@ def load_image_ids(labels_csv: Path) -> List[str]:
     return df[id_col].astype(str).tolist()
 
 
+def load_all_label_names_from_labels_csv(labels_csv: Path) -> List[str]:
+    """
+    Load all label columns (excluding the first ID column) from image_labels_test.csv.
+    These are the labels you likely generated heatmaps for.
+    """
+    df = pd.read_csv(labels_csv)
+    return [c for c in df.columns[1:]]
+
+
 def load_gt_boxes_scaled(
     ann_csv: Path,
     meta: Dict[str, Tuple[int, int]],
-    labels_keep: List[str],
     target_size: int = 256,
 ) -> List[Dict]:
     """
@@ -160,16 +163,12 @@ def load_gt_boxes_scaled(
     out = []
     for _, r in df.iterrows():
         label = str(r["class_name"])
-        # if label not in labels_keep:
-        #     continue
-
         image_id = str(r["image_id"])
         if image_id not in meta:
             continue
 
         orig_h, orig_w = meta[image_id]
         box = scale_box_to_256(r, orig_h, orig_w, target_size=target_size)
-
         out.append({"image_id": image_id, "label": label, "box": box})
     return out
 
@@ -185,7 +184,7 @@ def build_predictions_from_heatmaps(
 ) -> List[Dict]:
     """
     For each image_id, load <heatmaps_dir>/<image_id>.pt and generate candidate
-    predictions for each requested label.
+    predictions for each label in 'labels'.
 
     Returns list of dict:
       {"image_id": str, "label": str, "box": (x0,y0,x1,y1), "score": float}
@@ -203,6 +202,8 @@ def build_predictions_from_heatmaps(
         if not isinstance(obj, dict):
             raise ValueError(f"Heatmap file {p} must be a dict label->heatmap")
 
+        # For robustness: iterate only labels that exist in this file
+        # but still restrict to the global label list
         for label in labels:
             if label not in obj:
                 continue
@@ -314,14 +315,12 @@ def main():
     parser.add_argument("--heatmaps_dir", type=str, required=True,
                         help="Directory containing <image_id>.pt heatmap dicts")
     parser.add_argument("--labels_csv", type=str, required=True,
-                        help="image_labels_test.csv (defines test image_ids and N)")
+                        help="image_labels_test.csv (defines test image_ids and label names)")
     parser.add_argument("--ann_csv", type=str, required=True,
                         help="annotations_test.csv (GT boxes in original coords)")
     parser.add_argument("--meta_csv", type=str, required=True,
                         help="test_meta.csv with columns: image_id, dim0, dim1")
     parser.add_argument("--output_dir", type=str, required=True)
-    # parser.add_argument("--labels", type=str, nargs="+", required=True,
-    #                     help='Labels to evaluate, e.g. "Cardiomegaly" "Pleural effusion"')
     parser.add_argument("--target_size", type=int, default=256)
 
     # Threshold policy (20 thresholds by default)
@@ -340,7 +339,8 @@ def main():
 
     # Optional: limit images (debug)
     parser.add_argument("--max_images", type=int, default=-1)
-    # Select top_k predicted boxes top keep
+
+    # Select top_k predicted boxes to keep (per image per label)
     parser.add_argument("--top_k", type=int, default=1)
 
     args = parser.parse_args()
@@ -350,8 +350,13 @@ def main():
     ann_csv = Path(args.ann_csv)
     meta_csv = Path(args.meta_csv)
     output_dir = Path(args.output_dir)
-
     os.makedirs(output_dir, exist_ok=True)
+
+    # Get ALL label names from image_labels_test.csv
+    labels = load_all_label_names_from_labels_csv(labels_csv)
+    if len(labels) == 0:
+        raise RuntimeError("No label columns found in labels_csv.")
+    print(f"[Labels] Evaluating {len(labels)} labels from: {labels_csv}")
 
     # Thresholds (default 20)
     thresholds = np.concatenate([
@@ -371,16 +376,15 @@ def main():
     gt_boxes = load_gt_boxes_scaled(
         ann_csv=ann_csv,
         meta=meta,
-        labels_keep=args.labels,
         target_size=args.target_size,
     )
-    print(f"[GT] Loaded {len(gt_boxes)} GT boxes for labels={args.labels}")
+    print(f"[GT] Loaded {len(gt_boxes)} GT boxes total (all labels present in annotations).")
 
-    # Build predictions from CAM heatmaps
+    # Build predictions from CAM heatmaps for ALL labels
     predictions = build_predictions_from_heatmaps(
         heatmaps_dir=heatmaps_dir,
         image_ids=image_ids,
-        labels=args.labels,
+        labels=labels,
         thresholds=thresholds,
         min_area=args.min_area,
         connectivity=args.connectivity,
@@ -390,7 +394,7 @@ def main():
 
     # Evaluate per label
     rows = []
-    for label in args.labels:
+    for label in labels:
         curve, sens_at = evaluate_froc_for_label(
             predictions=predictions,
             gt_boxes=gt_boxes,
@@ -398,29 +402,28 @@ def main():
             num_images=num_images,
         )
 
-        print(f"\n[FROC] Label: {label}")
-        print(f"  Sensitivity @ 0.10 FP/image = {sens_at[0.10]:.4f}")
-        print(f"  Sensitivity @ 0.25 FP/image = {sens_at[0.25]:.4f}")
-        print(f"  Sensitivity @ 0.50 FP/image = {sens_at[0.50]:.4f}")
-        print(f"  Num GT boxes = {sum(1 for g in gt_boxes if g['label'] == label)}")
-        print(f"  Num preds    = {sum(1 for p in predictions if p['label'] == label)}")
+        n_gt = sum(1 for g in gt_boxes if g["label"] == label)
+        n_pred = sum(1 for p in predictions if p["label"] == label)
+
+        # Save per-label curve for plotting
+        curve_path = output_dir / f"froc_curve_{label.replace(' ', '_')}.csv"
+        pd.DataFrame(curve, columns=["fp_per_image", "sensitivity"]).to_csv(curve_path, index=False)
 
         rows.append({
             "label": label,
             "sens@0.10": sens_at[0.10],
             "sens@0.25": sens_at[0.25],
             "sens@0.50": sens_at[0.50],
-            "num_gt_boxes": sum(1 for g in gt_boxes if g["label"] == label),
-            "num_preds": sum(1 for p in predictions if p["label"] == label),
+            "num_gt_boxes": n_gt,
+            "num_preds": n_pred,
+            "curve_csv": str(curve_path),
         })
 
-        # Save per-label curve for plotting
-        curve_path = output_dir / f"froc_curve_{label.replace(' ', '_')}.csv"
-        pd.DataFrame(curve, columns=["fp_per_image", "sensitivity"]).to_csv(curve_path, index=False)
-        print(f"  Saved curve: {curve_path}")
+        print(f"[FROC] {label:30s}  GT={n_gt:4d}  Pred={n_pred:6d}  "
+              f"S@0.10={sens_at[0.10]:.4f}  S@0.25={sens_at[0.25]:.4f}  S@0.50={sens_at[0.50]:.4f}")
 
     # Save summary
-    out_df = pd.DataFrame(rows)
+    out_df = pd.DataFrame(rows).sort_values(by="label")
     out_path = output_dir / "froc_summary.csv"
     out_df.to_csv(out_path, index=False)
     print(f"\n[Saved] Summary: {out_path}")
