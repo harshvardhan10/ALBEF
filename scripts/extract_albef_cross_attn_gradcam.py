@@ -10,20 +10,34 @@ from PIL import Image
 from src import (
     build_model_and_tokenizer,
     get_image_transform,
-    get_label_text_inputs,   # <- new helper
+    get_label_text_inputs,
 )
 from albef_crossattn_gradcam import (
     register_albef_crossattn_gradcam_hooks,
     remove_albef_crossattn_gradcam_hooks,
     generate_albef_crossattn_gradcam,
 )
-from albef_gradcam import upsample_cam  # reuse your upsampling
+from albef_gradcam import upsample_cam
+
 
 def infer_png_path(images_root: Path, image_id: str) -> Path:
     png_path = images_root / f"{image_id}.png"
     if not png_path.exists():
         raise FileNotFoundError(f"PNG not found for image_id={image_id}: {png_path}")
     return png_path
+
+
+def parse_layers(s: str):
+    """
+    Parse --layers_to_use argument.
+    Examples:
+      "8" -> [8]
+      "8,9,10,11" -> [8,9,10,11]
+    """
+    s = s.strip()
+    if "," in s:
+        return [int(x) for x in s.split(",") if x.strip() != ""]
+    return [int(s)]
 
 
 def main():
@@ -35,15 +49,28 @@ def main():
     parser.add_argument("--labels_csv", type=str, required=True)
     parser.add_argument("--images_root", type=str, required=True)
     parser.add_argument("--output_dir", type=str, required=True)
+
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--max_images", type=int, default=None)
     parser.add_argument("--max_text_len", type=int, default=32)
     parser.add_argument("--only_labels", type=str, nargs="*", default=None)
+
+    # Paper-faithful default: multimodal "3rd" layer => encoder layer 8 in your model
+    parser.add_argument("--layers_to_use", type=str, default="8",
+                        help='Comma-separated encoder layer indices for cross-attn CAM, e.g. "8" or "8,9,10,11"')
+
+    # Prefer getter methods (if your modules provide them). If False, always use hooks.
+    parser.add_argument("--prefer_getters", action="store_true",
+                        help="Prefer get_attention_map()/get_attn_gradients() if available.")
+
     args = parser.parse_args()
 
     images_root = Path(args.images_root)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    layers_to_use = parse_layers(args.layers_to_use)
+    print(f"[Config] layers_to_use={layers_to_use}, prefer_getters={args.prefer_getters}")
 
     # ---- Build model, tokenizer, config ----
     model, tokenizer, config, device = build_model_and_tokenizer(
@@ -55,9 +82,9 @@ def main():
     transform = get_image_transform(image_res)
     model.eval()
 
-    # ---- Register cross-attn hooks ----
+    # ---- Hooks (needed for fallback mode) ----
     handles = register_albef_crossattn_gradcam_hooks(model)
-    print("[CrossAttn-GradCAM] Hooks registered.")
+    print("[CrossAttn-GradCAM] Hooks registered (used as fallback if getters unavailable).")
 
     # ---- Load CSV & determine labels ----
     df = pd.read_csv(args.labels_csv)
@@ -68,14 +95,11 @@ def main():
     if args.max_images is not None:
         df = df.iloc[: args.max_images].reset_index(drop=True)
 
-    def has_png(row):
-        return (images_root / f"{row[id_col]}.png").exists()
-
-    df["__has_png__"] = df.apply(has_png, axis=1)
+    df["__has_png__"] = df[id_col].apply(lambda x: (images_root / f"{x}.png").exists())
     df = df[df["__has_png__"]].reset_index(drop=True)
     print(f"[Data] After PNG filter: {len(df)} images remain.")
 
-    image_ids = df[id_col].tolist()
+    image_ids = df[id_col].astype(str).tolist()
     label_cols = all_label_cols
 
     if args.only_labels is not None:
@@ -104,28 +128,36 @@ def main():
         img_pil = Image.open(img_path).convert("RGB")
         img_tensor = transform(img_pil).unsqueeze(0)  # (1,3,H,W)
 
-        heatmaps = {}
+        out_obj = {}  # label -> dict(cams)
+
         for label in label_cols:
             input_ids = input_ids_dict[label]          # (1,T)
             attn_mask = attn_mask_dict[label]          # (1,T)
-            text_token_mask = token_mask_dict[label]   # (1,T)
+            text_token_mask = token_mask_dict[label]   # (1,T) or (T,)
 
-            cam_patch = generate_albef_crossattn_gradcam(
+            cams = generate_albef_crossattn_gradcam(
                 model=model,
                 img_tensor=img_tensor,
                 input_ids=input_ids,
                 attention_mask=attn_mask,
                 device=device,
                 text_token_mask=text_token_mask,
-                layers_to_use=[8, 9, 10, 11]
+                layers_to_use=layers_to_use,
+                prefer_getters=args.prefer_getters,
             )
+            # cams: {"cam_raw": (16,16), "cam_vis": (16,16)}
 
-            cam_up = upsample_cam(cam_patch, target_size=image_res)
-            heatmaps[label] = cam_up
+            # Upsample VIS map to image_res for thresholding / overlays
+            cam_vis_up = upsample_cam(cams["cam_vis"], target_size=image_res)
+
+            out_obj[label] = {
+                "cam_raw": cams["cam_raw"].cpu(),
+                "cam_vis": cams["cam_vis"].cpu(),
+                "cam_vis_up": cam_vis_up.float().cpu(),   # (image_res, image_res)
+            }
 
         out_path = output_dir / f"{image_id}.pt"
-        heatmaps_cpu = {k: v.float().cpu() for k, v in heatmaps.items()}
-        torch.save(heatmaps_cpu, out_path)
+        torch.save(out_obj, out_path)
         index_records.append({"image_id": image_id, "heatmap_path": str(out_path)})
 
         if idx_img % 20 == 0 or idx_img == len(image_ids):
@@ -134,7 +166,7 @@ def main():
     index_df = pd.DataFrame(index_records)
     index_path = output_dir / "crossattn_gradcam_index.csv"
     index_df.to_csv(index_path, index=False)
-    print(f"[Output] Saved cross-attn Grad-CAM index to: {index_path}")
+    print(f"[Output] Saved index to: {index_path}")
 
     remove_albef_crossattn_gradcam_hooks(handles)
     print("[CrossAttn-GradCAM] Hooks removed.")

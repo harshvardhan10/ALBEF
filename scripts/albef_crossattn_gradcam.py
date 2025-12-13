@@ -1,67 +1,57 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import torch
 import torch.nn.functional as F
 
-# Globals to store cross-attention maps and grads
+# Globals to store cross-attention maps and grads (fallback path)
 _cross_attn_maps: Dict[int, torch.Tensor] = {}
 _cross_attn_grads: Dict[int, torch.Tensor] = {}
 
 
 def _cross_attn_forward_hook(layer_idx: int):
     """
-    Hook for multimodal cross-attention.
-    Assumes output shape: (B, num_heads, T_text, N_img)
+    Hook for multimodal cross-attention dropout output (attention_probs after dropout).
+    output shape: (B, heads, T_text, N_img)
     """
-
     def hook(module, input, output):
         global _cross_attn_maps
         _cross_attn_maps[layer_idx] = output.detach()
-
     return hook
 
 
 def _cross_attn_backward_hook(layer_idx: int):
     """
-    Backward hook for cross-attention.
-    grad_output[0]: (B, num_heads, T_text, N_img)
+    Backward hook for cross-attention dropout.
+    grad_output[0]: (B, heads, T_text, N_img)
     """
-
     def hook(module, grad_input, grad_output):
         global _cross_attn_grads
         _cross_attn_grads[layer_idx] = grad_output[0].detach()
-
     return hook
 
 
 def register_albef_crossattn_gradcam_hooks(model) -> List[torch.utils.hooks.RemovableHandle]:
     """
-    Register hooks on ALL cross-attention layers in model.text_encoder.
+    Register hooks on ALL cross-attention layers in model.text_encoder (fallback mechanism).
 
     For ALBEF, cross-attn lives in:
       model.text_encoder.bert.encoder.layer[i].crossattention.self.dropout
 
-    Hook the dropout *on the cross-attention* so that its forward output
-    is the attention probabilities (after dropout) with shape (B, heads, T_text, N_img).
+    Hook the dropout on the cross-attention so that its forward output is attention_probs
+    with shape (B, heads, T_text, N_img).
     """
     handles: List[torch.utils.hooks.RemovableHandle] = []
 
-    te = model.text_encoder  # BertForMaskedLM
-    encoder = te.bert.encoder  # BertEncoder
+    te = model.text_encoder
+    encoder = te.bert.encoder
 
-    num_layers = len(encoder.layer)
     hooked_layers = []
-
     for layer_idx, layer in enumerate(encoder.layer):
-        # Only some layers (6–11) have crossattention
         if hasattr(layer, "crossattention"):
-            # crossattention is a BertAttention; its .self is BertSelfAttention
-            sa = layer.crossattention.self
-            dropout = sa.dropout  # this is applied to attention_probs
+            sa = layer.crossattention.self  # BertSelfAttention
+            dropout = sa.dropout
 
             h_fwd = dropout.register_forward_hook(_cross_attn_forward_hook(layer_idx))
-
-            # Backward hook API differs slightly between PyTorch versions
             if hasattr(dropout, "register_full_backward_hook"):
                 h_bwd = dropout.register_full_backward_hook(_cross_attn_backward_hook(layer_idx))
             else:
@@ -71,11 +61,10 @@ def register_albef_crossattn_gradcam_hooks(model) -> List[torch.utils.hooks.Remo
             hooked_layers.append(layer_idx)
 
     print(
-        f"[CrossAttn-GradCAM] Registered hooks on cross-attention dropout "
-        f"for layers: {hooked_layers} (total {len(handles)} hooks)."
+        f"[CrossAttn-GradCAM] Registered fallback hooks on cross-attention dropout "
+        f"for layers: {hooked_layers}."
     )
     return handles
-
 
 
 def remove_albef_crossattn_gradcam_hooks(handles: List[torch.utils.hooks.RemovableHandle]):
@@ -88,88 +77,157 @@ def remove_albef_crossattn_gradcam_hooks(handles: List[torch.utils.hooks.Removab
     print("[CrossAttn-GradCAM] Hooks removed and buffers cleared.")
 
 
-def _compute_crossattn_cam(
+# ---------------------------
+# Normalization helpers
+# ---------------------------
+
+def normalize_cam_vis_from_raw(patch_relevance_raw: torch.Tensor) -> torch.Tensor:
+    """
+    Visualization normalization:
+      - ReLU
+      - divide by max
+    No min-subtraction.
+    """
+    x = F.relu(patch_relevance_raw)
+    mx = x.max()
+    if mx > 0:
+        x = x / (mx + 1e-6)
+    else:
+        x = torch.zeros_like(x)
+    return x
+
+
+# ---------------------------
+# CAM computation
+# ---------------------------
+
+def _compute_crossattn_relevance_tokens(
     num_img_tokens: int,
     device: torch.device,
-    text_token_mask: torch.Tensor = None,
-    layers_to_use: list[int]  = None,
+    text_token_mask: Optional[torch.Tensor] = None,
+    layers_to_use: Optional[List[int]] = None,
+    prefer_getters: bool = True,
+    model=None,
 ) -> torch.Tensor:
     """
-    Build image-patch relevance from gradient-weighted cross-attention.
+    Return relevance over ALL image tokens (CLS + patches): shape (N_img,).
 
-    _cross_attn_maps[layer_idx]:  (B, heads, T_text, N_img)
-    _cross_attn_grads[layer_idx]: (B, heads, T_text, N_img)
-
-    Strategy:
-      - For each layer l:
-          grad_attn = ReLU(A_l * G_l)
-          aggregate over heads and text tokens -> (B, N_img)
-      - Sum across layers -> relevance over ALL image tokens (CLS + patches)
-      - Drop CLS token (index 0), keep only patch tokens
-      - Normalize to [0,1]
-      - Reshape patch tokens to (H', W') and return (H', W')
+    Two modes:
+      A) Preferred: read attention map + grad via get_attention_map()/get_attn_gradients()
+         from each crossattention.self module, if available and prefer_getters=True.
+      B) Fallback: use global buffers _cross_attn_maps/_cross_attn_grads collected via hooks.
     """
+    # -------- Mode A: module getters --------
+    if prefer_getters and model is not None:
+        te = model.text_encoder
+        encoder = te.bert.encoder
+
+        # identify available crossattention layers
+        avail = [i for i, layer in enumerate(encoder.layer) if hasattr(layer, "crossattention")]
+        if layers_to_use is None:
+            use_layers = avail
+        else:
+            use_layers = [l for l in layers_to_use if l in avail]
+            if len(use_layers) == 0:
+                raise RuntimeError(f"Requested layers {layers_to_use} not available. Cross-attn layers: {avail}")
+
+        # Check whether getters exist (on at least one layer)
+        any_has_getters = False
+        for l in use_layers:
+            sa = encoder.layer[l].crossattention.self
+            if hasattr(sa, "get_attention_map") and hasattr(sa, "get_attn_gradients"):
+                any_has_getters = True
+                break
+
+        if any_has_getters:
+            relevance = None
+
+            for l in use_layers:
+                sa = encoder.layer[l].crossattention.self
+                if not (hasattr(sa, "get_attention_map") and hasattr(sa, "get_attn_gradients")):
+                    raise RuntimeError(
+                        f"Layer {l} crossattention.self does not expose get_attention_map/get_attn_gradients "
+                        f"but another layer did. Please make this consistent or set prefer_getters=False."
+                    )
+
+                A = sa.get_attention_map()      # (B, heads, T_text, N_img)
+                G = sa.get_attn_gradients()     # (B, heads, T_text, N_img)
+
+                if A is None or G is None:
+                    raise RuntimeError(
+                        f"Layer {l}: attention map / gradients are None. Ensure your attention module stores them "
+                        f"during forward/backward."
+                    )
+
+                A = A.to(device)
+                G = G.to(device)
+
+                B, H, T_text, N_img = A.shape
+                assert B == 1, "Batch size 1 expected."
+                assert N_img == num_img_tokens, f"Mismatch N_img={N_img} vs expected {num_img_tokens}"
+
+                grad_attn = F.relu(A * G)
+
+                if text_token_mask is not None:
+                    # accept either (T,) or (1,T)
+                    if text_token_mask.dim() == 2:
+                        tmask = text_token_mask[0]
+                    else:
+                        tmask = text_token_mask
+                    tmask = tmask.to(device)
+                    assert tmask.numel() == T_text, f"text_token_mask len {tmask.numel()} != T_text {T_text}"
+                    grad_attn = grad_attn * tmask.view(1, 1, T_text, 1)
+
+                layer_rel = grad_attn.mean(dim=1).sum(dim=1)[0]  # (N_img,)
+
+                relevance = layer_rel if relevance is None else (relevance + layer_rel)
+
+            return relevance  # (N_img,)
+
+    # -------- Mode B: fallback buffers from hooks --------
     global _cross_attn_maps, _cross_attn_grads
 
     all_layers = sorted(_cross_attn_maps.keys())
     if not all_layers:
-        raise RuntimeError("No cross-attention maps captured. Did you call forward+backward?")
+        raise RuntimeError(
+            "No cross-attention maps captured in fallback buffers. "
+            "Did you register hooks and run forward+backward?"
+        )
 
     if layers_to_use is None:
         layer_indices = all_layers
     else:
         layer_indices = [l for l in layers_to_use if l in _cross_attn_maps]
         if not layer_indices:
-            raise RuntimeError(f"Requested layers {layers_to_use} not found in cross-attn maps. "
-                               f"Available: {all_layers}")
+            raise RuntimeError(
+                f"Requested layers {layers_to_use} not found in cross-attn maps. Available: {all_layers}"
+            )
 
     any_attn = _cross_attn_maps[layer_indices[0]]
     B, H, T_text, N_img = any_attn.shape
-    assert B == 1, "This helper assumes batch size 1."
-    assert N_img == num_img_tokens, f"Mismatch in number of image tokens: {N_img} vs {num_img_tokens}"
+    assert B == 1, "Batch size 1 expected."
+    assert N_img == num_img_tokens, f"Mismatch N_img={N_img} vs expected {num_img_tokens}"
 
-    # Relevance for ALL image tokens (CLS + patches)
     relevance = torch.zeros(N_img, device=device)
 
     for l in layer_indices:
-        A = _cross_attn_maps[l].to(device)   # (1, heads, T_text, N_img)
-        G = _cross_attn_grads[l].to(device)  # same shape
+        A = _cross_attn_maps[l].to(device)
+        G = _cross_attn_grads[l].to(device)
 
-        grad_attn = A * G
-        grad_attn = F.relu(grad_attn)        # (1, heads, T_text, N_img)
+        grad_attn = F.relu(A * G)
 
-        # Optional: restrict to specific text tokens (e.g. label word)
-        # text_token_mask: (T_text,) with 1.0 for tokens to keep
         if text_token_mask is not None:
-            mask = text_token_mask.view(1, 1, T_text, 1)  # (1,1,T_text,1)
-            grad_attn = grad_attn * mask.to(device)
+            if text_token_mask.dim() == 2:
+                tmask = text_token_mask[0]
+            else:
+                tmask = text_token_mask
+            tmask = tmask.to(device)
+            grad_attn = grad_attn * tmask.view(1, 1, T_text, 1)
 
-        # aggregate over heads and text tokens -> (1, N_img)
-        grad_attn_mean = grad_attn.mean(dim=1).sum(dim=1)  # (1, N_img)
+        layer_rel = grad_attn.mean(dim=1).sum(dim=1)[0]  # (N_img,)
+        relevance = relevance + layer_rel
 
-        relevance = relevance + grad_attn_mean[0]
-
-    # ---- Drop CLS token (index 0) -> keep only patch tokens ----
-    patch_relevance = relevance[1:]  # (N_patches,)
-
-    # ---- Normalize to [0,1] over patches ----
-    patch_relevance = patch_relevance - patch_relevance.min()
-    if patch_relevance.max() > 0:
-        patch_relevance = patch_relevance / (patch_relevance.max() + 1e-6)
-    else:
-        patch_relevance = torch.zeros_like(patch_relevance)
-
-    # ---- Reshape patches to square grid ----
-    num_patches = patch_relevance.shape[0]
-    grid = int(num_patches ** 0.5)
-    if grid * grid != num_patches:
-        raise ValueError(
-            f"Cannot reshape {num_patches} patch tokens into square grid "
-            f"(expected perfect square, got {num_patches})."
-        )
-
-    cam = patch_relevance.view(grid, grid)  # (H', W')
-    return cam
+    return relevance  # (N_img,)
 
 
 def generate_albef_crossattn_gradcam(
@@ -178,41 +236,44 @@ def generate_albef_crossattn_gradcam(
     input_ids: torch.Tensor,      # (1,T_text)
     attention_mask: torch.Tensor, # (1,T_text)
     device: torch.device,
-    text_token_mask: torch.Tensor = None,
-    layers_to_use: list[int] = None,
-) -> torch.Tensor:
+    text_token_mask: Optional[torch.Tensor] = None,
+    layers_to_use: Optional[List[int]] = None,
+    prefer_getters: bool = True,
+) -> Dict[str, torch.Tensor]:
     """
-    Cross-attention-based Grad-CAM for one (image, label-text prompt).
+    Cross-attention Grad-CAM for one (image, label-text).
 
-    Steps:
-      1. visual_encoder(image) -> image_embeds
-      2. text_encoder.bert in multimodal mode:
-         - encoder_hidden_states=image_embeds
-         - encoder_attention_mask=image_atts
-      3. ITM logits via model.itm_head
-      4. Backprop from 'match' logit to cross-attention maps
-      5. Compute gradient-weighted cross-attention relevance over image tokens
-      6. Drop CLS, reshape patch tokens to (H', W') and return
+    Uses ITM match logit as objective (ALBEF_itm).
+    Returns:
+      {
+        "cam_raw": (H', W') float32 tensor (ReLU applied at the end is NOT forced),
+        "cam_vis": (H', W') float32 tensor in [0,1] for visualization/thresholding
+      }
+
+    Notes:
+      - relevance is computed over (CLS + patches), then CLS is dropped.
+      - cam_raw is the patch relevance BEFORE visualization scaling (but still aggregated across layers).
+      - cam_vis is ReLU(raw) / max.
     """
+    model.eval()
+
+    # Clear fallback buffers (safe even if using getters)
     global _cross_attn_maps, _cross_attn_grads
     _cross_attn_maps.clear()
     _cross_attn_grads.clear()
 
-    model.eval()
     img_tensor = img_tensor.to(device, non_blocking=True)
     input_ids = input_ids.to(device)
     attention_mask = attention_mask.to(device)
 
-    # ---- Forward: visual encoder ----
+    # ---- visual encoder ----
     with torch.no_grad():
-        image_embeds = model.visual_encoder(img_tensor)   # (1, N_img, C)
+        image_embeds = model.visual_encoder(img_tensor)  # (1, 257, 768)
     image_atts = torch.ones(image_embeds.size()[:-1], dtype=torch.long, device=device)
 
-    # We do not need gradients w.r.t. visual encoder itself
     image_embeds = image_embeds.detach()
-    image_embeds.requires_grad_(False)
 
-    # ---- Forward: multimodal BERT encoder (text + image) ----
+    # ---- multimodal forward ----
     bert_out = model.text_encoder.bert(
         input_ids=input_ids,
         attention_mask=attention_mask,
@@ -220,23 +281,41 @@ def generate_albef_crossattn_gradcam(
         encoder_attention_mask=image_atts,
         return_dict=True,
     )
-    sequence_output = bert_out.last_hidden_state  # (1, T_text, 768)
-    multimodal_cls = sequence_output[:, 0, :]     # (1, 768)
+    sequence_output = bert_out.last_hidden_state     # (1, T, 768)
+    multimodal_cls = sequence_output[:, 0, :]        # (1, 768)
 
-    # ---- ITM head: match logit ----
-    itm_logits = model.itm_head(multimodal_cls)   # (1, 2)
-    match_logit = itm_logits[:, 1].squeeze(0)    # scalar
+    itm_logits = model.itm_head(multimodal_cls)      # (1, 2)
+    match_logit = itm_logits[:, 1].squeeze(0)        # scalar
 
-    # ---- Backward: triggers cross-attn hooks ----
-    model.zero_grad()
+    # ---- backward ----
+    model.zero_grad(set_to_none=True)
     match_logit.backward(retain_graph=False)
 
-    # ---- Compute CAM over patch tokens ----
-    cam = _compute_crossattn_cam(
-        num_img_tokens=image_embeds.shape[1],  # includes CLS; CLS will be dropped inside
+    # ---- relevance over image tokens ----
+    relevance_tokens = _compute_crossattn_relevance_tokens(
+        num_img_tokens=image_embeds.shape[1],
         device=device,
         text_token_mask=text_token_mask,
-        layers_to_use=layers_to_use
-    )  # (H', W')
+        layers_to_use=layers_to_use,
+        prefer_getters=prefer_getters,
+        model=model,
+    )  # (257,)
 
-    return cam.cpu().float()
+    # Drop CLS
+    patch_relevance_raw = relevance_tokens[1:]  # (256,)
+
+    # Reshape
+    num_patches = patch_relevance_raw.numel()
+    grid = int(num_patches ** 0.5)
+    if grid * grid != num_patches:
+        raise ValueError(f"Cannot reshape {num_patches} patch tokens into square grid.")
+
+    cam_raw = patch_relevance_raw.view(grid, grid)
+
+    # cam_vis: your requested normalization
+    cam_vis = normalize_cam_vis_from_raw(patch_relevance_raw).view(grid, grid)
+
+    return {
+        "cam_raw": cam_raw.detach().cpu().float(),
+        "cam_vis": cam_vis.detach().cpu().float(),
+    }
