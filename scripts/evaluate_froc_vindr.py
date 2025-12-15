@@ -76,7 +76,7 @@ def cam_to_boxes(cam: np.ndarray,
                  thresholds: np.ndarray,
                  min_area: int = 10,
                  connectivity: int = 2,
-                 top_k: int = 1) -> List[Tuple[Tuple[int, int, int, int], float]]:
+                 top_k_boxes: int = 1) -> List[Tuple[Tuple[int, int, int, int], float]]:
     """
     Convert one CAM (256x256) into a pool of candidate predicted boxes by:
       - thresholding CAM >= t for multiple thresholds
@@ -122,7 +122,7 @@ def cam_to_boxes(cam: np.ndarray,
 
     out = [(box, score) for box, score in best_by_box.items()]
     out.sort(key=lambda x: -x[1])  # sort by score descending
-    return out[:top_k]
+    return out[:top_k_boxes]
 
 
 # ---------------------------
@@ -221,7 +221,7 @@ def build_predictions_from_heatmaps(
                 thresholds=thresholds,
                 min_area=min_area,
                 connectivity=connectivity,
-                top_k=top_k
+                top_k_boxes=top_k
             )
 
             for box, score in boxes:
@@ -308,114 +308,7 @@ def evaluate_froc_for_label(
     return curve, sens_at
 
 
-def safe_filename(name: str) -> str:
-    """
-    Convert a label string into a filesystem-safe filename stem.
-    Replaces path separators and other unsafe characters with underscores.
-    """
-    name = str(name)
-
-    # Replace slashes explicitly first (most important)
-    name = name.replace("/", "_").replace("\\", "_")
-
-    # Replace anything not alnum, dash, underscore, dot with underscore
-    name = re.sub(r"[^A-Za-z0-9._-]+", "_", name)
-
-    # Collapse multiple underscores
-    name = re.sub(r"_+", "_", name).strip("_")
-
-    # Avoid empty
-    return name if name else "label"
-
-
-# ---------------------------
-# Main
-# ---------------------------
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--heatmaps_dir", type=str, required=True,
-                        help="Directory containing <image_id>.pt heatmap dicts")
-    parser.add_argument("--labels_csv", type=str, required=True,
-                        help="image_labels_test.csv (defines test image_ids and label names)")
-    parser.add_argument("--ann_csv", type=str, required=True,
-                        help="annotations_test.csv (GT boxes in original coords)")
-    parser.add_argument("--meta_csv", type=str, required=True,
-                        help="test_meta.csv with columns: image_id, dim0, dim1")
-    parser.add_argument("--output_dir", type=str, required=True)
-    parser.add_argument("--target_size", type=int, default=256)
-
-    # Threshold policy (20 thresholds by default)
-    # parser.add_argument("--n_thr_low", type=int, default=6)
-    parser.add_argument("--n_thr_high", type=int, default=14)
-    # parser.add_argument("--thr_low_min", type=float, default=0.10)
-    # parser.add_argument("--thr_low_max", type=float, default=0.30)
-    parser.add_argument("--thr_high_min", type=float, default=0.35)
-    parser.add_argument("--thr_high_max", type=float, default=0.95)
-
-    # Component filtering
-    parser.add_argument("--min_area", type=int, default=10,
-                        help="Minimum component area in pixels to be considered a detection")
-    parser.add_argument("--connectivity", type=int, default=2, choices=[1, 2],
-                        help="2=8-connected, 1=4-connected")
-
-    # Optional: limit images (debug)
-    parser.add_argument("--max_images", type=int, default=-1)
-
-    # Select top_k predicted boxes to keep (per image per label)
-    parser.add_argument("--top_k", type=int, default=1)
-
-    args = parser.parse_args()
-
-    heatmaps_dir = Path(args.heatmaps_dir)
-    labels_csv = Path(args.labels_csv)
-    ann_csv = Path(args.ann_csv)
-    meta_csv = Path(args.meta_csv)
-    output_dir = Path(args.output_dir)
-    os.makedirs(output_dir, exist_ok=True)
-
-    # Get ALL label names from image_labels_test.csv
-    labels = load_all_label_names_from_labels_csv(labels_csv)
-    if len(labels) == 0:
-        raise RuntimeError("No label columns found in labels_csv.")
-    print(f"[Labels] Evaluating {len(labels)} labels from: {labels_csv}")
-
-    # Thresholds (default 20)
-    # thresholds = np.concatenate([
-    #     np.linspace(args.thr_low_min, args.thr_low_max, args.n_thr_low),
-    #     np.linspace(args.thr_high_min, args.thr_high_max, args.n_thr_high),
-    # ]).astype(np.float32)
-
-    thresholds = np.linspace(args.thr_high_min, args.thr_high_max, args.n_thr_high).astype(np.float32)
-
-    # Define test set (N images) from image_labels_test.csv
-    image_ids = load_image_ids(labels_csv)
-    if args.max_images > 0:
-        image_ids = image_ids[:args.max_images]
-    num_images = len(image_ids)
-    print(f"[Data] N images for FP/image normalization: {num_images}")
-
-    # Load meta and GT boxes
-    meta = load_meta(meta_csv)
-    gt_boxes = load_gt_boxes_scaled(
-        ann_csv=ann_csv,
-        meta=meta,
-        target_size=args.target_size,
-    )
-    print(f"[GT] Loaded {len(gt_boxes)} GT boxes total (all labels present in annotations).")
-
-    # Build predictions from CAM heatmaps for ALL labels
-    predictions = build_predictions_from_heatmaps(
-        heatmaps_dir=heatmaps_dir,
-        image_ids=image_ids,
-        labels=labels,
-        thresholds=thresholds,
-        min_area=args.min_area,
-        connectivity=args.connectivity,
-        top_k=args.top_k
-    )
-    print(f"[Pred] Generated {len(predictions)} candidate predictions total.")
-
+def evaluate_froc(labels, predictions, gt_boxes, num_images, output_dir):
     # Evaluate per label
     rows = []
     for label in labels:
@@ -453,6 +346,106 @@ def main():
     out_df.to_csv(out_path, index=False)
     print(f"\n[Saved] Summary: {out_path}")
 
+
+def safe_filename(name: str) -> str:
+    """
+    Convert a label string into a filesystem-safe filename stem.
+    Replaces path separators and other unsafe characters with underscores.
+    """
+    name = str(name)
+
+    # Replace slashes explicitly first (most important)
+    name = name.replace("/", "_").replace("\\", "_")
+
+    # Replace anything not alnum, dash, underscore, dot with underscore
+    name = re.sub(r"[^A-Za-z0-9._-]+", "_", name)
+
+    # Collapse multiple underscores
+    name = re.sub(r"_+", "_", name).strip("_")
+
+    # Avoid empty
+    return name if name else "label"
+
+
+# ---------------------------
+# Main
+# ---------------------------
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--heatmaps_dir", type=str, required=True,
+                        help="Directory containing <image_id>.pt heatmap dicts")
+    parser.add_argument("--labels_csv", type=str, required=True,
+                        help="image_labels_test.csv (defines test image_ids and label names)")
+    parser.add_argument("--ann_csv", type=str, required=True,
+                        help="annotations_test.csv (GT boxes in original coords)")
+    parser.add_argument("--meta_csv", type=str, required=True,
+                        help="test_meta.csv with columns: image_id, dim0, dim1")
+    parser.add_argument("--output_dir", type=str, required=True)
+    parser.add_argument("--target_size", type=int, default=256)
+
+    parser.add_argument("--n_thr", type=int, default=14)
+    parser.add_argument("--thr_min", type=float, default=0.35)
+    parser.add_argument("--thr_max", type=float, default=0.95)
+
+    # Component filtering
+    parser.add_argument("--min_area", type=int, default=10,
+                        help="Minimum component area in pixels to be considered a detection")
+    parser.add_argument("--connectivity", type=int, default=2, choices=[1, 2],
+                        help="2=8-connected, 1=4-connected")
+
+    # Optional: limit images (debug)
+    parser.add_argument("--max_images", type=int, default=-1)
+
+    # Select top_k predicted boxes to keep (per image per label)
+    parser.add_argument("--top_k", type=int, default=1)
+
+    args = parser.parse_args()
+
+    heatmaps_dir = Path(args.heatmaps_dir)
+    labels_csv = Path(args.labels_csv)
+    ann_csv = Path(args.ann_csv)
+    meta_csv = Path(args.meta_csv)
+    output_dir = Path(args.output_dir)
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Get ALL label names from image_labels_test.csv
+    labels = load_all_label_names_from_labels_csv(labels_csv)
+    if len(labels) == 0:
+        raise RuntimeError("No label columns found in labels_csv.")
+    print(f"[Labels] Evaluating {len(labels)} labels from: {labels_csv}")
+
+    thresholds = np.linspace(args.thr_min, args.thr_max, args.n_thr).astype(np.float32)
+
+    # Define test set (N images) from image_labels_test.csv
+    image_ids = load_image_ids(labels_csv)
+    if args.max_images > 0:
+        image_ids = image_ids[:args.max_images]
+    num_images = len(image_ids)
+    print(f"[Data] N images for FP/image normalization: {num_images}")
+
+    # Load meta and GT boxes
+    meta = load_meta(meta_csv)
+    gt_boxes = load_gt_boxes_scaled(
+        ann_csv=ann_csv,
+        meta=meta,
+        target_size=args.target_size,
+    )
+    print(f"[GT] Loaded {len(gt_boxes)} GT boxes total (all labels present in annotations).")
+
+    # Build predictions from CAM heatmaps for ALL labels
+    predictions = build_predictions_from_heatmaps(
+        heatmaps_dir=heatmaps_dir,
+        image_ids=image_ids,
+        labels=labels,
+        thresholds=thresholds,
+        min_area=args.min_area,
+        connectivity=args.connectivity,
+        top_k=args.top_k
+    )
+    print(f"[Pred] Generated {len(predictions)} candidate predictions total.")
+
+    evaluate_froc(labels, predictions, gt_boxes, num_images, output_dir)
 
 if __name__ == "__main__":
     main()
