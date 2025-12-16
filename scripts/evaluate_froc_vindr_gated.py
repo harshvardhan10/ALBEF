@@ -31,6 +31,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import numpy as np
+import pandas as pd
 import torch
 
 from src import (
@@ -440,6 +441,18 @@ def main():
         f"(top_k_labels={args.top_k_labels}, cls_thr={args.cls_thr}, "
         f"top_k_boxes={args.top_k_boxes}, fusion={args.score_fusion})."
     )
+
+    df = pd.DataFrame([{
+        "image_id": p["image_id"],
+        "label": p["label"],
+        "cam_score": p["cam_score"],
+        "cls_score": p["cls_score"],
+        "fused_score": p["score"],
+    } for p in predictions])
+
+    out_csv = output_dir / "pred_score_distributions.csv"
+    df.to_csv(out_csv, index=False)
+    print(f"[Saved] {out_csv}")
 
     evaluate_froc(labels, predictions, gt_boxes, num_images, output_dir)
 
