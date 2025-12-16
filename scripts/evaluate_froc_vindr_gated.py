@@ -31,7 +31,6 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import numpy as np
-import pandas as pd
 import torch
 
 from src import (
@@ -39,14 +38,26 @@ from src import (
 )
 
 from evaluate_froc_vindr import (
-    safe_filename,
     load_image_ids,
     load_all_label_names_from_labels_csv,
     load_gt_boxes_scaled,
     cam_to_boxes,
-    evaluate_froc_for_label,
     evaluate_froc
 )
+
+
+GLOBAL_LABELS = {
+    "No finding",
+    "Other disease",
+    "Pneumonia",
+    "Tuberculosis",
+    "Lung tumor",
+    "COPD",
+}
+
+def filter_local_labels(labels: List[str]) -> List[str]:
+    """Exclude global (non-localizable) labels."""
+    return [lb for lb in labels if lb not in GLOBAL_LABELS]
 
 
 # ---------------------------
@@ -194,19 +205,19 @@ def build_predictions_from_heatmaps_gated(
     min_area: int = 10,
     connectivity: int = 2,
     top_k_boxes: int = 1,
-    score_fusion: str = "mul",  # "mul" | "cam" | "cls" | "sum"
+    score_fusion: str = "mul",
     alpha: float = 0.5,
+    debug_issue_a: bool = True,
 ) -> List[Dict]:
-    """
-    Gated prediction building.
-    For each image:
-      - pick candidate labels based on cls scores (NPZ)
-      - for each selected label: generate up to top_k_boxes
-      - final prediction score controls FROC ranking
-    """
+
     preds: List[Dict] = []
     missing_hm = 0
     missing_cls = 0
+
+    # ---- Issue A debugging counters ----
+    kept_by_gate = {lb: 0 for lb in labels}
+    cam_ok = {lb: 0 for lb in labels}
+    box_made = {lb: 0 for lb in labels}
 
     for image_id in image_ids:
         p = heatmaps_dir / f"{image_id}.pt"
@@ -220,9 +231,9 @@ def build_predictions_from_heatmaps_gated(
 
         obj = torch.load(p, map_location="cpu")
         if not isinstance(obj, dict):
-            raise ValueError(f"Heatmap file {p} must be a dict label->heatmap or label->dict")
+            raise ValueError(f"Heatmap file {p} must be a dict label->heatmap")
 
-        # label gating
+        # ---- label gating (LOCAL labels only) ----
         selected = select_labels_for_image(
             image_id=image_id,
             labels=labels,
@@ -231,10 +242,10 @@ def build_predictions_from_heatmaps_gated(
             top_k_labels=top_k_labels,
             cls_thr=cls_thr,
         )
-        if len(selected) == 0:
-            continue
 
         for label in selected:
+            kept_by_gate[label] += 1
+
             if label not in obj:
                 continue
 
@@ -243,10 +254,16 @@ def build_predictions_from_heatmaps_gated(
                 continue
 
             cam = extract_cam_from_obj(obj[label], cam_key=cam_key)
+
             if cam.shape != (256, 256):
                 raise ValueError(
                     f"Expected CAM 256x256, got {cam.shape} for image_id={image_id}, label={label}"
                 )
+
+            if not np.isfinite(cam).all() or cam.max() <= 0 or cam.std() < 1e-6:
+                continue
+
+            cam_ok[label] += 1
 
             boxes = cam_to_boxes(
                 cam=cam,
@@ -255,6 +272,9 @@ def build_predictions_from_heatmaps_gated(
                 connectivity=connectivity,
                 top_k_boxes=top_k_boxes,
             )
+
+            if len(boxes) > 0:
+                box_made[label] += 1
 
             for box, cam_s in boxes:
                 score = fuse_score(cam_s, cls_s, mode=score_fusion, alpha=alpha)
@@ -267,10 +287,32 @@ def build_predictions_from_heatmaps_gated(
                     "cam_score": float(cam_s),
                 })
 
+    # ---- Diagnostics ----
     if missing_hm > 0:
         print(f"[WARN] Missing heatmap files: {missing_hm}/{len(image_ids)}")
     if missing_cls > 0:
         print(f"[WARN] Missing cls scores for images: {missing_cls}/{len(image_ids)}")
+
+    if debug_issue_a:
+        print("\n[Issue A Debug] Per-label pipeline survival counts")
+        print("Label                     kept_by_gate  cam_ok  box_made")
+        print("-" * 60)
+        for lb in labels:
+            print(
+                f"{lb:25s} "
+                f"{kept_by_gate[lb]:13d} "
+                f"{cam_ok[lb]:7d} "
+                f"{box_made[lb]:9d}"
+            )
+
+        print("\n[Issue A Breakdown]")
+        killed_by_gate = [l for l in labels if kept_by_gate[l] == 0]
+        killed_by_cam = [l for l in labels if kept_by_gate[l] > 0 and cam_ok[l] == 0]
+        killed_by_post = [l for l in labels if cam_ok[l] > 0 and box_made[l] == 0]
+
+        print("Killed by gating:     ", killed_by_gate)
+        print("Killed by CAM:        ", killed_by_cam)
+        print("Killed by postprocess:", killed_by_post)
 
     return preds
 
@@ -332,8 +374,12 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Labels + image ids
-    labels = load_all_label_names_from_labels_csv(labels_csv)
-    print(f"[Labels] {len(labels)} labels from: {labels_csv}")
+    all_labels = load_all_label_names_from_labels_csv(labels_csv)
+    labels = filter_local_labels(all_labels)
+
+    print(f"[Labels] {len(all_labels)} total labels")
+    print(f"[Labels] {len(labels)} LOCAL labels used for localization")
+    print(f"[Labels] Excluded GLOBAL labels: {sorted(set(all_labels) - set(labels))}")
 
     image_ids = load_image_ids(labels_csv)
     if args.max_images > 0:
