@@ -197,6 +197,7 @@ def build_predictions_from_heatmaps_gated(
     image_ids: List[str],
     labels: List[str],
     score_by_image: Dict[str, np.ndarray],
+    score_by_image_z: Dict[str, np.ndarray],
     label_to_index: Dict[str, int],
     thresholds: np.ndarray,
     cam_key: str = "cam_vis_up",
@@ -237,7 +238,7 @@ def build_predictions_from_heatmaps_gated(
         selected = select_labels_for_image(
             image_id=image_id,
             labels=labels,
-            score_by_image=score_by_image,
+            score_by_image=score_by_image_z,
             label_to_index=label_to_index,
             top_k_labels=top_k_labels,
             cls_thr=cls_thr,
@@ -392,9 +393,24 @@ def main():
 
     # Load NPZ scores
     zs_image_ids, zs_label_names, zs_scores = load_scores_npz(scores_npz)
+
+    # Z-score normalization PER LABEL (for gating only)
+    zs_scores_z = zs_scores.copy()
+    mu = zs_scores_z.mean(axis=0, keepdims=True)
+    std = zs_scores_z.std(axis=0, keepdims=True) + 1e-6
+    zs_scores_z = (zs_scores_z - mu) / std
+
+    score_by_image_z = {
+        img_id: zs_scores_z[i]
+        for i, img_id in enumerate(zs_image_ids)
+    }
+
     score_by_image, label_to_index = build_score_lookup(zs_image_ids, zs_label_names, zs_scores)
     print(f"[ZeroShot] Loaded NPZ scores: {scores_npz}")
     print(f"[ZeroShot] scores shape: {zs_scores.shape}")
+
+    missing = [lb for lb in labels if lb not in label_to_index]
+    assert len(missing) == 0, f"Missing labels in NPZ: {missing}"
 
     # Load meta and GT
     meta = load_meta(meta_csv)
@@ -407,6 +423,7 @@ def main():
         image_ids=image_ids,
         labels=labels,
         score_by_image=score_by_image,
+        score_by_image_z=score_by_image_z,
         label_to_index=label_to_index,
         thresholds=thresholds,
         cam_key=args.cam_key,
