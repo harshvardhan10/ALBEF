@@ -22,7 +22,7 @@ anatomy_prior:
 
 anatomy_target_phrase: "cardiomegaly"
 anatomy_layers: [8]
-lambda_support: 0.01
+lambda_support: 0
 support_loss_type: "outside_mass"
 
 # first controlled run

@@ -54,10 +54,32 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     metric_logger.add_meter('loss_ita', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
     metric_logger.add_meter('loss_itm', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
 
+    # Anatomy-prior meters
+    metric_logger.add_meter('loss_support', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
+    metric_logger.add_meter('attn_inside', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
+    metric_logger.add_meter('attn_outside', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
+    metric_logger.add_meter('support_active', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
+
     header = 'Train Epoch: [{}]'.format(epoch)
-    print_freq = 50
+    print_freq = config.get("print_freq", 50)
     step_size = 100
     warmup_iterations = warmup_steps * step_size
+
+    lambda_support = config.get("lambda_support", 0.0)
+    anatomy_layers = config.get("anatomy_layers", [8])
+    anatomy_target_phrase = config.get("anatomy_target_phrase", "cardiomegaly")
+
+    # Build once, not every batch
+    target_token_ids = tokenizer(
+        anatomy_target_phrase,
+        add_special_tokens=False,
+    ).input_ids
+
+    if utils.is_main_process():
+        print(f"[AnatomyPrior] lambda_support: {lambda_support}")
+        print(f"[AnatomyPrior] target phrase: {anatomy_target_phrase}")
+        print(f"[AnatomyPrior] target token ids: {target_token_ids}")
+        print(f"[AnatomyPrior] layers: {anatomy_layers}")
 
     if args.distributed:
         data_loader.sampler.set_epoch(epoch)
@@ -67,20 +89,6 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
         optimizer.zero_grad()
 
         image = image.to(device, non_blocking=True)
-
-        B, C, H, W = image.shape
-
-        # Temporary cardiac prior mask for debugging only.
-        # This creates a rough central region as a fake heart-support mask.
-        cardiac_prior_mask = torch.zeros((B, 1, H, W), device=device)
-
-        h1, h2 = int(0.35 * H), int(0.75 * H)
-        w1, w2 = int(0.25 * W), int(0.75 * W)
-
-        cardiac_prior_mask[:, :, h1:h2, w1:w2] = 1.0
-
-        # For debugging, apply the support loss to every sample.
-        support_active = torch.ones((B,), dtype=torch.bool, device=device)
 
         text_input = tokenizer(
             text,
@@ -95,72 +103,135 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
         else:
             alpha = config['alpha'] * min(1, i / len(data_loader))
 
+        # ------------------------------------------------------------
+        # Original ALBEF losses
+        # ------------------------------------------------------------
         loss_mlm, loss_ita, loss_itm = model(image, text_input, alpha=alpha)
 
-        target_token_ids = tokenizer(
-            config.get("anatomy_target_phrase", "cardiomegaly"),
-            add_special_tokens=False,
-        ).input_ids
+        # ------------------------------------------------------------
+        # Default anatomy-prior values
+        # ------------------------------------------------------------
+        loss_support = torch.zeros((), device=image.device)
+        mean_inside_mass = torch.zeros((), device=image.device)
+        mean_outside_mass = torch.zeros((), device=image.device)
+        support_active = torch.zeros((image.shape[0],), dtype=torch.bool, device=image.device)
 
-        cardiomegaly_token_mask = build_token_mask(
-            input_ids=text_input.input_ids,
-            attention_mask=text_input.attention_mask,
-            target_token_ids=target_token_ids,
-        )
+        attn_patch = None
+        prior_patch = None
+        cardiac_prior_mask = None
 
-        attn_patch = extract_raw_crossattn_for_anatomy_loss(
-            model=model,
-            text_token_mask=cardiomegaly_token_mask,
-            layers_to_use=config.get("anatomy_layers", [8]),
-            remove_image_cls=True,
-            normalize_patches=True,
-        )
+        # ------------------------------------------------------------
+        # Anatomy-prior support regularization for Cardiomegaly
+        # ------------------------------------------------------------
+        if lambda_support > 0:
+            cardiomegaly_token_mask = build_token_mask(
+                input_ids=text_input.input_ids,
+                attention_mask=text_input.attention_mask,
+                target_token_ids=target_token_ids,
+            )
 
-        prior_patch = resize_prior_to_patch_mask(
-            prior_mask=cardiac_prior_mask,
-            num_patches=attn_patch.shape[-1],
-        )
+            support_active = cardiomegaly_token_mask.any(dim=1)
 
-        loss_support = support_outside_loss(
-            attn_patch=attn_patch,
-            prior_patch=prior_patch,
-            active_mask=support_active,
-        )
+            if support_active.sum() > 0:
+                attn_patch = extract_raw_crossattn_for_anatomy_loss(
+                    model=model,
+                    text_token_mask=cardiomegaly_token_mask,
+                    layers_to_use=anatomy_layers,
+                    remove_image_cls=True,
+                    normalize_patches=True,
+                )
 
+                # ------------------------------------------------------------
+                # Temporary central cardiac-support proxy.
+                # Replace later with real cardiac silhouette masks from dataset.
+                # ------------------------------------------------------------
+                B, C, H, W = image.shape
+
+                cardiac_prior_mask = torch.zeros((B, 1, H, W), device=image.device)
+
+                h1, h2 = int(0.35 * H), int(0.75 * H)
+                w1, w2 = int(0.25 * W), int(0.75 * W)
+
+                cardiac_prior_mask[:, :, h1:h2, w1:w2] = 1.0
+
+                prior_patch = resize_prior_to_patch_mask(
+                    prior_mask=cardiac_prior_mask,
+                    num_patches=attn_patch.shape[-1],
+                )
+
+                loss_support = support_outside_loss(
+                    attn_patch=attn_patch,
+                    prior_patch=prior_patch,
+                    active_mask=support_active,
+                )
+
+                inside_mass = (attn_patch * prior_patch).sum(dim=-1)
+                outside_mass = (attn_patch * (1.0 - prior_patch)).sum(dim=-1)
+
+                mean_inside_mass = inside_mass[support_active].mean().detach()
+                mean_outside_mass = outside_mass[support_active].mean().detach()
+
+        # ------------------------------------------------------------
+        # Debug print for first batch
+        # ------------------------------------------------------------
         if i == 0 and utils.is_main_process():
-            print("attn_patch:", attn_patch.shape)
-            print("prior_patch:", prior_patch.shape)
-            print("cardiac_prior_mask:", cardiac_prior_mask.shape)
-            print("support_active:", support_active.shape)
-            print("loss_support:", loss_support.item())
-            print("attn_patch requires_grad:", attn_patch.requires_grad)
+            print("[DEBUG] image:", image.shape)
+            print("[DEBUG] text_input.input_ids:", text_input.input_ids.shape)
+            print("[DEBUG] support_active:", support_active.shape)
+            print("[DEBUG] active samples:", int(support_active.sum().item()), "/", support_active.numel())
+            print("[DEBUG] loss_support:", float(loss_support.detach().cpu()))
 
+            if attn_patch is not None:
+                print("[DEBUG] attn_patch:", attn_patch.shape)
+                print("[DEBUG] attn_patch requires_grad:", attn_patch.requires_grad)
+
+            if prior_patch is not None:
+                print("[DEBUG] prior_patch:", prior_patch.shape)
+
+            if cardiac_prior_mask is not None:
+                print("[DEBUG] cardiac_prior_mask:", cardiac_prior_mask.shape)
+
+        # ------------------------------------------------------------
+        # Final loss
+        # ------------------------------------------------------------
         loss = (
-                loss_mlm
-                + loss_ita
-                + loss_itm
-                + config.get("lambda_support", 0.01) * loss_support
+            loss_mlm
+            + loss_ita
+            + loss_itm
+            + lambda_support * loss_support
         )
-
-        # loss = loss_mlm + loss_ita + loss_itm
 
         loss.backward()
         optimizer.step()
 
+        # ------------------------------------------------------------
+        # Logging
+        # ------------------------------------------------------------
         metric_logger.update(loss_mlm=loss_mlm.item())
         metric_logger.update(loss_ita=loss_ita.item())
         metric_logger.update(loss_itm=loss_itm.item())
+        metric_logger.update(loss_support=loss_support.item())
+        metric_logger.update(attn_inside=mean_inside_mass.item())
+        metric_logger.update(attn_outside=mean_outside_mass.item())
+        metric_logger.update(support_active=support_active.float().mean().item())
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
 
         if epoch == 0 and i % step_size == 0 and i <= warmup_iterations:
             scheduler.step(i // step_size)
 
+        # Optional short pilot run
+        if config.get("debug_max_batches", None) is not None:
+            if i + 1 >= config["debug_max_batches"]:
+                if utils.is_main_process():
+                    print(f"[DEBUG] Stopping after {i + 1} batches because debug_max_batches is set.")
+                break
+
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger.global_avg())
+
     # return raw floats so we can compute best_loss properly
     return {k: meter.global_avg for k, meter in metric_logger.meters.items()}
-
 
 def auto_resume_from_output_dir(args, model, optimizer, lr_scheduler, config, device):
     """
