@@ -47,6 +47,7 @@ from anatomy_prior.token_utils import build_token_mask
 def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, scheduler, config):
     # train
     model.train()
+    raw_model = model.module if hasattr(model, "module") else model
 
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=50, fmt='{value:.6f}'))
@@ -70,16 +71,22 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     anatomy_target_phrase = config.get("anatomy_target_phrase", "cardiomegaly")
 
     # Build once, not every batch
-    target_token_ids = tokenizer(
-        anatomy_target_phrase,
-        add_special_tokens=False,
-    ).input_ids
+    target_token_ids = None
+
+    if lambda_support > 0:
+        target_token_ids = tokenizer(
+            anatomy_target_phrase,
+            add_special_tokens=False,
+        ).input_ids
 
     if utils.is_main_process():
         print(f"[AnatomyPrior] lambda_support: {lambda_support}")
-        print(f"[AnatomyPrior] target phrase: {anatomy_target_phrase}")
-        print(f"[AnatomyPrior] target token ids: {target_token_ids}")
-        print(f"[AnatomyPrior] layers: {anatomy_layers}")
+        if lambda_support > 0:
+            print(f"[AnatomyPrior] target phrase: {anatomy_target_phrase}")
+            print(f"[AnatomyPrior] target token ids: {target_token_ids}")
+            print(f"[AnatomyPrior] layers: {anatomy_layers}")
+        else:
+            print("[AnatomyPrior] disabled for this run.")
 
     if args.distributed:
         data_loader.sampler.set_epoch(epoch)
@@ -134,7 +141,7 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
 
             if support_active.sum() > 0:
                 attn_patch = extract_raw_crossattn_for_anatomy_loss(
-                    model=model,
+                    model=raw_model,
                     text_token_mask=cardiomegaly_token_mask,
                     layers_to_use=anatomy_layers,
                     remove_image_cls=True,
@@ -305,10 +312,14 @@ def main(args, config):
     model = model.to(device)
 
     # Enable saving raw cross-attention maps for anatomy-prior support loss
-    enable_crossattn_attention_saving_for_anatomy(
-        model,
-        layers=config.get("anatomy_layers", [8]),
-    )
+    if config.get("lambda_support", 0.0) > 0:
+        enable_crossattn_attention_saving_for_anatomy(
+            model,
+            layers=config.get("anatomy_layers", [8]),
+        )
+    else:
+        if utils.is_main_process():
+            print("[AnatomyPrior] lambda_support=0, cross-attention saving disabled.")
 
     arg_opt = utils.AttrDict(config['optimizer'])
     arg_opt["lr"] = float(arg_opt["lr"])
@@ -393,6 +404,10 @@ def main(args, config):
                 'train_loss_ita': loss_ita,
                 'train_loss_itm': loss_itm,
                 'train_loss_total': train_loss_total,
+                'train_loss_support': float(train_stats.get('loss_support', 0.0)),
+                'train_attn_inside': float(train_stats.get('attn_inside', 0.0)),
+                'train_attn_outside': float(train_stats.get('attn_outside', 0.0)),
+                'train_support_active': float(train_stats.get('support_active', 0.0)),
                 'best_loss': best_loss,
                 'lr': float(train_stats.get('lr', optimizer.param_groups[0]["lr"])),
             }
