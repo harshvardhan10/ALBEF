@@ -1,6 +1,5 @@
 train_file: ['data/mimic_cxr.json']
 
-# each train_file (json) contains a python list where each item is {'image': img_path, 'caption': text or list_of_text }               
 bert_config: 'configs/config_bert.json'
 text_encoder: 'bert-base-uncased'
 
@@ -15,31 +14,22 @@ momentum: 0.995
 alpha: 0.4
 
 optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.02}
-schedular: {sched: cosine, lr: 1e-4, epochs: 30, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 10, cooldown_epochs: 0}
+#schedular: {sched: cosine, lr: 1e-4, epochs: 2, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 1, cooldown_epochs: 0}  # for debug run
+schedular: {sched: cosine, lr: 1e-4, epochs: 30, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 10, cooldown_epochs: 0} # for full run
 
+
+# A0 baseline: anatomy regularization disabled
 anatomy_prior:
-  enabled: true
+  enabled: false
 
 anatomy_target_phrase: "cardiomegaly"
 anatomy_layers: [8]
-lambda_support: 0
+lambda_support: 0.0
 support_loss_type: "outside_mass"
+support_mode: "none"
 
-# first controlled run
 train_subset_size: 15000
+# debug_max_batches: 1000  # for debug run
+debug_max_batches: null  # for full run
 
-batch_size_train: 16
-batch_size_test: 32
-
-# quick pilot
-debug_max_batches: 1000
-
-# logging
-log_every: 50
-
-
-
-
-
-
-
+print_freq: 50
