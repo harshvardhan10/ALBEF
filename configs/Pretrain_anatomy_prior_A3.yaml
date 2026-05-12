@@ -1,0 +1,33 @@
+train_file: ['data/mimic_cxr.json']
+
+bert_config: 'configs/config_bert.json'
+text_encoder: 'bert-base-uncased'
+
+image_res: 256
+vision_width: 768
+embed_dim: 256
+batch_size: 64
+temp: 0.07
+mlm_probability: 0.15
+queue_size: 65536
+momentum: 0.995
+alpha: 0.4
+
+optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.02}
+schedular: {sched: cosine, lr: 1e-4, epochs: 2, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 1, cooldown_epochs: 0}
+#schedular: {sched: cosine, lr: 1e-4, epochs: 30, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 10, cooldown_epochs: 0} # for full run
+
+anatomy_prior:
+  enabled: true
+
+anatomy_target_phrase: "cardiomegaly"
+anatomy_layers: [8]
+lambda_support: 0.01
+support_loss_type: "outside_mass"
+support_mode: "positive_only"
+
+train_subset_size: 15000
+debug_max_batches: 1000
+#debug_max_batches: null  # for full run
+
+print_freq: 50

@@ -44,6 +44,54 @@ from anatomy_prior.losses import (
 from anatomy_prior.token_utils import build_token_mask
 
 
+def build_support_weights_from_captions(text, config, device):
+    """
+    Builds per-sample weights for anatomy support loss.
+
+    A1: all Cardiomegaly/uncertain Cardiomegaly captions active
+    A2: Cardiomegaly = 1.0, uncertain Cardiomegaly = 0.5
+    A3: only exact Cardiomegaly active
+    """
+
+    support_mode = config.get("support_mode", "all_cardiomegaly_captions")
+
+    positive_weight = float(config.get("positive_caption_weight", 1.0))
+    uncertain_weight = float(config.get("uncertain_caption_weight", 0.5))
+
+    weights = []
+
+    for t in text:
+        t_lower = str(t).lower().strip()
+
+        if support_mode == "none":
+            weights.append(0.0)
+
+        if support_mode == "all_cardiomegaly_captions":
+            if "cardiomegaly" in t_lower:
+                weights.append(1.0)
+            else:
+                weights.append(0.0)
+
+        elif support_mode == "uncertainty_weighted":
+            if t_lower == "cardiomegaly":
+                weights.append(positive_weight)
+            elif "uncertain cardiomegaly" in t_lower:
+                weights.append(uncertain_weight)
+            else:
+                weights.append(0.0)
+
+        elif support_mode == "positive_only":
+            if t_lower == "cardiomegaly":
+                weights.append(1.0)
+            else:
+                weights.append(0.0)
+
+        else:
+            raise ValueError(f"Unknown support_mode: {support_mode}")
+
+    return torch.tensor(weights, dtype=torch.float, device=device)
+
+
 def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, scheduler, config):
     # train
     model.train()
@@ -60,6 +108,9 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     metric_logger.add_meter('attn_inside', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
     metric_logger.add_meter('attn_outside', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
     metric_logger.add_meter('support_active', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
+
+    # A2
+    metric_logger.add_meter('support_weight', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
 
     header = 'Train Epoch: [{}]'.format(epoch)
     print_freq = config.get("print_freq", 50)
@@ -122,6 +173,7 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
         mean_inside_mass = torch.zeros((), device=image.device)
         mean_outside_mass = torch.zeros((), device=image.device)
         support_active = torch.zeros((image.shape[0],), dtype=torch.bool, device=image.device)
+        mean_support_weight = torch.zeros((), device=image.device)
 
         attn_patch = None
         prior_patch = None
@@ -137,7 +189,20 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
                 target_token_ids=target_token_ids,
             )
 
-            support_active = cardiomegaly_token_mask.any(dim=1)
+            token_active = cardiomegaly_token_mask.any(dim=1)
+
+            support_weights = build_support_weights_from_captions(
+                text=text,
+                config=config,
+                device=image.device,
+            )
+
+            # Only allow support loss where Cardiomegaly token was found
+            support_weights = support_weights * token_active.float()
+
+            mean_support_weight = support_weights.mean().detach()
+
+            support_active = support_weights > 0
 
             if support_active.sum() > 0:
                 attn_patch = extract_raw_crossattn_for_anatomy_loss(
@@ -169,14 +234,22 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
                 loss_support = support_outside_loss(
                     attn_patch=attn_patch,
                     prior_patch=prior_patch,
-                    active_mask=support_active,
+                    active_mask=support_weights,
                 )
 
                 inside_mass = (attn_patch * prior_patch).sum(dim=-1)
                 outside_mass = (attn_patch * (1.0 - prior_patch)).sum(dim=-1)
 
-                mean_inside_mass = inside_mass[support_active].mean().detach()
-                mean_outside_mass = outside_mass[support_active].mean().detach()
+                # mean_inside_mass = inside_mass[support_active].mean().detach()
+                # mean_outside_mass = outside_mass[support_active].mean().detach()
+
+                w = support_weights.clamp_min(0.0)
+
+                mean_inside_mass = (inside_mass * w).sum() / w.sum().clamp_min(1.0)
+                mean_outside_mass = (outside_mass * w).sum() / w.sum().clamp_min(1.0)
+
+                mean_inside_mass = mean_inside_mass.detach()
+                mean_outside_mass = mean_outside_mass.detach()
 
         # ------------------------------------------------------------
         # Debug print for first batch
@@ -187,6 +260,14 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
             print("[DEBUG] support_active:", support_active.shape)
             print("[DEBUG] active samples:", int(support_active.sum().item()), "/", support_active.numel())
             print("[DEBUG] loss_support:", float(loss_support.detach().cpu()))
+
+            if lambda_support > 0:
+                print("[DEBUG] support_mode:", config.get("support_mode"))
+                print("[DEBUG] support_weights mean:", float(support_weights.mean().detach().cpu()))
+                print("[DEBUG] support_weights unique:", torch.unique(support_weights.detach().cpu()))
+                print("[DEBUG] first 10 raw texts:")
+                for idx, t in enumerate(text[:10]):
+                    print(f"  {idx}: {t}")
 
             if attn_patch is not None:
                 print("[DEBUG] attn_patch:", attn_patch.shape)
@@ -222,6 +303,7 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
         metric_logger.update(attn_outside=mean_outside_mass.item())
         metric_logger.update(support_active=support_active.float().mean().item())
         metric_logger.update(lr=optimizer.param_groups[0]["lr"])
+        metric_logger.update(support_weight=mean_support_weight.item())
 
         if epoch == 0 and i % step_size == 0 and i <= warmup_iterations:
             scheduler.step(i // step_size)
@@ -410,6 +492,7 @@ def main(args, config):
                 'train_support_active': float(train_stats.get('support_active', 0.0)),
                 'best_loss': best_loss,
                 'lr': float(train_stats.get('lr', optimizer.param_groups[0]["lr"])),
+                'train_support_weight': float(train_stats.get('support_weight', 0.0)),
             }
 
             save_obj = {
