@@ -14,8 +14,8 @@ momentum: 0.995
 alpha: 0.4
 
 optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.02}
-schedular: {sched: cosine, lr: 1e-4, epochs: 2, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 1, cooldown_epochs: 0}  # for debug
-#schedular: {sched: cosine, lr: 1e-4, epochs: 30, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 10, cooldown_epochs: 0} # for full run
+#schedular: {sched: cosine, lr: 1e-4, epochs: 2, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 1, cooldown_epochs: 0}  # for debug
+schedular: {sched: cosine, lr: 1e-4, epochs: 30, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 10, cooldown_epochs: 0} # for full run
 
 anatomy_prior:
   enabled: true
@@ -27,7 +27,7 @@ support_loss_type: "outside_mass"
 support_mode: "all_cardiomegaly_captions"
 
 train_subset_size: 15000
-debug_max_batches: 1000
-#debug_max_batches: null  # for full run
+#debug_max_batches: 1000
+debug_max_batches: null  # for full run
 
 print_freq: 50
