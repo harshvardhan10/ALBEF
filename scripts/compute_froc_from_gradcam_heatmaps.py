@@ -116,7 +116,19 @@ def load_heatmap_index(heatmaps_dir: Path) -> pd.DataFrame:
 
     def _resolve(p: str) -> str:
         p = str(p)
-        return str((heatmaps_dir / p).resolve()) if not os.path.isabs(p) else p
+
+        if os.path.isabs(p):
+            return p
+
+        p_from_cwd = Path(p)
+        if p_from_cwd.exists():
+            return str(p_from_cwd.resolve())
+
+        p_from_heatmaps_dir = heatmaps_dir / p
+        if p_from_heatmaps_dir.exists():
+            return str(p_from_heatmaps_dir.resolve())
+
+        return str(p_from_heatmaps_dir.resolve())
 
     idx["heatmap_path"] = idx["heatmap_path"].astype(str).map(_resolve)
 
