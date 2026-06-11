@@ -18,7 +18,10 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import DataLoader
+from torch.utils.data import (
+    DataLoader,
+    Subset
+)
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 
@@ -308,7 +311,7 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
         if epoch == 0 and i % step_size == 0 and i <= warmup_iterations:
             scheduler.step(i // step_size)
 
-        # Optional short pilot run
+        # Short pilot run
         if config.get("debug_max_batches", None) is not None:
             if i + 1 >= config["debug_max_batches"]:
                 if utils.is_main_process():
@@ -369,6 +372,37 @@ def main(args, config):
     #### Dataset ####
     print("Creating dataset")
     datasets = [create_dataset('pretrain', config)]
+
+    # ------------------------------------------------------------
+    # Fixed training subset for controlled A0-A3 experiments
+    # ------------------------------------------------------------
+    train_subset_size = config.get("train_subset_size", None)
+
+    if train_subset_size is not None:
+        train_subset_size = int(train_subset_size)
+        full_dataset_size = len(datasets[0])
+
+        if train_subset_size > full_dataset_size:
+            raise ValueError(
+                f"train_subset_size={train_subset_size} is larger than "
+                f"full dataset size={full_dataset_size}"
+            )
+
+        subset_seed = int(config.get("train_subset_seed", 42))
+
+        rng = np.random.default_rng(subset_seed)
+        subset_indices = rng.permutation(full_dataset_size)[:train_subset_size].tolist()
+
+        datasets = [Subset(datasets[0], subset_indices)]
+
+        if utils.is_main_process():
+            print(
+                f"[DATASET] Using subset: {train_subset_size}/{full_dataset_size} "
+                f"samples with train_subset_seed={subset_seed}"
+            )
+    else:
+        if utils.is_main_process():
+            print(f"[DATASET] Using full dataset: {len(datasets[0])} samples")
 
     if args.distributed:
         num_tasks = utils.get_world_size()

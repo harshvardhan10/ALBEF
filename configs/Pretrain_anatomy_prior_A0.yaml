@@ -15,7 +15,7 @@ alpha: 0.4
 
 optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.02}
 #schedular: {sched: cosine, lr: 1e-4, epochs: 2, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 1, cooldown_epochs: 0}  # for debug run
-schedular: {sched: cosine, lr: 1e-4, epochs: 30, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 10, cooldown_epochs: 0} # for full run
+schedular: {sched: cosine, lr: 1e-4, epochs: 30, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 10, cooldown_epochs: 0} # for full/subset run
 
 
 # A0 baseline: anatomy regularization disabled
@@ -28,8 +28,10 @@ lambda_support: 0.0
 support_loss_type: "outside_mass"
 support_mode: "none"
 
-train_subset_size: 15000
+train_subset_size: 15000  # for subset run
+train_subset_seed: 42
+# train_subset_size: null  # for full run
 # debug_max_batches: 1000  # for debug run
-debug_max_batches: null  # for full run
+debug_max_batches: null  # for full/subset run
 
 print_freq: 50
