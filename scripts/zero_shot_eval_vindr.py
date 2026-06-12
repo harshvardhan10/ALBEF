@@ -510,8 +510,8 @@ def parse_args():
     parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--num_workers", type=int, default=8)
     parser.add_argument("--device", type=str, default="cuda")
-    parser.add_argument("--threshold", type=float, default=0.6571,
-                        help="Global threshold used for F1 computation")  # best threshold computed on A0 subset
+    parser.add_argument("--threshold", type=float, default=0.5,
+                        help="Global threshold used for F1 computation")
     parser.add_argument("--max_images", type=int, default=None,
                         help="Optional: limit number of images for quick debugging")
 
