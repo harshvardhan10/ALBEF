@@ -164,23 +164,18 @@ def compute_map_at_k(y_true, scores, k=10):
 #     return metrics
 
 
-def compute_classification_metrics(
-    y_true,
-    scores,
-    label_names,
-    threshold=0.5,
-    compute_best_threshold=True,
-):
+def compute_classification_metrics(y_true, scores, label_names, threshold=0.5):
     y_true = np.asarray(y_true).astype(int)
     scores = np.asarray(scores)
+
     N, L = y_true.shape
     assert scores.shape == (N, L)
 
     metrics = {}
 
-    # =====================
+    # ==========================
     # ROC-AUC
-    # =====================
+    # ==========================
     per_label_auc = {}
     auc_values = []
 
@@ -206,25 +201,22 @@ def compute_classification_metrics(
     except ValueError:
         metrics["micro_auc"] = None
 
-    # =====================
+    # ==========================
     # Fixed-threshold F1
-    # =====================
+    # ==========================
     y_pred = (scores >= threshold).astype(int)
 
     per_label_f1 = {}
+    f1_values = []
     per_label_support = {}
     per_label_pred_pos = {}
-    f1_values = []
 
     for j, label in enumerate(label_names):
         y = y_true[:, j]
         y_hat = y_pred[:, j]
 
-        support = int(y.sum())
-        pred_pos = int(y_hat.sum())
-
-        per_label_support[label] = support
-        per_label_pred_pos[label] = pred_pos
+        per_label_support[label] = int(y.sum())
+        per_label_pred_pos[label] = int(y_hat.sum())
 
         if len(np.unique(y)) < 2:
             per_label_f1[label] = None
@@ -243,67 +235,66 @@ def compute_classification_metrics(
         f1_score(y_true.ravel(), y_pred.ravel(), zero_division=0)
     )
 
-    # =====================
-    # Best-threshold F1
-    # =====================
-    if compute_best_threshold:
-        per_label_best_f1 = {}
-        per_label_best_threshold = {}
-        best_f1_values = []
+    # ==========================
+    # Best-threshold F1 using 20 thresholds
+    # ==========================
+    thresholds = np.linspace(scores.min(), scores.max(), 20)
 
-        for j, label in enumerate(label_names):
-            y = y_true[:, j]
-            s = scores[:, j]
+    per_label_best_f1 = {}
+    per_label_best_threshold = {}
+    best_f1_values = []
 
-            if len(np.unique(y)) < 2:
-                per_label_best_f1[label] = None
-                per_label_best_threshold[label] = None
-                continue
+    for j, label in enumerate(label_names):
+        y = y_true[:, j]
+        s = scores[:, j]
 
-            # Candidate thresholds from observed scores
-            thresholds = np.unique(s)
+        if len(np.unique(y)) < 2:
+            per_label_best_f1[label] = None
+            per_label_best_threshold[label] = None
+            continue
 
-            best_f1 = -1.0
-            best_thr = None
+        best_f1 = -1.0
+        best_thr = None
 
-            for thr in thresholds:
-                y_hat = (s >= thr).astype(int)
-                f1 = f1_score(y, y_hat, zero_division=0)
+        for thr in thresholds:
+            y_hat = (s >= thr).astype(int)
+            f1 = f1_score(y, y_hat, zero_division=0)
 
-                if f1 > best_f1:
-                    best_f1 = f1
-                    best_thr = float(thr)
+            if f1 > best_f1:
+                best_f1 = f1
+                best_thr = float(thr)
 
-            per_label_best_f1[label] = float(best_f1)
-            per_label_best_threshold[label] = best_thr
-            best_f1_values.append(best_f1)
+        per_label_best_f1[label] = float(best_f1)
+        per_label_best_threshold[label] = best_thr
+        best_f1_values.append(best_f1)
 
-        metrics["per_label_best_f1"] = per_label_best_f1
-        metrics["per_label_best_threshold"] = per_label_best_threshold
-        metrics["macro_best_f1"] = (
-            float(np.mean(best_f1_values)) if len(best_f1_values) > 0 else None
-        )
+    metrics["threshold_grid"] = [float(t) for t in thresholds]
+    metrics["per_label_best_f1"] = per_label_best_f1
+    metrics["per_label_best_threshold"] = per_label_best_threshold
+    metrics["macro_best_f1"] = (
+        float(np.mean(best_f1_values)) if len(best_f1_values) > 0 else None
+    )
 
-        # Global best threshold for micro-F1
-        global_thresholds = np.unique(scores.ravel())
+    # ==========================
+    # Global best threshold for micro-F1
+    # ==========================
+    best_micro_f1 = -1.0
+    best_global_thr = None
 
-        best_micro_f1 = -1.0
-        best_global_thr = None
+    for thr in thresholds:
+        y_hat = (scores >= thr).astype(int)
+        f1 = f1_score(y_true.ravel(), y_hat.ravel(), zero_division=0)
 
-        for thr in global_thresholds:
-            y_hat = (scores >= thr).astype(int)
-            f1 = f1_score(y_true.ravel(), y_hat.ravel(), zero_division=0)
+        if f1 > best_micro_f1:
+            best_micro_f1 = f1
+            best_global_thr = float(thr)
 
-            if f1 > best_micro_f1:
-                best_micro_f1 = f1
-                best_global_thr = float(thr)
+    metrics["micro_best_f1"] = float(best_micro_f1)
+    metrics["best_global_threshold"] = best_global_thr
 
-        metrics["best_global_threshold"] = best_global_thr
-        metrics["micro_best_f1"] = float(best_micro_f1)
-
-    # =====================
+    # ==========================
     # mAP@10
-    # =====================
+    # ==========================
     metrics["map_at_10"] = compute_map_at_k(y_true, scores, k=10)
 
     return metrics
@@ -376,6 +367,8 @@ def evaluate_checkpoint(
     save_scores: bool = True,
     save_scores_csv_flag: bool = False,
 ):
+    print("[Device]", device_str)
+
     print(f"\n========== Evaluating checkpoint: {ckpt_path} ==========")
     ckpt_path = Path(ckpt_path)
     ckpt_name = ckpt_path.stem
@@ -442,6 +435,11 @@ def evaluate_checkpoint(
     print("[Eval] Scores shape:", all_scores.shape)
     print("[Eval] Labels shape:", all_labels.shape)
     print("[Eval] Num image_ids:", len(all_ids))
+
+    print("score min:", all_scores.min())
+    print("score max:", all_scores.max())
+    print("score mean:", all_scores.mean())
+    print("score std:", all_scores.std())
 
     cls_metrics = compute_classification_metrics(
         y_true=all_labels,
