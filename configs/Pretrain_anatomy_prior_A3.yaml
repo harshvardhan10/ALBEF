@@ -22,7 +22,7 @@ anatomy_prior:
 
 anatomy_target_phrase: "cardiomegaly"
 anatomy_layers: [8]
-lambda_support: 0.005
+lambda_support: 0.001
 support_loss_type: "outside_mass"
 support_mode: "positive_only"
 
