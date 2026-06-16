@@ -22,13 +22,13 @@ anatomy_prior:
 
 anatomy_target_phrase: "cardiomegaly"
 anatomy_layers: [8]
-lambda_support: 0.01
+lambda_support: 0.005
 support_loss_type: "outside_mass"
 support_mode: "positive_only"
 
-train_subset_size: 15000  # for subset run
+#train_subset_size: 15000  # for subset run
 train_subset_seed: 42
-# train_subset_size: null  # for full  run
+train_subset_size: null  # for full  run
 # debug_max_batches: 1000  # for debug run
 debug_max_batches: null  # for full/subset run
 
