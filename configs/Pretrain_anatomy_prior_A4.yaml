@@ -1,0 +1,43 @@
+# A4 Cardiomegaly: A3 positive-only anatomy support + A0 classification preservation
+
+train_file: ['data/mimic_cxr.json']
+
+bert_config: 'configs/config_bert.json'
+text_encoder: 'bert-base-uncased'
+
+image_res: 256
+vision_width: 768
+embed_dim: 256
+batch_size: 64
+temp: 0.07
+mlm_probability: 0.15
+queue_size: 65536
+momentum: 0.995
+alpha: 0.4
+
+optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.02}
+schedular: {sched: cosine, lr: 1e-4, epochs: 30, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 10, cooldown_epochs: 0}
+
+# train_subset_size: 15000
+train_subset_seed: 42
+
+# A3 anatomy-support settings
+support_mode: 'positive_only'
+anatomy_target_phrase: 'cardiomegaly'
+anatomy_layers: [8]
+lambda_support: 0.01
+positive_caption_weight: 1.0
+uncertain_caption_weight: 0.5
+
+# A4 classification-preservation settings
+use_classification_preservation: true
+classification_teacher_checkpoint: '/home/woody/iwi5/iwi5362h/ALBEF/output_anatomy_A0_full/checkpoint_best.pth'
+lambda_cls_preserve: 0.5
+cls_preserve_temperature: 0.07
+
+# Runtime/debugging
+print_freq: 50
+# debug_max_batches: 20
+
+# Storage control
+save_epoch_checkpoints:
