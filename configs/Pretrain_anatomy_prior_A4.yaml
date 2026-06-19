@@ -32,7 +32,7 @@ uncertain_caption_weight: 0.5
 # A4 classification-preservation settings
 use_classification_preservation: true
 classification_teacher_checkpoint: '/home/woody/iwi5/iwi5362h/ALBEF/output_anatomy_A0_full/checkpoint_best.pth'
-lambda_cls_preserve: 0.1
+lambda_cls_preserve: 1
 cls_preserve_temperature: 0.07
 
 # Runtime/debugging
