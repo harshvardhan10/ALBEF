@@ -1,4 +1,4 @@
-"""
+'''
 A5 pretraining script:
 Identity-initialized patch prediction head trained with anatomy support loss
 while detaching ALBEF cross-attention maps.
@@ -12,7 +12,9 @@ Key A5 behavior:
   - Checkpoints store ALBEF weights under checkpoint['model'] and patch head
     weights separately under checkpoint['patch_head'], keeping old zero-shot
     classification code compatible with checkpoint['model'].
-"""
+  - DDP-safe version: patch_head is a standalone module, not a child of
+    DDP-wrapped ALBEF; its gradients are manually averaged across ranks.
+'''
 
 import argparse
 import os
@@ -193,6 +195,27 @@ def module_grad_norm(module: nn.Module) -> float:
     return float(total_sq ** 0.5)
 
 
+def sync_module_gradients(module: nn.Module) -> None:
+    """
+    Manually average gradients for a module that is intentionally kept outside DDP.
+
+    A5 uses patch_head outside ALBEF.forward(), so patch_head must not be registered
+    inside the DDP-wrapped ALBEF module. This function keeps patch_head synchronized
+    across ranks by all-reducing its gradients after loss.backward().
+    """
+    if not (dist.is_available() and dist.is_initialized()):
+        return
+
+    world_size = float(dist.get_world_size())
+    for p in module.parameters():
+        if not p.requires_grad:
+            continue
+        if p.grad is None:
+            p.grad = torch.zeros_like(p.data)
+        dist.all_reduce(p.grad, op=dist.ReduceOp.SUM)
+        p.grad.div_(world_size)
+
+
 def module_param_norm(module: nn.Module) -> float:
     total_sq = 0.0
     for p in module.parameters():
@@ -231,10 +254,10 @@ def load_model_albef_state(model, state_dict, strict=False):
 # Training
 # ============================================================
 
-def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, scheduler, config, args):
+def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, scheduler, config, args, patch_head):
     model.train()
+    patch_head.train()
     raw_model = get_model_without_ddp(model)
-    patch_head = get_patch_head(raw_model)
 
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=50, fmt='{value:.6f}'))
@@ -442,6 +465,11 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
 
         loss.backward()
 
+        # patch_head is deliberately outside DDP because it is used outside
+        # ALBEF.forward(). Average its gradients manually across ranks.
+        if args.distributed:
+            sync_module_gradients(patch_head)
+
         patch_head_grad_norm = module_grad_norm(patch_head)
 
         if i == 0 and utils.is_main_process():
@@ -487,7 +515,7 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
 # Checkpoint loading / saving
 # ============================================================
 
-def auto_resume_from_output_dir(args, model, optimizer, lr_scheduler, config, device):
+def auto_resume_from_output_dir(args, model, patch_head, optimizer, lr_scheduler, config, device):
     """
     A5 compact output policy: prefer checkpoint_last.pth. Falls back to the
     latest checkpoint_XX.pth only for compatibility with older output dirs.
@@ -509,9 +537,8 @@ def auto_resume_from_output_dir(args, model, optimizer, lr_scheduler, config, de
     state_dict = checkpoint['model']
     load_model_albef_state(model, state_dict, strict=False)
 
-    raw_model = get_model_without_ddp(model)
     if "patch_head" in checkpoint:
-        raw_model.patch_head.load_state_dict(checkpoint["patch_head"], strict=True)
+        patch_head.load_state_dict(checkpoint["patch_head"], strict=True)
         print("[AutoResume:A5] Loaded patch_head state.")
     else:
         print("[AutoResume:A5] WARNING: checkpoint has no patch_head state; using identity init.")
@@ -527,10 +554,10 @@ def auto_resume_from_output_dir(args, model, optimizer, lr_scheduler, config, de
     return start_epoch, best_loss
 
 
-def save_a5_checkpoint(args, model_without_ddp, optimizer, lr_scheduler, config, epoch, best_loss, is_best):
+def save_a5_checkpoint(args, model_without_ddp, patch_head, optimizer, lr_scheduler, config, epoch, best_loss, is_best):
     save_obj = {
         'model': albef_state_dict_without_patch_head(model_without_ddp),
-        'patch_head': model_without_ddp.patch_head.state_dict(),
+        'patch_head': patch_head.state_dict(),
         'optimizer': optimizer.state_dict(),
         'lr_scheduler': lr_scheduler.state_dict(),
         'config': config,
@@ -611,16 +638,18 @@ def main(args, config):
     print("Creating ALBEF model")
     model = ALBEF(config=config, text_encoder=args.text_encoder, tokenizer=tokenizer, init_deit=True)
 
-    # Attach the A5 head before optimizer creation so create_optimizer includes it.
-    patch_head = build_patch_head_from_config(config)
-    model.add_module("patch_head", patch_head)
-    print(f"[A5] Attached patch_head with num_patches={patch_head.num_patches}, "
+    # A5 patch head is intentionally NOT registered as a child of ALBEF.
+    # Reason: it is used outside ALBEF.forward(); putting it inside a DDP-wrapped
+    # model can trigger "Expected to mark a variable ready only once".
+    patch_head = build_patch_head_from_config(config).to(device)
+    print(f"[A5] Created standalone patch_head with num_patches={patch_head.num_patches}, "
           f"num_layers={patch_head.num_layers}, normalization={patch_head.normalization}")
 
     if bool(config.get("freeze_albef_for_a5", False)):
-        for name, p in model.named_parameters():
-            if not name.startswith("patch_head."):
-                p.requires_grad = False
+        for _, p in model.named_parameters():
+            p.requires_grad = False
+        for p in patch_head.parameters():
+            p.requires_grad = True
         print("[A5] freeze_albef_for_a5=True: only patch_head parameters are trainable.")
     else:
         print("[A5] freeze_albef_for_a5=False: ALBEF is trained by original ALBEF losses; support branch is detached.")
@@ -640,6 +669,17 @@ def main(args, config):
     arg_opt["lr"] = float(arg_opt["lr"])
     optimizer = create_optimizer(arg_opt, model)
 
+    # Add standalone patch_head parameters to the same optimizer.
+    # Gradients are manually synchronized across ranks in train().
+    patch_head_params = [p for p in patch_head.parameters() if p.requires_grad]
+    if len(patch_head_params) > 0:
+        optimizer.add_param_group({
+            "params": patch_head_params,
+            "lr": float(arg_opt["lr"]),
+            "weight_decay": float(arg_opt.get("weight_decay", 0.0)),
+        })
+        print(f"[A5] Added {len(patch_head_params)} patch_head parameter tensors to optimizer.")
+
     arg_sche = utils.AttrDict(config['schedular'])
     arg_sche["lr"] = float(arg_sche["lr"])
     arg_sche["warmup_lr"] = float(arg_sche["warmup_lr"])
@@ -656,7 +696,7 @@ def main(args, config):
         if args.resume:
             load_model_albef_state(model, state_dict, strict=False)
             if isinstance(checkpoint, dict) and "patch_head" in checkpoint:
-                model.patch_head.load_state_dict(checkpoint["patch_head"], strict=True)
+                patch_head.load_state_dict(checkpoint["patch_head"], strict=True)
                 print("[Checkpoint:A5] Loaded patch_head state.")
             else:
                 print("[Checkpoint:A5] No patch_head state found; keeping identity-initialized head.")
@@ -680,14 +720,14 @@ def main(args, config):
                 )
             load_model_albef_state(model, state_dict, strict=False)
             if isinstance(checkpoint, dict) and "patch_head" in checkpoint:
-                model.patch_head.load_state_dict(checkpoint["patch_head"], strict=True)
+                patch_head.load_state_dict(checkpoint["patch_head"], strict=True)
                 print("[Checkpoint:A5] Loaded patch_head state from checkpoint.")
             else:
                 print("[Checkpoint:A5] Loaded ALBEF weights only; patch_head remains identity-initialized.")
     else:
         if getattr(args, "auto_resume", False):
             start_epoch, best_loss = auto_resume_from_output_dir(
-                args, model, optimizer, lr_scheduler, config, device
+                args, model, patch_head, optimizer, lr_scheduler, config, device
             )
         else:
             print("[Checkpoint:A5] No checkpoint provided and auto-resume disabled. Starting from scratch.")
@@ -697,7 +737,7 @@ def main(args, config):
         model = torch.nn.parallel.DistributedDataParallel(
             model,
             device_ids=[args.gpu],
-            find_unused_parameters=True,  # patch_head is unused in batches with no active support samples
+            find_unused_parameters=False,
         )
         model_without_ddp = model.module
 
@@ -719,6 +759,7 @@ def main(args, config):
             lr_scheduler,
             config,
             args,
+            patch_head,
         )
 
         if utils.is_main_process():
@@ -753,7 +794,7 @@ def main(args, config):
                 'train_support_active': float(train_stats.get('support_active', 0.0)),
                 'train_support_weight': float(train_stats.get('support_weight', 0.0)),
                 'train_patch_head_grad_norm': float(train_stats.get('patch_head_grad_norm', 0.0)),
-                'patch_head_param_norm': module_param_norm(model_without_ddp.patch_head),
+                'patch_head_param_norm': module_param_norm(patch_head),
                 'best_loss': best_loss,
                 'lr': float(train_stats.get('lr', optimizer.param_groups[0]["lr"])),
             }
@@ -762,6 +803,7 @@ def main(args, config):
             save_a5_checkpoint(
                 args=args,
                 model_without_ddp=model_without_ddp,
+                patch_head=patch_head,
                 optimizer=optimizer,
                 lr_scheduler=lr_scheduler,
                 config=config,
