@@ -58,10 +58,10 @@ class VinDrImageDataset(Dataset):
             raise RuntimeError(f"No .{self.image_ext} images found under {self.images_root}")
 
         self.records = records
-        self.transform = xrv.datasets.Compose([
+        self.transforms = [
             xrv.datasets.XRayCenterCrop(),
             xrv.datasets.XRayResizer(512),
-        ])
+        ]
 
         print(f"[Dataset] Using {len(self.records)} images from {self.images_root}", flush=True)
 
@@ -78,7 +78,8 @@ class VinDrImageDataset(Dataset):
 
         # XRV expects C,H,W.
         arr = arr[None, :, :]
-        arr = self.transform(arr)
+        for transform in self.transforms:
+            arr = transform(arr)
         arr = np.ascontiguousarray(arr).astype(np.float32)
         return torch.from_numpy(arr)
 
@@ -129,7 +130,10 @@ def build_heart_prior(
     )
 
     print("[Model] Loading TorchXRayVision ChestX-Det PSPNet", flush=True)
-    seg_model = xrv.baseline_models.chestx_det.PSPNet(cache_dir=cache_dir)
+    try:
+        seg_model = xrv.baseline_models.chestx_det.PSPNet(cache_dir=cache_dir)
+    except TypeError:
+        seg_model = xrv.baseline_models.chestx_det.PSPNet()
     seg_model = seg_model.to(device)
     seg_model.eval()
 
