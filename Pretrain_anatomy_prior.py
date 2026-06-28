@@ -51,12 +51,34 @@ def build_support_weights_from_captions(text, config, device):
     """
     Builds per-sample weights for anatomy support loss.
 
-    A1: all Cardiomegaly/uncertain Cardiomegaly captions active
-    A2: Cardiomegaly = 1.0, uncertain Cardiomegaly = 0.5
-    A3: only exact Cardiomegaly active
+    Modified it for compatibility with both Cardiomegaly and PE
+
+    Disease-agnostic modes:
+        "none"
+        "all_target_captions"
+        "uncertainty_weighted"
+        "positive_only"
+
+    For current experiments:
+        anatomy_target_phrase: "cardiomegaly"
+        anatomy_target_phrase: "pleural effusion"
     """
 
-    support_mode = config.get("support_mode", "all_cardiomegaly_captions")
+    support_mode = config.get("support_mode", "all_target_captions")
+    support_mode = str(support_mode).lower().strip()
+
+    target_phrase = str(config.get("anatomy_target_phrase", "")).lower().strip()
+
+    # ------------------------------------------------------------------
+    # Backward compatibility with Cardiomegaly YAMLs
+    # ------------------------------------------------------------------
+    if support_mode == "all_cardiomegaly_captions":
+        support_mode = "all_target_captions"
+
+    if support_mode != "none" and target_phrase == "":
+        raise ValueError(
+            "anatomy_target_phrase must be set when support_mode is not 'none'."
+        )
 
     positive_weight = float(config.get("positive_caption_weight", 1.0))
     uncertain_weight = float(config.get("uncertain_caption_weight", 0.5))
@@ -66,34 +88,199 @@ def build_support_weights_from_captions(text, config, device):
     for t in text:
         t_lower = str(t).lower().strip()
 
-        if support_mode == "none":
-            weights.append(0.0)
+        exact_positive = t_lower == target_phrase
+        contains_target = target_phrase in t_lower
+        uncertain_target = contains_target and ("uncertain" in t_lower)
 
-        if support_mode == "all_cardiomegaly_captions":
-            if "cardiomegaly" in t_lower:
-                weights.append(1.0)
-            else:
-                weights.append(0.0)
+        if support_mode == "none":
+            weight = 0.0
+
+        elif support_mode == "all_target_captions":
+            weight = 1.0 if contains_target else 0.0
 
         elif support_mode == "uncertainty_weighted":
-            if t_lower == "cardiomegaly":
-                weights.append(positive_weight)
-            elif "uncertain cardiomegaly" in t_lower:
-                weights.append(uncertain_weight)
+            if exact_positive:
+                weight = positive_weight
+            elif uncertain_target:
+                weight = uncertain_weight
             else:
-                weights.append(0.0)
+                weight = 0.0
 
         elif support_mode == "positive_only":
-            if t_lower == "cardiomegaly":
-                weights.append(1.0)
-            else:
-                weights.append(0.0)
+            weight = 1.0 if exact_positive else 0.0
 
         else:
-            raise ValueError(f"Unknown support_mode: {support_mode}")
+            raise ValueError(
+                f"Unknown support_mode: {support_mode}. "
+                "Expected one of: none, all_target_captions, "
+                "uncertainty_weighted, positive_only, "
+                "all_cardiomegaly_captions."
+            )
+
+        weights.append(weight)
 
     return torch.tensor(weights, dtype=torch.float, device=device)
 
+
+def build_dummy_anatomy_prior_mask(target_phrase, batch_size, height, width, device):
+    """
+    Builds fixed dummy anatomy masks for anatomy-aware support regularization.
+
+    Cardiomegaly:
+        central lower chest / heart region.
+
+    Pleural Effusion:
+        bilateral lower lung-base regions near the costophrenic angles.
+    """
+
+    target_phrase = str(target_phrase).lower().strip()
+
+    prior_mask = torch.zeros(
+        (batch_size, 1, height, width),
+        dtype=torch.float32,
+        device=device,
+    )
+
+    if target_phrase == "cardiomegaly":
+        # Central cardiac silhouette proxy
+        h1, h2 = int(0.35 * height), int(0.75 * height)
+        w1, w2 = int(0.25 * width), int(0.75 * width)
+
+        prior_mask[:, :, h1:h2, w1:w2] = 1.0
+
+    elif target_phrase == "pleural effusion":
+        # Bilateral lower pleural/lung-base proxy
+        h1, h2 = int(0.55 * height), int(0.93 * height)
+
+        # Right lower lung in image coordinates
+        w1_r, w2_r = int(0.07 * width), int(0.45 * width)
+
+        # Left lower lung in image coordinates
+        w1_l, w2_l = int(0.55 * width), int(0.93 * width)
+
+        prior_mask[:, :, h1:h2, w1_r:w2_r] = 1.0
+        prior_mask[:, :, h1:h2, w1_l:w2_l] = 1.0
+
+    else:
+        raise ValueError(
+            f"No dummy anatomy prior mask defined for anatomy_target_phrase='{target_phrase}'. "
+            "Supported dummy masks: 'cardiomegaly', 'pleural effusion'."
+        )
+
+    return prior_mask
+
+
+
+def load_external_anatomy_prior_template(prior_path, device):
+    """
+    Load a dataset-level anatomy prior saved as .npy/.npz and return shape [1, 1, H, W].
+
+    Expected use for A3-heartseg:
+      anatomy_prior_path: anatomy_priors/vindr_train_heart_prior_256.npy
+
+    The prior can be binary or soft. Values are clamped/normalized to [0, 1].
+    """
+    prior_path = Path(prior_path)
+    if not prior_path.exists():
+        raise FileNotFoundError(f"External anatomy prior not found: {prior_path}")
+
+    if prior_path.suffix == ".npy":
+        arr = np.load(prior_path)
+    elif prior_path.suffix == ".npz":
+        data = np.load(prior_path)
+        if "prior" in data.files:
+            arr = data["prior"]
+        elif "mask" in data.files:
+            arr = data["mask"]
+        else:
+            arr = data[data.files[0]]
+    else:
+        raise ValueError(f"Unsupported prior file extension: {prior_path.suffix}")
+
+    arr = np.asarray(arr, dtype=np.float32)
+    arr = np.nan_to_num(arr, nan=0.0, posinf=1.0, neginf=0.0)
+
+    # Accept HxW, 1xHxW, or 1x1xHxW.
+    if arr.ndim == 2:
+        arr = arr[None, None, :, :]
+    elif arr.ndim == 3:
+        if arr.shape[0] == 1:
+            arr = arr[None, :, :, :]
+        else:
+            raise ValueError(f"Expected prior shape HxW, 1xHxW, or 1x1xHxW; got {arr.shape}")
+    elif arr.ndim == 4:
+        if arr.shape[0] != 1 or arr.shape[1] != 1:
+            raise ValueError(f"Expected prior shape 1x1xHxW; got {arr.shape}")
+    else:
+        raise ValueError(f"Expected prior shape HxW, 1xHxW, or 1x1xHxW; got {arr.shape}")
+
+    arr_min = float(arr.min())
+    arr_max = float(arr.max())
+    if arr_max <= 0:
+        raise ValueError(f"Loaded prior is all zero: {prior_path}")
+
+    # If values are not already in [0, 1], min-max normalize.
+    if arr_min < 0.0 or arr_max > 1.0:
+        arr = (arr - arr_min) / max(arr_max - arr_min, 1e-8)
+
+    arr = np.clip(arr, 0.0, 1.0)
+    return torch.from_numpy(arr).float().to(device)
+
+
+def build_external_anatomy_prior_mask(
+    prior_template,
+    batch_size,
+    height,
+    width,
+    device,
+    binarize_threshold=None,
+):
+    """
+    Resize a loaded dataset-level prior to the current image tensor size and repeat over batch.
+    Returns [B, 1, H, W].
+    """
+    prior = prior_template.to(device=device, dtype=torch.float32)
+
+    if prior.shape[-2:] != (height, width):
+        prior = F.interpolate(
+            prior,
+            size=(height, width),
+            mode="bilinear",
+            align_corners=False,
+        )
+
+    prior = prior.clamp(0.0, 1.0)
+
+    if binarize_threshold is not None:
+        prior = (prior >= float(binarize_threshold)).float()
+
+    return prior.expand(batch_size, 1, height, width).contiguous()
+
+
+def build_anatomy_prior_mask(target_phrase, batch_size, height, width, device, config, prior_template=None):
+    """
+    Build the anatomy prior used by the support loss.
+
+    If config['anatomy_prior_path'] is set, use the external segmentation-derived prior.
+    Otherwise, fall back to the original dummy rectangle/lung-base prior.
+    """
+    if prior_template is not None:
+        return build_external_anatomy_prior_mask(
+            prior_template=prior_template,
+            batch_size=batch_size,
+            height=height,
+            width=width,
+            device=device,
+            binarize_threshold=config.get("anatomy_prior_binarize_threshold", None),
+        )
+
+    return build_dummy_anatomy_prior_mask(
+        target_phrase=target_phrase,
+        batch_size=batch_size,
+        height=height,
+        width=width,
+        device=device,
+    )
 
 def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, scheduler, config):
     # train
@@ -122,7 +309,17 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
 
     lambda_support = config.get("lambda_support", 0.0)
     anatomy_layers = config.get("anatomy_layers", [8])
-    anatomy_target_phrase = config.get("anatomy_target_phrase", "cardiomegaly")
+
+    anatomy_target_phrase = str(config.get("anatomy_target_phrase", "")).lower().strip()
+
+    # Optional external segmentation-derived anatomy prior, loaded once per epoch.
+    anatomy_prior_path = config.get("anatomy_prior_path", None)
+    external_prior_template = None
+    if lambda_support > 0 and anatomy_prior_path is not None and str(anatomy_prior_path).strip() != "":
+        external_prior_template = load_external_anatomy_prior_template(
+            prior_path=anatomy_prior_path,
+            device=device,
+        )
 
     # Build once, not every batch
     target_token_ids = None
@@ -139,6 +336,12 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
             print(f"[AnatomyPrior] target phrase: {anatomy_target_phrase}")
             print(f"[AnatomyPrior] target token ids: {target_token_ids}")
             print(f"[AnatomyPrior] layers: {anatomy_layers}")
+            if external_prior_template is not None:
+                print(f"[AnatomyPrior] external prior path: {anatomy_prior_path}")
+                print(f"[AnatomyPrior] external prior shape: {tuple(external_prior_template.shape)}")
+                print(f"[AnatomyPrior] external prior min/max: "
+                      f"{float(external_prior_template.min()):.4f}/"
+                      f"{float(external_prior_template.max()):.4f}")
         else:
             print("[AnatomyPrior] disabled for this run.")
 
@@ -180,19 +383,19 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
 
         attn_patch = None
         prior_patch = None
-        cardiac_prior_mask = None
+        anatomy_prior_mask = None
 
         # ------------------------------------------------------------
-        # Anatomy-prior support regularization for Cardiomegaly
+        # Anatomy-prior support regularization
         # ------------------------------------------------------------
         if lambda_support > 0:
-            cardiomegaly_token_mask = build_token_mask(
+            target_token_mask = build_token_mask(
                 input_ids=text_input.input_ids,
                 attention_mask=text_input.attention_mask,
                 target_token_ids=target_token_ids,
             )
 
-            token_active = cardiomegaly_token_mask.any(dim=1)
+            token_active = target_token_mask.any(dim=1)
 
             support_weights = build_support_weights_from_captions(
                 text=text,
@@ -210,27 +413,31 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
             if support_active.sum() > 0:
                 attn_patch = extract_raw_crossattn_for_anatomy_loss(
                     model=raw_model,
-                    text_token_mask=cardiomegaly_token_mask,
+                    text_token_mask=target_token_mask,
                     layers_to_use=anatomy_layers,
                     remove_image_cls=True,
                     normalize_patches=True,
                 )
 
                 # ------------------------------------------------------------
-                # Temporary central cardiac-support proxy.
-                # Replace later with real cardiac silhouette masks from dataset.
+                # Temporary disease-specific dummy anatomy support proxy.
+                # Cardiomegaly: central heart region.
+                # Pleural Effusion: bilateral lower lung-base regions.
                 # ------------------------------------------------------------
                 B, C, H, W = image.shape
 
-                cardiac_prior_mask = torch.zeros((B, 1, H, W), device=image.device)
-
-                h1, h2 = int(0.35 * H), int(0.75 * H)
-                w1, w2 = int(0.25 * W), int(0.75 * W)
-
-                cardiac_prior_mask[:, :, h1:h2, w1:w2] = 1.0
+                anatomy_prior_mask = build_anatomy_prior_mask(
+                    target_phrase=anatomy_target_phrase,
+                    batch_size=B,
+                    height=H,
+                    width=W,
+                    device=image.device,
+                    config=config,
+                    prior_template=external_prior_template,
+                )
 
                 prior_patch = resize_prior_to_patch_mask(
-                    prior_mask=cardiac_prior_mask,
+                    prior_mask=anatomy_prior_mask,
                     num_patches=attn_patch.shape[-1],
                 )
 
@@ -279,8 +486,8 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
             if prior_patch is not None:
                 print("[DEBUG] prior_patch:", prior_patch.shape)
 
-            if cardiac_prior_mask is not None:
-                print("[DEBUG] cardiac_prior_mask:", cardiac_prior_mask.shape)
+            if anatomy_prior_mask is not None:
+                print("[DEBUG] cardiac_prior_mask:", anatomy_prior_mask.shape)
 
         # ------------------------------------------------------------
         # Final loss
