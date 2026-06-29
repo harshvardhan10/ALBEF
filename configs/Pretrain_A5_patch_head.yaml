@@ -1,5 +1,4 @@
 # A5: identity-initialized patch prediction head from detached ALBEF attention
-# Copy to: configs/Pretrain_A5_patch_head.yaml
 
 train_file: ['data/mimic_cxr.json']
 
