@@ -1,0 +1,16 @@
+{
+  "images_root": "/home/woody/iwi5/iwi5362h/data/vindr_cxr/train",
+  "index_csv": "/home/woody/iwi5/iwi5362h/data/vindr_cxr/annotations/image_labels_train.csv",
+  "image_ext": "png",
+  "num_images": 15000,
+  "model": "torchxrayvision.baseline_models.chestx_det.PSPNet",
+  "target": "Heart",
+  "heart_channel_index": 8,
+  "heart_threshold": 0.5,
+  "output_size": 256,
+  "output_npy": "/home/woody/iwi5/iwi5362h/ALBEF/anatomy_priors/vindr_train_heart_prior_256.npy",
+  "preview_png": "/home/woody/iwi5/iwi5362h/ALBEF/anatomy_priors/vindr_train_heart_prior_256.png",
+  "prior_min": 0.0,
+  "prior_max": 0.95660001039505,
+  "prior_mean": 0.07551822811365128
+}
