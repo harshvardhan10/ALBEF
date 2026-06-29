@@ -40,16 +40,36 @@ class VinDrImageDataset(Dataset):
         if index_csv is not None:
             df = pd.read_csv(index_csv)
             id_col = df.columns[0]
-            image_ids = df[id_col].astype(str).tolist()
+
+            raw_image_ids = df[id_col].astype(str).tolist()
+            image_ids = list(dict.fromkeys(raw_image_ids))  # stable de-duplication
+
+            print(
+                f"[Dataset] index_csv rows={len(raw_image_ids)} "
+                f"unique_image_ids={len(image_ids)} using id_col='{id_col}'",
+                flush=True,
+            )
         else:
             paths = sorted(self.images_root.glob(f"*.{self.image_ext}"))
             image_ids = [p.stem for p in paths]
 
         records = []
+        seen = set()
+        missing = 0
+
         for image_id in image_ids:
+            if image_id in seen:
+                continue
+            seen.add(image_id)
+
             p = self.images_root / f"{image_id}.{self.image_ext}"
             if p.exists():
                 records.append((image_id, p))
+            else:
+                missing += 1
+
+        if missing > 0:
+            print(f"[Dataset] Warning: {missing} unique image_ids had no matching PNG", flush=True)
 
         if max_images is not None:
             records = records[: int(max_images)]
