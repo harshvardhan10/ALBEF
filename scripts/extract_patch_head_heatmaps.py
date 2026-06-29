@@ -262,9 +262,10 @@ def extract_patch_head_maps_for_checkpoint(
                     f"Target token mask is empty for label='{label}' and label_text='{label_text}'."
                 )
 
-            with torch.no_grad():
-                # Same raw-attention path as A5 training: run ALBEF once, then extract
-                # normalized patch attention from the saved cross-attention tensors.
+            model.zero_grad(set_to_none=True)
+            patch_head.zero_grad(set_to_none=True)
+
+            with torch.enable_grad():
                 _ = model(img_tensor, text_input, alpha=0.0)
 
                 attn_patch = extract_raw_crossattn_for_anatomy_loss(
@@ -276,6 +277,8 @@ def extract_patch_head_maps_for_checkpoint(
                 )
 
                 attn_patch_detached = attn_patch.detach()
+
+            with torch.no_grad():
                 patch_pred = patch_head(attn_patch_detached)
 
                 # [1,N] -> [S,S] and [image_res,image_res]
