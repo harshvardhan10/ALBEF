@@ -33,13 +33,17 @@ from src import (
     get_image_transform,
 )
 
-from ALBEF.anatomy_prior.attention_extract import (
+from ..anatomy_prior.attention_extract import (
     enable_crossattn_attention_saving_for_anatomy,
     extract_raw_crossattn_for_anatomy_loss,
 )
-from ALBEF.anatomy_prior.token_utils import build_token_mask
+from ..anatomy_prior.token_utils import build_token_mask
 
-from ALBEF.anatomy_prior.patch_head import build_patch_head_from_config, upsample_patch_vector, patch_vector_to_grid
+from ..anatomy_prior.patch_head import (
+    build_patch_head_from_config,
+    upsample_patch_vector,
+    patch_vector_to_grid
+)
 
 # ============================================================
 # Utilities copied/adapted from existing extraction script
