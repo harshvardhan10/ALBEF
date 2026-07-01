@@ -1,0 +1,52 @@
+# A6.1: Frozen A0 ALBEF + train only identity-initialized patch head
+# Copy your normal A0/A5 pretraining config fields and keep dataset paths identical.
+
+train_file: ['data/mimic_cxr.json']
+
+bert_config: 'configs/config_bert.json'
+text_encoder: 'bert-base-uncased'
+
+image_res: 256
+vision_width: 768
+embed_dim: 256
+batch_size: 64
+temp: 0.07
+mlm_probability: 0.15
+queue_size: 65536
+momentum: 0.995
+alpha: 0.4
+
+# A6.1 trains only the patch head. ALBEF is frozen from --checkpoint A0-best.
+optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.02}
+patch_head_lr: 1e-4
+patch_head_weight_decay: 0.02
+
+schedular: {sched: cosine, lr: 1e-4, epochs: 30, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 1, cooldown_epochs: 0}
+use_patch_head_scheduler: false
+
+# Controlled subset options. Leave null for full MIMIC-CXR pretraining set.
+train_subset_size: null
+train_subset_seed: 42
+num_workers: 4
+print_freq: 50
+
+# Anatomy-prior settings
+lambda_support: 0.01
+support_mode: positive_only
+anatomy_target_phrase: cardiomegaly
+anatomy_layers: [8]
+positive_caption_weight: 1.0
+uncertain_caption_weight: 0.5
+
+# Identity-initialized patch head
+patch_head_num_patches: 256
+patch_head_num_layers: 2
+patch_head_normalization: relu_renorm
+patch_head_eps: 1e-8
+
+# Identity regularization keeps patch_pred close to the detached raw attention.
+# This discourages collapse to a generic cardiac mask.
+beta_identity: 0.1
+identity_reg_mode: mse
+
+# debug_max_batches: 2
