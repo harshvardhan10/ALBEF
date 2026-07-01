@@ -332,6 +332,19 @@ def extract_patch_head_maps_for_checkpoint_batched(
     image_res = int(config["image_res"])
     transform = get_image_transform(image_res)
 
+    # ALBEF pretraining forward updates the contrastive feature queue and contains:
+    #     assert self.queue_size % batch_size == 0
+    # Therefore every model forward must use a batch size that divides queue_size.
+    # Pad the final incomplete DataLoader batch to this fixed batch_size below,
+    # but the configured batch_size itself must still divide queue_size.
+    queue_size = int(config.get("queue_size", 65536))
+    if queue_size % int(batch_size) != 0:
+        raise ValueError(
+            f"batch_size={batch_size} must divide queue_size={queue_size} because "
+            "models/model_pretrain.py::_dequeue_and_enqueue asserts queue_size % batch_size == 0. "
+            "Use e.g. 8, 16, 32, or 64."
+        )
+
     if is_main_process(rank):
         print(f"[Model] image_res={image_res}", flush=True)
         print(f"[Model] device={device}", flush=True)
@@ -402,10 +415,25 @@ def extract_patch_head_maps_for_checkpoint_batched(
     for batch_idx, (images, batch_image_ids) in enumerate(pbar, start=1):
         images = images.to(device, non_blocking=True)
         batch_image_ids = [str(x) for x in batch_image_ids]
-        B = images.shape[0]
+        real_B = images.shape[0]
+        model_B = int(batch_size)
 
-        # One output object per image in this batch.
-        out_objs = [{} for _ in range(B)]
+        # The last DataLoader batch can be smaller than batch_size, e.g. 28 when
+        # each rank has 1500 images and batch_size=32. ALBEF's pretraining forward
+        # asserts queue_size % current_batch_size == 0, so a partial final batch can
+        # crash even though full batches work. Pad by duplicating the last image and
+        # crop outputs back to real_B before saving. Duplicates are never written.
+        if real_B < model_B:
+            pad_n = model_B - real_B
+            pad_images = images[-1:].expand(pad_n, -1, -1, -1).contiguous()
+            images_for_model = torch.cat([images, pad_images], dim=0)
+        else:
+            images_for_model = images
+
+        B = images_for_model.shape[0]
+
+        # One output object per real image in this batch, not per padded image.
+        out_objs = [{} for _ in range(real_B)]
 
         for label in label_cols:
             label_text = str(label).lower().strip()
@@ -439,9 +467,9 @@ def extract_patch_head_maps_for_checkpoint_batched(
             with torch.enable_grad():
                 if amp and device.type == "cuda":
                     with torch.cuda.amp.autocast():
-                        _ = model(images, text_input, alpha=0.0)
+                        _ = model(images_for_model, text_input, alpha=0.0)
                 else:
-                    _ = model(images, text_input, alpha=0.0)
+                    _ = model(images_for_model, text_input, alpha=0.0)
 
                 attn_patch = extract_raw_crossattn_for_anatomy_loss(
                     model=model,
@@ -469,7 +497,7 @@ def extract_patch_head_maps_for_checkpoint_batched(
                     attn_up = attn_up.detach().float().cpu()
                     attn_up_vis = minmax_norm_torch(attn_up).cpu()
 
-                for b in range(B):
+                for b in range(real_B):
                     label_payload = {
                         "patch_pred_raw": patch_pred_grid[b],
                         "patch_pred_vis": patch_pred_vis[b],
