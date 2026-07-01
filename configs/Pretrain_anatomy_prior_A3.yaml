@@ -22,7 +22,7 @@ anatomy_prior:
 
 anatomy_target_phrase: "cardiomegaly"
 anatomy_layers: [8]
-lambda_support: 0.001
+lambda_support: 0.01
 support_loss_type: "outside_mass"
 support_mode: "positive_only"
 
@@ -33,3 +33,7 @@ train_subset_size: null  # for full  run
 debug_max_batches: null  # for full/subset run
 
 print_freq: 50
+
+# New
+anatomy_prior_path: 'anatomy_priors/vindr_train_heart_prior_256.npy'
+anatomy_prior_binarize_threshold: null
