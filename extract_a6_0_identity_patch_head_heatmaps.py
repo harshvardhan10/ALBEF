@@ -60,7 +60,7 @@ from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 
-from src import build_model_and_tokenizer, get_image_transform
+from scripts.src import build_model_and_tokenizer, get_image_transform
 
 from anatomy_prior.attention_extract import (
     enable_crossattn_attention_saving_for_anatomy,
