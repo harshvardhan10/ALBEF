@@ -23,7 +23,7 @@ train_subset_size: null
 train_subset_seed: 42
 
 # A5 anatomy prior settings
-lambda_support: 0.01
+lambda_support: 0
 support_mode: positive_only
 anatomy_target_phrase: cardiomegaly
 anatomy_layers: [8]
