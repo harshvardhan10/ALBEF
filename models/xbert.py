@@ -323,10 +323,18 @@ class BertSelfAttention(nn.Module):
 
         # Normalize the attention scores to probabilities.
         attention_probs = nn.Softmax(dim=-1)(attention_scores)
-        
+
         if is_cross_attention and self.save_attention:
-            self.save_attention_map(attention_probs)
-            attention_probs.register_hook(self.save_attn_gradients)         
+            # For raw attention extraction, especially A6.1 frozen-backbone mode,
+            # we only need the attention map itself. Detach it so it does not keep
+            # the full frozen ALBEF computation graph alive.
+            self.save_attention_map(attention_probs.detach())
+
+            # Only register gradient hook when gradients are actually enabled.
+            # Grad-CAM still works in grad-enabled extraction.
+            # Frozen A6.1 no_grad attention extraction will not crash.
+            if attention_probs.requires_grad:
+                attention_probs.register_hook(self.save_attn_gradients)
 
         # This is actually dropping out entire tokens to attend to, which might
         # seem a bit unusual, but is taken from the original Transformer paper.

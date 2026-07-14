@@ -365,14 +365,10 @@ def train_one_epoch(model, data_loader, optimizer, tokenizer, epoch, device, con
         global_active_count = distributed_sum_scalar(local_active_count)
         has_global_active = float(global_active_count.item()) > 0.0
 
-        if support_active.sum() > 0:
-            # Important: even though ALBEF parameters are frozen, set image.requires_grad_(True)
-            # so existing XBERT attention hook code can register hooks on attention_probs.
-            # We detach attn_patch before patch_head, so no ALBEF/image gradients are used.
-            image_for_forward = image.detach().requires_grad_(True)
-
-            with torch.enable_grad():
-                _ = model(image_for_forward, text_input, alpha=0.0)
+        if has_global_active:
+            # modified the XBERT code for handling hooks registration so the below block can be run with torch.no_grad()
+            with torch.no_grad():
+                _ = model(image, text_input, alpha=0.0)
 
                 attn_patch = extract_raw_crossattn_for_anatomy_loss(
                     model=raw_model,
@@ -382,7 +378,7 @@ def train_one_epoch(model, data_loader, optimizer, tokenizer, epoch, device, con
                     normalize_patches=True,
                 )
 
-                attn_patch_detached = attn_patch.detach()
+            attn_patch_detached = attn_patch.detach()
 
             # Patch head is the only trainable component.
             patch_pred = patch_head(attn_patch_detached)
