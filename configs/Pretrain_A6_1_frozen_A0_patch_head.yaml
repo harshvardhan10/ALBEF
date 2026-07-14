@@ -46,7 +46,7 @@ patch_head_eps: 1e-8
 
 # Identity regularization keeps patch_pred close to the detached raw attention.
 # This discourages collapse to a generic cardiac mask.
-beta_identity: 0.1
+beta_identity: 0
 identity_reg_mode: mse
 
 # debug_max_batches: 2
