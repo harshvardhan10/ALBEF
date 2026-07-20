@@ -8,7 +8,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-from dataset.chexmask_view_dataset import CheXmaskViewApplier, normalize_image_id
+from ..dataset.chexmask_view_dataset import CheXmaskViewApplier, normalize_image_id
 
 
 def add_label(image, label):

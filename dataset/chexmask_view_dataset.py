@@ -31,7 +31,7 @@ import numpy as np
 from PIL import Image, ImageFilter, ImageFile
 from torch.utils.data import Dataset
 
-from utils import pre_caption
+from .utils import pre_caption
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
