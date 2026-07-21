@@ -25,7 +25,7 @@ import yaml
 
 from dataset import create_loader, create_sampler
 from dataset.randaugment import RandomAugment
-from ALBEF.dataset.chexmask_cached_mask_dataset import CheXmaskCachedMaskPretrainDataset
+from dataset.chexmask_cached_mask_dataset import CheXmaskCachedMaskPretrainDataset
 from models.model_pretrain import ALBEF
 from models.tokenization_bert import BertTokenizer
 from models.vit import interpolate_pos_embed
