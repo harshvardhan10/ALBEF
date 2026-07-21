@@ -1,0 +1,46 @@
+train_file: ['data/mimic_cxr.json']
+
+bert_config: 'configs/config_bert.json'
+text_encoder: 'bert-base-uncased'
+
+view_type: 'heart'
+chexmask_db: '/home/vault/iwi5/iwi5362h/data/chexmask/index/mimic_chexmask.sqlite'
+
+# Keep 0.0 to use the same full manifest as the existing original A0.
+# CheXmask recommends >=0.7 for high-confidence masks, but then the original,
+# lung and heart experiments should all use the same filtered ID set.
+chexmask_min_rca_mean: 0.0
+chexmask_failure_policy: 'error'
+mask_dilation_px: 0
+mask_feather_px: 0.0
+
+image_res: 256
+vision_width: 768
+embed_dim: 256
+batch_size: 64
+num_workers: 8
+
+temp: 0.07
+mlm_probability: 0.15
+queue_size: 65536
+momentum: 0.995
+alpha: 0.4
+max_text_len: 25
+
+optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.02}
+schedular:
+  sched: cosine
+  lr: 1e-4
+  epochs: 30
+  min_lr: 1e-5
+  decay_rate: 1
+  warmup_lr: 1e-5
+  warmup_epochs: 10
+  cooldown_epochs: 0
+
+# null means every record in mimic_cxr.json.
+train_subset_size: null
+train_subset_seed: 42
+print_freq: 50
+grad_clip_norm: null
+debug_max_batches: 2
