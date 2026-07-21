@@ -127,6 +127,12 @@ def main() -> None:
 
     try:
         for index, record in enumerate(records):
+            if index == 0 or (index + 1) % 1000 == 0:
+                print(
+                    f"[Progress] validating {index + 1:,}/{len(records):,}",
+                    flush=True,
+                )
+
             image_id = record_image_id(
                 record,
                 image_key=args.image_key,
