@@ -3,7 +3,7 @@ train_file:
   - 'data/chexmask_manifests/mimic_cxr_chexmask_common_valid_heart_maskcache.json'
 
 view_name: 'heart'
-mask_root: '/home/vault/iwi5/iwi5362h/data/chexmask/mask_cache/common/heart'
+mask_root: '/home/woody/iwi5/iwi5362h/data/chexmask/mask_cache/common/heart'
 
 bert_config: 'configs/config_bert.json'
 text_encoder: 'bert-base-uncased'
