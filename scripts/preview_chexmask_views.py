@@ -14,6 +14,11 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from PIL import Image, ImageDraw
 
+from dataset.chexmask_view_dataset import (
+    CheXmaskViewApplier,
+    normalize_image_id,
+)
+
 
 def add_label(image, label):
     canvas = Image.new("RGB", (image.width, image.height + 32), "white")
