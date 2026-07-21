@@ -4,11 +4,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-from ..dataset.chexmask_view_dataset import CheXmaskViewApplier, normalize_image_id
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from PIL import Image, ImageDraw
 
 
 def add_label(image, label):
