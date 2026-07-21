@@ -43,4 +43,4 @@ train_subset_size: null
 train_subset_seed: 42
 print_freq: 50
 grad_clip_norm: null
-debug_max_batches: 2
+#debug_max_batches: 2
