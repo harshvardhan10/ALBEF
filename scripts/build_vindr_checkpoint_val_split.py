@@ -1,14 +1,11 @@
-"""
-Build a fixed VinDr-train validation subset for ALBEF checkpoint selection.
+"""Build a fixed VinDr-train validation subset for checkpoint selection.
 
-The script samples Cardiomegaly-positive and negative images with a fixed seed,
-requires the original PNG and all requested mask-cache files to exist, and saves:
-  1. image-level validation labels CSV
-  2. validation bounding-box annotations CSV
-
-The same CSV should be reused for original, lung-only, heart-only, and later
-bone-suppressed checkpoint selection.
+The split can optionally be restricted to image IDs present in a CheXmask VinDr
+CSV, without requiring decoded PNG masks to exist yet. This allows the split to
+be frozen first and the small validation-only mask cache to be decoded next.
 """
+
+from __future__ import annotations
 
 import argparse
 from pathlib import Path
@@ -17,23 +14,49 @@ import numpy as np
 import pandas as pd
 
 
+def find_column(df: pd.DataFrame, candidates: list[str]) -> str | None:
+    lookup = {str(column).strip().lower(): column for column in df.columns}
+    for candidate in candidates:
+        match = lookup.get(candidate.strip().lower())
+        if match is not None:
+            return str(match)
+    return None
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--labels_csv", required=True)
     parser.add_argument("--annotations_csv", required=True)
     parser.add_argument("--images_root", required=True)
-    parser.add_argument(
-        "--required_mask_roots",
-        nargs="*",
-        default=[],
-        help="Optional sharded mask roots that every selected image must have.",
-    )
     parser.add_argument("--output_labels_csv", required=True)
     parser.add_argument("--output_annotations_csv", required=True)
     parser.add_argument("--label", default="Cardiomegaly")
     parser.add_argument("--num_positive", type=int, default=200)
     parser.add_argument("--num_negative", type=int, default=300)
     parser.add_argument("--seed", type=int, default=42)
+
+    parser.add_argument(
+        "--chexmask_csv",
+        default=None,
+        help=(
+            "Optional VinDr CheXmask CSV. When supplied, only IDs present in "
+            "this CSV are eligible; decoded PNG masks are not required yet."
+        ),
+    )
+    parser.add_argument(
+        "--chexmask_id_col",
+        default=None,
+        help="Optional CheXmask image-ID column. Defaults to the first column.",
+    )
+    parser.add_argument(
+        "--min_dice_rca_mean",
+        type=float,
+        default=0.7,
+        help=(
+            "Minimum CheXmask Dice RCA (Mean) when the column exists. "
+            "Set below 0 to disable quality filtering."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -43,14 +66,13 @@ def main():
     labels_path = Path(args.labels_csv)
     annotations_path = Path(args.annotations_csv)
     images_root = Path(args.images_root)
-    mask_roots = [Path(path) for path in args.required_mask_roots]
 
     labels = pd.read_csv(labels_path)
     annotations = pd.read_csv(annotations_path)
-    labels.columns = [column.strip() for column in labels.columns]
-    annotations.columns = [column.strip() for column in annotations.columns]
+    labels.columns = [str(column).strip() for column in labels.columns]
+    annotations.columns = [str(column).strip() for column in annotations.columns]
 
-    id_col = labels.columns[0]
+    id_col = str(labels.columns[0])
     if args.label not in labels.columns:
         raise ValueError(
             f"Label {args.label!r} not present in {labels_path}. "
@@ -79,24 +101,50 @@ def main():
             f"{args.label} must be binary 0/1. Found: {np.unique(values).tolist()}"
         )
 
+    eligible_mask = labels[id_col].map(
+        lambda image_id: (images_root / f"{image_id}.png").exists()
+    )
+
+    if args.chexmask_csv:
+        chexmask_path = Path(args.chexmask_csv)
+        chexmask = pd.read_csv(chexmask_path)
+        chexmask.columns = [str(column).strip() for column in chexmask.columns]
+        chexmask_id_col = args.chexmask_id_col or str(chexmask.columns[0])
+        if chexmask_id_col not in chexmask.columns:
+            raise ValueError(
+                f"CheXmask ID column {chexmask_id_col!r} not found. "
+                f"Columns: {list(chexmask.columns)}"
+            )
+        chexmask[chexmask_id_col] = chexmask[chexmask_id_col].astype(str)
+
+        quality_col = find_column(
+            chexmask,
+            ["Dice RCA (Mean)", "dice_rca_mean", "dice rca mean"],
+        )
+        if quality_col is not None and args.min_dice_rca_mean >= 0:
+            before = len(chexmask)
+            quality = pd.to_numeric(chexmask[quality_col], errors="coerce")
+            chexmask = chexmask[quality >= float(args.min_dice_rca_mean)].copy()
+            print(
+                f"CheXmask quality filter {quality_col}>="
+                f"{args.min_dice_rca_mean}: {before} -> {len(chexmask)}",
+                flush=True,
+            )
+
+        chexmask_ids = set(chexmask[chexmask_id_col].astype(str))
+        eligible_mask &= labels[id_col].isin(chexmask_ids)
+        print(
+            f"Eligible CheXmask IDs after filtering: {len(chexmask_ids)}",
+            flush=True,
+        )
+
+    candidates = labels[eligible_mask].copy()
     box_positive_ids = set(
         annotations.loc[
             annotations["class_name"] == args.label,
             "image_id",
         ].astype(str)
     )
-
-    def has_all_files(image_id: str) -> bool:
-        image_path = images_root / f"{image_id}.png"
-        if not image_path.exists():
-            return False
-        return all(
-            (mask_root / image_id[:2] / f"{image_id}.png").exists()
-            for mask_root in mask_roots
-        )
-
-    valid_file_mask = labels[id_col].map(has_all_files)
-    candidates = labels[valid_file_mask].copy()
 
     positive = candidates[
         (candidates[args.label] == 1)
@@ -107,12 +155,13 @@ def main():
     if len(positive) < args.num_positive:
         raise ValueError(
             f"Requested {args.num_positive} positives but only {len(positive)} "
-            "have labels, boxes, original images, and all required masks."
+            "eligible positives have labels, boxes, images, and optional "
+            "CheXmask records."
         )
     if len(negative) < args.num_negative:
         raise ValueError(
             f"Requested {args.num_negative} negatives but only {len(negative)} "
-            "have original images and all required masks."
+            "eligible negatives have images and optional CheXmask records."
         )
 
     rng = np.random.default_rng(args.seed)
@@ -124,12 +173,10 @@ def main():
     )
 
     selected = pd.concat(
-        [labels.loc[positive_indices], labels.loc[negative_indices]],
-        axis=0,
+        [labels.loc[positive_indices], labels.loc[negative_indices]], axis=0
     )
     selected = selected.sample(frac=1.0, random_state=args.seed).reset_index(drop=True)
     selected_ids = set(selected[id_col].astype(str))
-
     selected_annotations = annotations[
         annotations["image_id"].isin(selected_ids)
     ].copy()
@@ -138,7 +185,6 @@ def main():
     output_annotations = Path(args.output_annotations_csv)
     output_labels.parent.mkdir(parents=True, exist_ok=True)
     output_annotations.parent.mkdir(parents=True, exist_ok=True)
-
     selected.to_csv(output_labels, index=False)
     selected_annotations.to_csv(output_annotations, index=False)
 
