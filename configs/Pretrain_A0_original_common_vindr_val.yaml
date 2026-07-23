@@ -1,0 +1,71 @@
+# Original-CXR A0 pretraining on the same CheXmask-common-valid image/report subset.
+# This reuses the heart manifest only as a common-valid image/caption list.
+# For view_name=original, mask_relpath is ignored by the unified trainer.
+train_file:
+  - 'data/chexmask_manifests/mimic_cxr_chexmask_common_valid_heart_maskcache.json'
+
+view_name: 'original'
+
+bert_config: 'configs/config_bert.json'
+text_encoder: 'bert-base-uncased'
+
+image_res: 256
+vision_width: 768
+embed_dim: 256
+batch_size: 64
+num_workers: 8
+
+temp: 0.07
+mlm_probability: 0.15
+queue_size: 65536
+momentum: 0.995
+alpha: 0.4
+max_text_len: 25
+
+optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.02}
+schedular:
+  sched: cosine
+  lr: 1e-4
+  epochs: 30
+  min_lr: 1e-5
+  decay_rate: 1
+  warmup_lr: 1e-5
+  warmup_epochs: 10
+  cooldown_epochs: 0
+
+train_subset_size: null
+train_subset_seed: 42
+print_freq: 50
+grad_clip_norm: null
+debug_max_batches: null
+
+vindr_validation:
+  enabled: true
+  validate_every: 1
+  view_type: 'original'
+
+  classification_labels_csv: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/annotations/checkpoint_validation/cardiomegaly_labels.csv'
+  localization_labels_csv: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/annotations/checkpoint_validation/cardiomegaly_labels.csv'
+  localization_annotations_csv: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/annotations/checkpoint_validation/cardiomegaly_boxes.csv'
+  images_root: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/train'
+  mask_root: null
+
+  label_name: 'Cardiomegaly'
+  batch_size: 64
+  num_workers: 4
+  max_classification_images: null
+  threshold_steps: 200
+
+  max_localization_images: null
+  layers_to_use: [8]
+  max_text_length: 32
+  cam_key: 'cam_vis'
+  heatmap_threshold: 0.50
+  min_box_area_frac: 0.002
+  score_mode: 'max'
+  match_mode: 'quadrant'
+  iou_threshold: 0.1
+  froc_targets: [0.10, 0.25, 0.50]
+
+  auc_tolerance: 0.002
+  localization_min_delta: 0.0
