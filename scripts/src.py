@@ -49,7 +49,10 @@ def build_model_and_tokenizer(
     cudnn.benchmark = True
 
     # Tokenizer
-    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+    tokenizer = BertTokenizer.from_pretrained(
+        "/home/woody/iwi5/iwi5362h/.cache/huggingface/models--bert-base-uncased/snapshots/86b5e0934494bd15c9632b12f734a8a67f723594",
+        local_files_only=True,
+    )
 
     print("[Model] Building ALBEF...")
     model = ALBEF(
