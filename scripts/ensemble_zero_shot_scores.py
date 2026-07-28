@@ -1,24 +1,17 @@
 #!/usr/bin/env python3
 """
-Ensemble saved VinDr zero-shot classification scores.
+Validation-calibrated ensemble of saved VinDr zero-shot scores.
 
-The input files are the ``.npz`` files written by zero_shot_eval_vindr.py (or
-its mask-cache variant). Rows are aligned by image ID and columns are aligned
-by label name before averaging. Array position is never assumed to carry the
-same meaning across models.
+Rows are aligned by image ID and columns by the literal class name. For the
+default ``validation_zscore`` method, each model/class is standardized using
+only that model's 2,000-image validation scores:
 
-Example
--------
-python scripts/ensemble_zero_shot_scores.py \
-    --score_files \
-        outputs/original/vindr_zero_shot_scores_checkpoint_best_macro_auc_stable.npz \
-        outputs/lung/vindr_zero_shot_scores_checkpoint_best_macro_auc_stable.npz \
-        outputs/heart/vindr_zero_shot_scores_checkpoint_best_macro_auc_stable.npz \
-    --model_names original lung heart \
-    --output_dir outputs/ensemble/stable \
-    --ensemble_name stable \
-    --threshold 0.3948 \
-    --save_scores_csv
+    z = (score - validation_mean) / validation_std
+
+The aligned standardized scores are averaged. Per-class F1 thresholds are
+selected on the ensembled validation scores and applied unchanged to the
+ensembled VinDr test scores. Test labels are never used for normalization,
+threshold selection, or model weighting.
 """
 
 from __future__ import annotations
@@ -32,65 +25,52 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.metrics import f1_score, precision_recall_curve, roc_auc_score
 
 
 REQUIRED_KEYS = {"image_ids", "label_names", "scores", "y_true"}
 
 
-def _string_list(values: np.ndarray, field: str, path: Path) -> List[str]:
+def _unique_strings(values: np.ndarray, field: str, path: Path) -> List[str]:
     result = [str(value) for value in np.asarray(values).reshape(-1).tolist()]
-    if any(value == "" for value in result):
-        raise ValueError(f"{path}: {field} contains an empty value")
     duplicates = sorted(
         value for value, count in Counter(result).items() if count > 1
     )
     if duplicates:
-        preview = duplicates[:10]
-        raise ValueError(
-            f"{path}: duplicate {field} values found: {preview}"
-            + (" ..." if len(duplicates) > 10 else "")
-        )
+        raise ValueError(f"{path}: duplicate {field}: {duplicates[:10]}")
+    if any(not value for value in result):
+        raise ValueError(f"{path}: {field} contains an empty value")
     return result
 
 
-def load_score_file(path: Path) -> Dict[str, Any]:
+def load_scores(path: Path) -> Dict[str, Any]:
     if not path.is_file():
-        raise FileNotFoundError(f"Score file not found: {path}")
-
+        raise FileNotFoundError(path)
     with np.load(path, allow_pickle=True) as data:
         missing = REQUIRED_KEYS.difference(data.files)
         if missing:
-            raise KeyError(f"{path}: missing required arrays: {sorted(missing)}")
+            raise KeyError(f"{path}: missing arrays {sorted(missing)}")
+        image_ids = _unique_strings(data["image_ids"], "image_ids", path)
+        label_names = _unique_strings(data["label_names"], "label_names", path)
+        scores = np.asarray(data["scores"], dtype=np.float64)
+        y_true = np.asarray(data["y_true"], dtype=np.int64)
 
-        image_ids = _string_list(data["image_ids"], "image_ids", path)
-        label_names = _string_list(data["label_names"], "label_names", path)
-        scores = np.asarray(data["scores"], dtype=np.float32)
-        y_true = np.asarray(data["y_true"], dtype=np.float32)
-
-    expected_shape = (len(image_ids), len(label_names))
-    if scores.shape != expected_shape:
+    expected = (len(image_ids), len(label_names))
+    if scores.shape != expected or y_true.shape != expected:
         raise ValueError(
-            f"{path}: scores shape {scores.shape} != expected {expected_shape}"
-        )
-    if y_true.shape != expected_shape:
-        raise ValueError(
-            f"{path}: y_true shape {y_true.shape} != expected {expected_shape}"
+            f"{path}: expected arrays of shape {expected}; "
+            f"scores={scores.shape}, y_true={y_true.shape}"
         )
     if not np.isfinite(scores).all():
-        raise ValueError(f"{path}: scores contain NaN or infinite values")
-    if not np.isfinite(y_true).all():
-        raise ValueError(f"{path}: y_true contains NaN or infinite values")
-    if not np.isin(y_true, [0.0, 1.0]).all():
-        invalid = np.unique(y_true[~np.isin(y_true, [0.0, 1.0])])
-        raise ValueError(f"{path}: y_true is not binary; invalid values={invalid}")
-
+        raise ValueError(f"{path}: scores contain NaN or infinity")
+    if not np.isin(y_true, [0, 1]).all():
+        raise ValueError(f"{path}: y_true must be binary")
     return {
         "path": str(path),
         "image_ids": image_ids,
         "label_names": label_names,
         "scores": scores,
-        "y_true": y_true.astype(np.int64),
+        "y_true": y_true,
     }
 
 
@@ -99,92 +79,166 @@ def align_to_canonical(
     canonical_image_ids: Sequence[str],
     canonical_labels: Sequence[str],
 ) -> Tuple[np.ndarray, np.ndarray]:
-    item_ids = item["image_ids"]
-    item_labels = item["label_names"]
-    path = item["path"]
-
-    canonical_id_set = set(canonical_image_ids)
-    item_id_set = set(item_ids)
-    if item_id_set != canonical_id_set:
-        missing = sorted(canonical_id_set - item_id_set)
-        extra = sorted(item_id_set - canonical_id_set)
+    if set(item["image_ids"]) != set(canonical_image_ids):
+        missing = sorted(set(canonical_image_ids) - set(item["image_ids"]))
+        extra = sorted(set(item["image_ids"]) - set(canonical_image_ids))
         raise ValueError(
-            f"{path}: image-ID set differs from the canonical file; "
+            f"{item['path']}: image-ID set differs; "
             f"missing={missing[:10]}, extra={extra[:10]}"
         )
-
-    canonical_label_set = set(canonical_labels)
-    item_label_set = set(item_labels)
-    if item_label_set != canonical_label_set:
-        missing = sorted(canonical_label_set - item_label_set)
-        extra = sorted(item_label_set - canonical_label_set)
+    if set(item["label_names"]) != set(canonical_labels):
+        missing = sorted(set(canonical_labels) - set(item["label_names"]))
+        extra = sorted(set(item["label_names"]) - set(canonical_labels))
         raise ValueError(
-            f"{path}: label set differs from the canonical file; "
-            f"missing={missing}, extra={extra}"
+            f"{item['path']}: label set differs; missing={missing}, extra={extra}"
         )
 
-    row_lookup = {image_id: index for index, image_id in enumerate(item_ids)}
-    col_lookup = {label: index for index, label in enumerate(item_labels)}
-    row_order = np.asarray([row_lookup[x] for x in canonical_image_ids])
-    col_order = np.asarray([col_lookup[x] for x in canonical_labels])
+    row_lookup = {
+        image_id: index for index, image_id in enumerate(item["image_ids"])
+    }
+    column_lookup = {
+        label: index for index, label in enumerate(item["label_names"])
+    }
+    row_order = np.asarray([row_lookup[value] for value in canonical_image_ids])
+    column_order = np.asarray([column_lookup[value] for value in canonical_labels])
+    return (
+        item["scores"][row_order][:, column_order],
+        item["y_true"][row_order][:, column_order],
+    )
 
-    aligned_scores = item["scores"][row_order][:, col_order]
-    aligned_y_true = item["y_true"][row_order][:, col_order]
-    return aligned_scores, aligned_y_true
 
-
-def compute_map_at_k(y_true: np.ndarray, scores: np.ndarray, k: int = 10):
-    ap_values = []
-    for y, score in zip(y_true, scores):
-        positive_indices = np.where(y == 1)[0]
-        if len(positive_indices) == 0:
-            continue
-
-        top_k = np.argsort(-score)[:k]
-        hits = 0
-        precisions = []
-        for rank, index in enumerate(top_k, start=1):
-            if y[index] == 1:
-                hits += 1
-                precisions.append(hits / rank)
-
-        denominator = min(len(positive_indices), k)
-        ap_values.append(
-            float(np.sum(precisions) / denominator) if precisions else 0.0
+def align_split(
+    items: Sequence[Dict[str, Any]], model_names: Sequence[str], split_name: str
+) -> Tuple[List[str], List[str], np.ndarray, List[np.ndarray]]:
+    canonical_ids = items[0]["image_ids"]
+    canonical_labels = items[0]["label_names"]
+    canonical_y = items[0]["y_true"]
+    aligned_scores: List[np.ndarray] = []
+    for item, model_name in zip(items, model_names):
+        scores, y_true = align_to_canonical(
+            item, canonical_ids, canonical_labels
         )
+        if not np.array_equal(y_true, canonical_y):
+            mismatches = int(np.count_nonzero(y_true != canonical_y))
+            raise ValueError(
+                f"{split_name}/{model_name}: ground truth differs at "
+                f"{mismatches} cells after explicit alignment"
+            )
+        aligned_scores.append(scores)
+    return canonical_ids, canonical_labels, canonical_y, aligned_scores
 
-    return float(np.mean(ap_values)) if ap_values else None
+
+def best_f1_threshold(y_true: np.ndarray, scores: np.ndarray) -> Optional[float]:
+    if np.unique(y_true).size < 2:
+        return None
+    precision, recall, thresholds = precision_recall_curve(y_true, scores)
+    if thresholds.size == 0:
+        return None
+    denominator = precision[:-1] + recall[:-1]
+    f1 = np.divide(
+        2.0 * precision[:-1] * recall[:-1],
+        denominator,
+        out=np.zeros_like(denominator),
+        where=denominator > 0,
+    )
+    best = np.flatnonzero(np.isclose(f1, np.max(f1), rtol=0.0, atol=1e-12))
+    return float(np.max(thresholds[best]))
 
 
-def compute_classification_metrics(
+def select_validation_thresholds(
+    y_true: np.ndarray, scores: np.ndarray, label_names: Sequence[str]
+) -> Tuple[np.ndarray, Dict[str, Optional[float]], Optional[float]]:
+    thresholds = np.full(len(label_names), np.nan, dtype=np.float64)
+    mapping: Dict[str, Optional[float]] = {}
+    for column, label in enumerate(label_names):
+        threshold = best_f1_threshold(y_true[:, column], scores[:, column])
+        mapping[label] = threshold
+        if threshold is not None:
+            thresholds[column] = threshold
+    return (
+        thresholds,
+        mapping,
+        best_f1_threshold(y_true.ravel(), scores.ravel()),
+    )
+
+
+def _mean_defined(values: Sequence[Optional[float]]) -> Optional[float]:
+    defined = [float(value) for value in values if value is not None]
+    return float(np.mean(defined)) if defined else None
+
+
+def compute_metrics(
+    *,
     y_true: np.ndarray,
     scores: np.ndarray,
     label_names: Sequence[str],
-    threshold: float,
+    thresholds: np.ndarray,
+    global_threshold: Optional[float],
+    stable_labels: Optional[Sequence[str]],
+    target_label: str,
 ) -> Dict[str, Any]:
-    """Match the metrics produced by the supplied zero-shot evaluator."""
-    y_true = np.asarray(y_true).astype(int)
-    scores = np.asarray(scores)
-    if y_true.shape != scores.shape:
-        raise ValueError(
-            f"Metric input shape mismatch: y_true={y_true.shape}, scores={scores.shape}"
-        )
+    label_to_index = {label: index for index, label in enumerate(label_names)}
+    if target_label not in label_to_index:
+        raise ValueError(f"Target label {target_label!r} is absent")
+    stable = list(stable_labels or [])
+    missing_stable = [label for label in stable if label not in label_to_index]
+    if missing_stable:
+        raise ValueError(f"Stable labels are absent: {missing_stable}")
 
-    metrics: Dict[str, Any] = {}
     per_label_auc: Dict[str, Optional[float]] = {}
-    auc_values = []
-
+    per_label_f1: Dict[str, Optional[float]] = {}
+    per_label_support: Dict[str, int] = {}
+    per_label_predicted_positive: Dict[str, Optional[int]] = {}
     for column, label in enumerate(label_names):
-        y = y_true[:, column]
-        if len(np.unique(y)) < 2:
+        target = y_true[:, column]
+        per_label_support[label] = int(target.sum())
+        if np.unique(target).size < 2:
             per_label_auc[label] = None
+            per_label_f1[label] = None
+            per_label_predicted_positive[label] = None
             continue
-        auc = float(roc_auc_score(y, scores[:, column]))
-        per_label_auc[label] = auc
-        auc_values.append(auc)
+        per_label_auc[label] = float(roc_auc_score(target, scores[:, column]))
+        if np.isnan(thresholds[column]):
+            per_label_f1[label] = None
+            per_label_predicted_positive[label] = None
+        else:
+            prediction = (scores[:, column] >= thresholds[column]).astype(int)
+            per_label_f1[label] = float(
+                f1_score(target, prediction, zero_division=0)
+            )
+            per_label_predicted_positive[label] = int(prediction.sum())
 
-    metrics["per_label_auc"] = per_label_auc
-    metrics["macro_auc"] = float(np.mean(auc_values)) if auc_values else None
+    if stable:
+        undefined_auc = [label for label in stable if per_label_auc[label] is None]
+        undefined_f1 = [label for label in stable if per_label_f1[label] is None]
+        if undefined_auc or undefined_f1:
+            raise ValueError(
+                "A stable-label metric is undefined; "
+                f"AUC={undefined_auc}, F1={undefined_f1}"
+            )
+
+    metrics: Dict[str, Any] = {
+        "num_images": int(y_true.shape[0]),
+        "num_labels": int(y_true.shape[1]),
+        "per_label_auc": per_label_auc,
+        "macro_auc_all_evaluable": _mean_defined(list(per_label_auc.values())),
+        "per_label_f1_validation_threshold": per_label_f1,
+        "macro_f1_all_evaluable_validation_threshold": _mean_defined(
+            list(per_label_f1.values())
+        ),
+        "per_label_support": per_label_support,
+        "per_label_predicted_positive": per_label_predicted_positive,
+        "cardiomegaly_auc": per_label_auc[target_label],
+        "cardiomegaly_f1_validation_threshold": per_label_f1[target_label],
+    }
+    if stable:
+        metrics["stable_labels"] = stable
+        metrics["macro_auc_stable"] = float(
+            np.mean([per_label_auc[label] for label in stable])
+        )
+        metrics["macro_f1_stable_validation_threshold"] = float(
+            np.mean([per_label_f1[label] for label in stable])
+        )
 
     try:
         metrics["micro_auc"] = float(
@@ -192,298 +246,276 @@ def compute_classification_metrics(
         )
     except ValueError:
         metrics["micro_auc"] = None
-
-    y_pred = (scores >= threshold).astype(int)
-    per_label_f1: Dict[str, Optional[float]] = {}
-    per_label_support: Dict[str, int] = {}
-    per_label_pred_pos: Dict[str, int] = {}
-    f1_values = []
-
-    for column, label in enumerate(label_names):
-        y = y_true[:, column]
-        y_hat = y_pred[:, column]
-        per_label_support[label] = int(y.sum())
-        per_label_pred_pos[label] = int(y_hat.sum())
-        if len(np.unique(y)) < 2:
-            per_label_f1[label] = None
-            continue
-        value = float(f1_score(y, y_hat, zero_division=0))
-        per_label_f1[label] = value
-        f1_values.append(value)
-
-    metrics["threshold_fixed"] = float(threshold)
-    metrics["per_label_f1"] = per_label_f1
-    metrics["per_label_support"] = per_label_support
-    metrics["per_label_pred_pos"] = per_label_pred_pos
-    metrics["macro_f1"] = float(np.mean(f1_values)) if f1_values else None
-    metrics["micro_f1"] = float(
-        f1_score(y_true.ravel(), y_pred.ravel(), zero_division=0)
-    )
-
-    thresholds = np.linspace(float(scores.min()), float(scores.max()), 20)
-    per_label_best_f1: Dict[str, Optional[float]] = {}
-    per_label_best_threshold: Dict[str, Optional[float]] = {}
-    best_f1_values = []
-
-    for column, label in enumerate(label_names):
-        y = y_true[:, column]
-        score = scores[:, column]
-        if len(np.unique(y)) < 2:
-            per_label_best_f1[label] = None
-            per_label_best_threshold[label] = None
-            continue
-
-        candidates = [
-            (float(f1_score(y, score >= value, zero_division=0)), float(value))
-            for value in thresholds
-        ]
-        best_f1, best_threshold = max(candidates, key=lambda item: item[0])
-        per_label_best_f1[label] = best_f1
-        per_label_best_threshold[label] = best_threshold
-        best_f1_values.append(best_f1)
-
-    metrics["threshold_grid"] = [float(value) for value in thresholds]
-    metrics["per_label_best_f1"] = per_label_best_f1
-    metrics["per_label_best_threshold"] = per_label_best_threshold
-    metrics["macro_best_f1"] = (
-        float(np.mean(best_f1_values)) if best_f1_values else None
-    )
-
-    global_candidates = [
-        (
-            float(
-                f1_score(
-                    y_true.ravel(),
-                    (scores >= value).astype(int).ravel(),
-                    zero_division=0,
-                )
-            ),
-            float(value),
+    metrics["global_threshold_selected_on_validation"] = global_threshold
+    metrics["micro_f1_validation_threshold"] = (
+        None
+        if global_threshold is None
+        else float(
+            f1_score(
+                y_true.ravel(),
+                (scores >= global_threshold).astype(int).ravel(),
+                zero_division=0,
+            )
         )
-        for value in thresholds
-    ]
-    best_micro_f1, best_global_threshold = max(
-        global_candidates, key=lambda item: item[0]
     )
-    metrics["micro_best_f1"] = best_micro_f1
-    metrics["best_global_threshold"] = best_global_threshold
-    metrics["map_at_10"] = compute_map_at_k(y_true, scores, k=10)
     return metrics
 
 
-def selected_macro_auc(
-    per_label_auc: Dict[str, Optional[float]],
-    requested_labels: Optional[Sequence[str]],
-) -> Optional[Dict[str, Any]]:
-    if not requested_labels:
+def load_stable_labels(
+    config_path: Optional[str], cli_labels: Optional[Sequence[str]]
+) -> Optional[List[str]]:
+    if cli_labels is not None:
+        labels = list(cli_labels)
+    elif config_path is not None:
+        try:
+            import yaml
+        except ImportError as error:
+            raise RuntimeError("PyYAML is required when --config is used") from error
+        with open(config_path, encoding="utf-8") as handle:
+            config = yaml.safe_load(handle)
+        labels = list(config.get("vindr_validation", {}).get("macro_auc_labels", []))
+    else:
         return None
+    if not labels:
+        raise ValueError("The stable-label list is empty")
     duplicates = sorted(
-        label
-        for label, count in Counter(requested_labels).items()
-        if count > 1
+        label for label, count in Counter(labels).items() if count > 1
     )
     if duplicates:
-        raise ValueError(f"--macro_auc_labels contains duplicates: {duplicates}")
-
-    missing = [label for label in requested_labels if label not in per_label_auc]
-    if missing:
-        raise ValueError(f"Configured macro-AUC labels are missing: {missing}")
-
-    undefined = [
-        label for label in requested_labels if per_label_auc[label] is None
-    ]
-    if undefined:
-        raise ValueError(
-            f"Configured macro-AUC labels have undefined test AUC: {undefined}"
-        )
-
-    values = [float(per_label_auc[label]) for label in requested_labels]
-    return {
-        "labels": list(requested_labels),
-        "per_label_auc": {
-            label: float(per_label_auc[label]) for label in requested_labels
-        },
-        "macro_auc": float(np.mean(values)),
-    }
+        raise ValueError(f"Stable-label list contains duplicates: {duplicates}")
+    return [str(label) for label in labels]
 
 
 def safe_name(value: str) -> str:
-    cleaned = re.sub(r"[^A-Za-z0-9_.-]+", "_", value.strip()).strip("_.")
-    if not cleaned:
-        raise ValueError("ensemble_name must contain at least one safe character")
-    return cleaned
+    result = re.sub(r"[^A-Za-z0-9_.-]+", "_", value.strip()).strip("_.")
+    if not result:
+        raise ValueError("--ensemble_name is empty after sanitization")
+    return result
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Align VinDr zero-shot scores by image ID and label name, then "
-            "compute a weighted score-level ensemble."
-        )
-    )
+    parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--score_files",
+        "--validation_score_files",
         nargs="+",
         required=True,
-        help="Two or more score .npz files produced with --save_scores.",
+        help="One saved validation NPZ per model, in model-name order.",
     )
     parser.add_argument(
-        "--model_names",
+        "--test_score_files",
         nargs="+",
-        default=None,
-        help="Optional display names in the same order as --score_files.",
+        required=True,
+        help="One saved test NPZ per model, in the same order.",
     )
+    parser.add_argument("--model_names", nargs="+", required=True)
+    parser.add_argument("--weights", nargs="+", type=float, default=None)
     parser.add_argument(
-        "--weights",
-        nargs="+",
-        type=float,
-        default=None,
-        help="Optional non-negative weights; defaults to equal averaging.",
+        "--method",
+        choices=["validation_zscore", "raw_mean"],
+        default="validation_zscore",
     )
     parser.add_argument("--output_dir", required=True)
-    parser.add_argument("--ensemble_name", default="ensemble")
-    parser.add_argument("--threshold", type=float, default=0.3948)
-    parser.add_argument(
-        "--macro_auc_labels",
-        nargs="+",
-        default=None,
-        help=(
-            "Optional fixed labels for an additional matched macro AUC. "
-            "Quote labels containing spaces."
-        ),
-    )
-    parser.add_argument(
-        "--save_scores_csv",
-        action="store_true",
-        help="Also save a human-readable wide CSV.",
-    )
+    parser.add_argument("--ensemble_name", required=True)
+    parser.add_argument("--target_label", default="Cardiomegaly")
+    parser.add_argument("--config", default=None)
+    parser.add_argument("--macro_auc_labels", nargs="+", default=None)
+    parser.add_argument("--epsilon", type=float, default=1e-8)
+    parser.add_argument("--save_scores_csv", action="store_true")
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    score_paths = [Path(path) for path in args.score_files]
-    if len(score_paths) < 2:
-        raise ValueError("At least two --score_files are required")
-
-    if args.model_names is None:
-        model_names = [path.stem for path in score_paths]
-    else:
-        model_names = list(args.model_names)
-        if len(model_names) != len(score_paths):
-            raise ValueError(
-                "--model_names must have the same length as --score_files"
-            )
-        if len(set(model_names)) != len(model_names):
-            raise ValueError("--model_names must be unique")
+    validation_paths = [Path(value) for value in args.validation_score_files]
+    test_paths = [Path(value) for value in args.test_score_files]
+    model_names = list(args.model_names)
+    count = len(model_names)
+    if count < 2:
+        raise ValueError("An ensemble requires at least two models")
+    if len(set(model_names)) != count:
+        raise ValueError("--model_names must be unique")
+    if len(validation_paths) != count or len(test_paths) != count:
+        raise ValueError(
+            "--validation_score_files, --test_score_files and --model_names "
+            "must have the same length"
+        )
 
     if args.weights is None:
-        weights = np.ones(len(score_paths), dtype=np.float64)
+        weights = np.ones(count, dtype=np.float64)
     else:
         weights = np.asarray(args.weights, dtype=np.float64)
-        if len(weights) != len(score_paths):
-            raise ValueError("--weights must have the same length as --score_files")
+        if weights.shape != (count,):
+            raise ValueError("--weights must have one value per model")
         if not np.isfinite(weights).all() or np.any(weights < 0):
             raise ValueError("--weights must be finite and non-negative")
-        if float(weights.sum()) <= 0:
-            raise ValueError("At least one ensemble weight must be positive")
-    weights = weights / weights.sum()
+    if float(weights.sum()) <= 0:
+        raise ValueError("At least one ensemble weight must be positive")
+    weights /= weights.sum()
 
-    loaded = [load_score_file(path) for path in score_paths]
-    canonical_image_ids = loaded[0]["image_ids"]
-    canonical_labels = loaded[0]["label_names"]
-    canonical_y_true = loaded[0]["y_true"]
-
-    aligned_scores = []
-    for model_name, item in zip(model_names, loaded):
-        scores, y_true = align_to_canonical(
-            item, canonical_image_ids, canonical_labels
-        )
-        if not np.array_equal(y_true, canonical_y_true):
-            mismatch_count = int(np.count_nonzero(y_true != canonical_y_true))
-            raise ValueError(
-                f"{item['path']}: aligned ground truth disagrees with the "
-                f"canonical file at {mismatch_count} cells ({model_name})"
-            )
-        aligned_scores.append(scores.astype(np.float64))
-
-    ensemble_scores = np.zeros_like(aligned_scores[0], dtype=np.float64)
-    for weight, scores in zip(weights, aligned_scores):
-        ensemble_scores += float(weight) * scores
-    ensemble_scores = ensemble_scores.astype(np.float32)
-
-    metrics = compute_classification_metrics(
-        y_true=canonical_y_true,
-        scores=ensemble_scores,
-        label_names=canonical_labels,
-        threshold=float(args.threshold),
+    validation_items = [load_scores(path) for path in validation_paths]
+    test_items = [load_scores(path) for path in test_paths]
+    val_ids, labels, val_y, val_model_scores = align_split(
+        validation_items, model_names, "validation"
     )
-    matched = selected_macro_auc(
-        metrics["per_label_auc"], args.macro_auc_labels
+    test_ids, test_labels, test_y, test_model_scores = align_split(
+        test_items, model_names, "test"
+    )
+    if set(test_labels) != set(labels):
+        raise ValueError("Validation and test label sets differ")
+    if test_labels != labels:
+        lookup = {label: index for index, label in enumerate(test_labels)}
+        order = np.asarray([lookup[label] for label in labels])
+        test_y = test_y[:, order]
+        test_model_scores = [scores[:, order] for scores in test_model_scores]
+
+    normalization: Dict[str, Any] = {}
+    transformed_val: List[np.ndarray] = []
+    transformed_test: List[np.ndarray] = []
+    for model_name, val_scores, test_scores in zip(
+        model_names, val_model_scores, test_model_scores
+    ):
+        if args.method == "validation_zscore":
+            mean = val_scores.mean(axis=0)
+            observed_std = val_scores.std(axis=0, ddof=0)
+            constant = observed_std < float(args.epsilon)
+            scale = np.where(constant, 1.0, observed_std)
+            val_scores = (val_scores - mean[None, :]) / scale[None, :]
+            test_scores = (test_scores - mean[None, :]) / scale[None, :]
+            normalization[model_name] = {
+                "fitted_on": "validation",
+                "per_label_mean": {
+                    label: float(mean[index])
+                    for index, label in enumerate(labels)
+                },
+                "per_label_std": {
+                    label: float(observed_std[index])
+                    for index, label in enumerate(labels)
+                },
+                "constant_score_labels_scale_set_to_one": [
+                    label
+                    for index, label in enumerate(labels)
+                    if constant[index]
+                ],
+            }
+        transformed_val.append(val_scores)
+        transformed_test.append(test_scores)
+
+    ensemble_val = np.average(
+        np.stack(transformed_val, axis=0), axis=0, weights=weights
+    )
+    ensemble_test = np.average(
+        np.stack(transformed_test, axis=0), axis=0, weights=weights
+    )
+    thresholds, threshold_map, global_threshold = select_validation_thresholds(
+        val_y, ensemble_val, labels
+    )
+    stable_labels = load_stable_labels(args.config, args.macro_auc_labels)
+    validation_metrics = compute_metrics(
+        y_true=val_y,
+        scores=ensemble_val,
+        label_names=labels,
+        thresholds=thresholds,
+        global_threshold=global_threshold,
+        stable_labels=stable_labels,
+        target_label=args.target_label,
+    )
+    test_metrics = compute_metrics(
+        y_true=test_y,
+        scores=ensemble_test,
+        label_names=labels,
+        thresholds=thresholds,
+        global_threshold=global_threshold,
+        stable_labels=stable_labels,
+        target_label=args.target_label,
     )
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     name = safe_name(args.ensemble_name)
-
-    scores_path = output_dir / f"vindr_zero_shot_scores_{name}.npz"
+    validation_output = output_dir / f"vindr_validation_scores_{name}.npz"
+    test_output = output_dir / f"vindr_test_scores_{name}.npz"
     np.savez_compressed(
-        scores_path,
-        image_ids=np.asarray(canonical_image_ids, dtype=object),
-        label_names=np.asarray(canonical_labels, dtype=object),
-        scores=ensemble_scores,
-        y_true=canonical_y_true.astype(np.float32),
+        validation_output,
+        image_ids=np.asarray(val_ids, dtype=object),
+        label_names=np.asarray(labels, dtype=object),
+        scores=ensemble_val.astype(np.float32),
+        y_true=val_y.astype(np.int8),
+        per_label_thresholds=thresholds.astype(np.float32),
+        global_threshold=np.asarray(global_threshold, dtype=np.float32),
+    )
+    np.savez_compressed(
+        test_output,
+        image_ids=np.asarray(test_ids, dtype=object),
+        label_names=np.asarray(labels, dtype=object),
+        scores=ensemble_test.astype(np.float32),
+        y_true=test_y.astype(np.int8),
+        per_label_thresholds=thresholds.astype(np.float32),
+        global_threshold=np.asarray(global_threshold, dtype=np.float32),
     )
 
-    csv_path = None
+    csv_output = None
     if args.save_scores_csv:
-        score_df = pd.DataFrame(
-            ensemble_scores,
-            columns=[f"score::{label}" for label in canonical_labels],
+        score_frame = pd.DataFrame(
+            ensemble_test,
+            columns=[f"score::{label}" for label in labels],
         )
-        score_df.insert(0, "image_id", canonical_image_ids)
-        truth_df = pd.DataFrame(
-            canonical_y_true,
-            columns=[f"y::{label}" for label in canonical_labels],
+        score_frame.insert(0, "image_id", test_ids)
+        truth_frame = pd.DataFrame(
+            test_y, columns=[f"y::{label}" for label in labels]
         )
-        csv_path = output_dir / f"vindr_zero_shot_scores_{name}.csv"
-        pd.concat([score_df, truth_df], axis=1).to_csv(csv_path, index=False)
+        csv_output = output_dir / f"vindr_test_scores_{name}.csv"
+        pd.concat([score_frame, truth_frame], axis=1).to_csv(
+            csv_output, index=False
+        )
 
     result = {
         "ensemble_name": args.ensemble_name,
-        "method": "weighted_arithmetic_mean_of_raw_scores",
+        "method": args.method,
         "model_names": model_names,
-        "score_files": [str(path) for path in score_paths],
         "normalized_weights": {
-            model: float(weight) for model, weight in zip(model_names, weights)
+            model: float(weight)
+            for model, weight in zip(model_names, weights)
         },
+        "validation_score_files": [str(path) for path in validation_paths],
+        "test_score_files": [str(path) for path in test_paths],
         "alignment": {
-            "rows": "image_id",
-            "columns": "label_name",
-            "canonical_file": str(score_paths[0]),
+            "rows": "explicit image_id lookup within each split",
+            "columns": "explicit literal label-name lookup",
         },
-        "num_images": len(canonical_image_ids),
-        "label_names": canonical_labels,
-        "threshold": float(args.threshold),
-        "classification": metrics,
-        "matched_macro_auc": matched,
-        "scores_file_npz": str(scores_path),
-        "scores_file_csv": str(csv_path) if csv_path is not None else None,
+        "normalization": normalization,
+        "threshold_source": "ensembled_2000_image_validation_scores",
+        "per_label_thresholds": threshold_map,
+        "validation_metrics": validation_metrics,
+        "test_metrics": test_metrics,
+        "validation_ensemble_scores_file": str(validation_output),
+        "test_ensemble_scores_file": str(test_output),
+        "test_ensemble_scores_csv": (
+            None if csv_output is None else str(csv_output)
+        ),
+        "note": (
+            "No normalization statistic, threshold, or weight was selected "
+            "using VinDr test labels. Oracle/test-optimized F1 is not reported."
+        ),
     }
-
-    json_path = output_dir / f"vindr_zero_shot_{name}.json"
-    with open(json_path, "w", encoding="utf-8") as handle:
+    metrics_output = output_dir / f"vindr_ensemble_metrics_{name}.json"
+    with metrics_output.open("w", encoding="utf-8") as handle:
         json.dump(result, handle, indent=2)
 
-    print("[Alignment] Rows aligned explicitly by image_id")
-    print("[Alignment] Columns aligned explicitly by label name")
-    print(f"[Ensemble] models={model_names}")
-    print(f"[Ensemble] weights={weights.tolist()}")
-    print(f"[Metrics] macro_auc={metrics['macro_auc']}")
-    if matched is not None:
-        print(f"[Metrics] matched_macro_auc={matched['macro_auc']}")
-    print(f"[Output] Scores:  {scores_path}")
-    print(f"[Output] Metrics: {json_path}")
+    print("[Alignment] rows=image_id, columns=literal label name")
+    print(f"[Ensemble] method={args.method}, weights={weights.tolist()}")
+    print(f"[Test] macro AUC all = {test_metrics['macro_auc_all_evaluable']}")
+    if "macro_auc_stable" in test_metrics:
+        print(f"[Test] macro AUC stable = {test_metrics['macro_auc_stable']}")
+        print(
+            "[Test] macro F1 stable (validation thresholds) = "
+            f"{test_metrics['macro_f1_stable_validation_threshold']}"
+        )
+    print(f"[Test] {args.target_label} AUC = {test_metrics['cardiomegaly_auc']}")
+    print(
+        f"[Test] {args.target_label} F1 (validation threshold) = "
+        f"{test_metrics['cardiomegaly_f1_validation_threshold']}"
+    )
+    print(f"[Output] {metrics_output}")
 
 
 if __name__ == "__main__":
