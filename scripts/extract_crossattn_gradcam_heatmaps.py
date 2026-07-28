@@ -23,10 +23,6 @@ from albef_crossattn_gradcam import (
 from albef_gradcam import upsample_cam
 
 
-SUPPORTED_VIEWS = ("original", "lung_only", "heart_only")
-MASK_EXTENSIONS = (".png", ".jpg", ".jpeg", ".tif", ".tiff", ".npy", ".npz")
-
-
 def parse_layers(s: str):
     """
     Parse --layers_to_use argument.
@@ -61,79 +57,42 @@ def infer_png_path(images_root: Path, image_id: str) -> Path:
 
 def infer_mask_path(mask_root: Path, image_id: str) -> Path:
     """
-    Find a mask stored directly under ``mask_root``.
+    Resolve a CheXmask cache entry.
 
-    Supported formats are common image formats, .npy, and .npz. For .npz,
-    either a single array or an array under the key ``mask`` is expected.
+    VinDr masks are sharded by the first two characters of the image ID:
+      <mask_root>/<image_id[:2]>/<image_id>.png
     """
-    for extension in MASK_EXTENSIONS:
-        candidate = mask_root / f"{image_id}{extension}"
-        if candidate.exists():
-            return candidate
-    raise FileNotFoundError(
-        f"Mask not found for image_id={image_id} under {mask_root}. "
-        f"Expected one of: {', '.join(image_id + ext for ext in MASK_EXTENSIONS)}"
-    )
-
-
-def load_binary_mask(mask_path: Path, image_size) -> np.ndarray:
-    """Load a mask, resize it with nearest-neighbour interpolation, and binarize it."""
-    suffix = mask_path.suffix.lower()
-
-    if suffix == ".npy":
-        mask = np.load(mask_path)
-    elif suffix == ".npz":
-        with np.load(mask_path) as data:
-            if "mask" in data:
-                mask = data["mask"]
-            elif len(data.files) == 1:
-                mask = data[data.files[0]]
-            else:
-                raise ValueError(
-                    f"{mask_path} contains multiple arrays and no 'mask' key: "
-                    f"{data.files}"
-                )
-    else:
-        mask = np.asarray(Image.open(mask_path).convert("L"))
-
-    mask = np.asarray(mask).squeeze()
-    if mask.ndim != 2:
-        raise ValueError(
-            f"Expected a 2-D mask for {mask_path}, got shape {mask.shape}"
+    mask_path = mask_root / image_id[:2].lower() / f"{image_id}.png"
+    if not mask_path.exists():
+        raise FileNotFoundError(
+            f"Mask not found for image_id={image_id}: {mask_path}"
         )
-
-    # PIL expects (width, height), which is also Image.size.
-    if (mask.shape[1], mask.shape[0]) != image_size:
-        mask_pil = Image.fromarray(mask.astype(np.float32), mode="F")
-        mask = np.asarray(
-            mask_pil.resize(image_size, resample=Image.Resampling.NEAREST)
-        )
-
-    # Works for masks encoded as bool, 0/1, 0/255, or probabilities.
-    finite_mask = np.nan_to_num(mask.astype(np.float32), nan=0.0)
-    threshold = 0.5 if finite_mask.max(initial=0.0) <= 1.0 else 127.5
-    return finite_mask > threshold
+    return mask_path
 
 
-def apply_anatomy_view(
-    image: Image.Image,
+def load_view_image(
+    image_path: Path,
     image_id: str,
     view: str,
     mask_root: Path,
-) -> Image.Image:
-    """Return the original image or an RGB image with pixels outside the mask zeroed."""
+) -> tuple[Image.Image, Path]:
+    image = Image.open(image_path).convert("RGB")
+
     if view == "original":
-        return image
+        return image, None
 
     if mask_root is None:
         raise ValueError(f"--mask_root is required when --view={view}")
 
     mask_path = infer_mask_path(mask_root, image_id)
-    mask = load_binary_mask(mask_path, image.size)
+    mask = Image.open(mask_path).convert("L")
+    if mask.size != image.size:
+        mask = mask.resize(image.size, resample=Image.Resampling.NEAREST)
 
-    image_array = np.asarray(image, dtype=np.uint8)
-    masked_array = image_array * mask[..., None].astype(np.uint8)
-    return Image.fromarray(masked_array, mode="RGB")
+    image_array = np.asarray(image)
+    mask_array = np.asarray(mask) > 0
+    masked_array = image_array * mask_array[..., None]
+    return Image.fromarray(masked_array.astype(np.uint8), mode="RGB"), mask_path
 
 
 def load_image_ids_and_labels(
@@ -142,8 +101,6 @@ def load_image_ids_and_labels(
     only_labels=None,
     max_images=None,
     positive_only_label=None,
-    view="original",
-    mask_root=None,
 ):
     df = pd.read_csv(labels_csv)
 
@@ -189,31 +146,6 @@ def load_image_ids_and_labels(
     if len(df) == 0:
         raise RuntimeError(f"No valid PNG images found under: {images_root}")
 
-    if view != "original":
-        if mask_root is None:
-            raise ValueError(f"--mask_root is required when --view={view}")
-        if not mask_root.exists():
-            raise FileNotFoundError(f"Mask root not found: {mask_root}")
-
-        missing_masks = []
-        for image_id in df[id_col].astype(str):
-            try:
-                infer_mask_path(mask_root, image_id)
-            except FileNotFoundError:
-                missing_masks.append(image_id)
-
-        if missing_masks:
-            preview = ", ".join(missing_masks[:10])
-            raise FileNotFoundError(
-                f"Missing {len(missing_masks)} {view} masks under {mask_root}. "
-                f"First missing image IDs: {preview}. Heatmap extraction was "
-                "stopped to avoid mixing original and masked views."
-            )
-        print(
-            f"[Data] Mask check: found all {len(df)} masks under {mask_root}",
-            flush=True,
-        )
-
     if max_images is not None:
         df = df.iloc[:max_images].reset_index(drop=True)
         print(f"[Data] max_images={max_images}, using {len(df)} images", flush=True)
@@ -254,8 +186,8 @@ def extract_heatmaps_for_checkpoint(
     if not images_root.exists():
         raise FileNotFoundError(f"Images root not found: {images_root}")
 
-    if view not in SUPPORTED_VIEWS:
-        raise ValueError(f"Unsupported view={view!r}; choose from {SUPPORTED_VIEWS}")
+    if view not in {"original", "lung_only", "heart_only"}:
+        raise ValueError(f"Unsupported view: {view}")
 
     if view != "original":
         if mask_root is None:
@@ -271,13 +203,13 @@ def extract_heatmaps_for_checkpoint(
     print(f"[Config] ckpt_path         = {ckpt_path}", flush=True)
     print(f"[Config] labels_csv        = {labels_csv}", flush=True)
     print(f"[Config] images_root       = {images_root}", flush=True)
-    print(f"[Config] view              = {view}", flush=True)
-    print(f"[Config] mask_root         = {mask_root}", flush=True)
     print(f"[Config] output_dir        = {output_dir}", flush=True)
     print(f"[Config] layers_to_use     = {layers_to_use}", flush=True)
     print(f"[Config] only_labels       = {only_labels}", flush=True)
     print(f"[Config] max_images        = {max_images}", flush=True)
     print(f"[Config] positive_only     = {positive_only_label}", flush=True)
+    print(f"[Config] view              = {view}", flush=True)
+    print(f"[Config] mask_root         = {mask_root}", flush=True)
     print("=" * 80, flush=True)
 
     model, tokenizer, config, device = build_model_and_tokenizer(
@@ -300,8 +232,6 @@ def extract_heatmaps_for_checkpoint(
         only_labels=only_labels,
         max_images=max_images,
         positive_only_label=positive_only_label,
-        view=view,
-        mask_root=mask_root,
     )
 
     input_ids_dict, attn_mask_dict, token_mask_dict = get_label_text_inputs(
@@ -329,17 +259,12 @@ def extract_heatmaps_for_checkpoint(
                         "image_id": image_id,
                         "heatmap_path": str(out_path),
                         "status": "exists_skipped",
-                        "view": view,
-                        "mask_root": (
-                            str(mask_root) if mask_root is not None else None
-                        ),
                     }
                 )
                 continue
 
-            img_pil = Image.open(img_path).convert("RGB")
-            img_pil = apply_anatomy_view(
-                image=img_pil,
+            img_pil, mask_path = load_view_image(
+                image_path=img_path,
                 image_id=image_id,
                 view=view,
                 mask_root=mask_root,
@@ -350,7 +275,8 @@ def extract_heatmaps_for_checkpoint(
                 "__metadata__": {
                     "image_id": image_id,
                     "view": view,
-                    "mask_root": str(mask_root) if mask_root is not None else None,
+                    "image_path": str(img_path),
+                    "mask_path": str(mask_path) if mask_path is not None else None,
                 }
             }
 
@@ -390,7 +316,7 @@ def extract_heatmaps_for_checkpoint(
                 "heatmap_path": str(out_path),
                 "status": "saved",
                 "view": view,
-                "mask_root": str(mask_root) if mask_root is not None else None,
+                "mask_path": str(mask_path) if mask_path is not None else "",
             }
 
             for lb in label_cols:
@@ -462,12 +388,9 @@ def parse_args():
     parser.add_argument(
         "--view",
         type=str,
-        choices=SUPPORTED_VIEWS,
+        choices=("original", "lung_only", "heart_only"),
         default="original",
-        help=(
-            "Image view supplied to the model. lung_only and heart_only zero "
-            "pixels outside the corresponding binary mask."
-        ),
+        help="Image view to evaluate.",
     )
 
     parser.add_argument(
@@ -475,8 +398,8 @@ def parse_args():
         type=str,
         default=None,
         help=(
-            "Directory containing masks named <image_id>.<extension>. Required "
-            "for lung_only and heart_only; ignored for original."
+            "Root of the selected CheXmask cache, e.g. .../test/lung or "
+            ".../test/heart. Required for lung_only and heart_only."
         ),
     )
 
@@ -554,7 +477,7 @@ def main():
         positive_only_label=args.positive_only_label,
         overwrite=args.overwrite,
         view=args.view,
-        mask_root=Path(args.mask_root) if args.mask_root is not None else None,
+        mask_root=Path(args.mask_root) if args.mask_root else None,
     )
 
 
