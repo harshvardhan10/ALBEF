@@ -709,14 +709,38 @@ def run_froc_from_heatmaps(
 
     print("[Done] FROC computation complete.", flush=True)
     print(froc_summary, flush=True)
+    return froc_summary
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Compute Cardiomegaly FROC from extracted ALBEF Grad-CAM heatmaps."
+        description=(
+            "Compute FROC from one or more extracted ALBEF Grad-CAM heatmap "
+            "directories. Multiple inputs can represent original, lung-only, "
+            "heart-only, and ensemble heatmaps."
+        )
     )
 
-    parser.add_argument("--heatmaps_dir", type=str, required=True)
+    heatmap_group = parser.add_mutually_exclusive_group(required=True)
+    heatmap_group.add_argument(
+        "--heatmaps_dir",
+        type=str,
+        help="One heatmap directory (backward-compatible single-run mode).",
+    )
+    heatmap_group.add_argument(
+        "--heatmaps_dirs",
+        nargs="+",
+        help="Two or more heatmap directories to evaluate with identical settings.",
+    )
+    parser.add_argument(
+        "--model_names",
+        nargs="+",
+        default=None,
+        help=(
+            "Names corresponding to --heatmaps_dirs, for example "
+            "original lung_only heart_only ensemble. Defaults to directory names."
+        ),
+    )
     parser.add_argument("--annotations_csv", type=str, required=True)
     parser.add_argument("--meta_csv", type=str, required=True)
     parser.add_argument("--output_dir", type=str, required=True)
@@ -790,23 +814,74 @@ def main():
     args = parse_args()
 
     targets = parse_float_list(args.froc_targets)
+    if not targets:
+        raise ValueError("--froc_targets must contain at least one value")
 
-    run_froc_from_heatmaps(
-        heatmaps_dir=Path(args.heatmaps_dir),
-        annotations_csv=Path(args.annotations_csv),
-        meta_csv=Path(args.meta_csv),
-        output_dir=Path(args.output_dir),
-        label=args.label,
-        cam_key=args.cam_key,
-        threshold=args.threshold,
-        min_box_area_frac=args.min_box_area_frac,
-        score_mode=args.score_mode,
-        match_mode=args.match_mode,
-        iou_threshold=args.iou_threshold,
-        targets=targets,
-        max_images=args.max_images,
-        prefix=args.prefix,
+    heatmaps_dirs = (
+        [Path(args.heatmaps_dir)]
+        if args.heatmaps_dir is not None
+        else [Path(path) for path in args.heatmaps_dirs]
     )
+
+    if args.model_names is None:
+        model_names = [path.name for path in heatmaps_dirs]
+    else:
+        model_names = list(args.model_names)
+        if len(model_names) != len(heatmaps_dirs):
+            raise ValueError(
+                "--model_names must have the same number of entries as the "
+                "selected heatmap directories"
+            )
+        if len(set(model_names)) != len(model_names):
+            raise ValueError("--model_names must be unique")
+
+    output_root = Path(args.output_dir)
+    output_root.mkdir(parents=True, exist_ok=True)
+    multiple_runs = len(heatmaps_dirs) > 1
+    comparison_rows = []
+
+    for model_name, heatmaps_dir in zip(model_names, heatmaps_dirs):
+        run_name = safe_filename(model_name)
+        run_output_dir = output_root / run_name if multiple_runs else output_root
+        run_prefix = (
+            f"{safe_filename(args.prefix)}_{run_name}"
+            if multiple_runs
+            else args.prefix
+        )
+
+        print(
+            f"\n[Run] model={model_name} heatmaps_dir={heatmaps_dir}",
+            flush=True,
+        )
+        summary = run_froc_from_heatmaps(
+            heatmaps_dir=heatmaps_dir,
+            annotations_csv=Path(args.annotations_csv),
+            meta_csv=Path(args.meta_csv),
+            output_dir=run_output_dir,
+            label=args.label,
+            cam_key=args.cam_key,
+            threshold=args.threshold,
+            min_box_area_frac=args.min_box_area_frac,
+            score_mode=args.score_mode,
+            match_mode=args.match_mode,
+            iou_threshold=args.iou_threshold,
+            targets=targets,
+            max_images=args.max_images,
+            prefix=run_prefix,
+        ).copy()
+        summary.insert(0, "model_name", model_name)
+        summary.insert(1, "heatmaps_dir", str(heatmaps_dir))
+        comparison_rows.append(summary)
+
+    if multiple_runs:
+        comparison = pd.concat(comparison_rows, ignore_index=True)
+        comparison_path = (
+            output_root
+            / f"{safe_filename(args.prefix)}_froc_comparison_{safe_filename(args.label)}.csv"
+        )
+        comparison.to_csv(comparison_path, index=False)
+        print(f"\n[Output] FROC comparison: {comparison_path}", flush=True)
+        print(comparison.to_string(index=False), flush=True)
 
 
 if __name__ == "__main__":
