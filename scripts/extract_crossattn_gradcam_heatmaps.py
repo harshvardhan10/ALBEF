@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+from typing import Tuple, Optional
 
 import numpy as np
 import pandas as pd
@@ -75,7 +76,7 @@ def load_view_image(
     image_id: str,
     view: str,
     mask_root: Path,
-) -> tuple[Image.Image, Path]:
+) -> Tuple[Image.Image, Optional[Path]]:
     image = Image.open(image_path).convert("RGB")
 
     if view == "original":
