@@ -69,6 +69,61 @@ def load_annotations(path: Path) -> pd.DataFrame:
     return df
 
 
+def load_meta(path: Path) -> pd.DataFrame:
+    """
+    Load native VinDr image dimensions.
+
+    The canonical train_meta.csv columns are image_id, width and height. A few
+    common aliases are accepted so column naming differences fail informatively.
+    """
+    df = pd.read_csv(path)
+    df.columns = [c.strip() for c in df.columns]
+    id_col = next(
+        (c for c in ["image_id", "dicom_id", "id"] if c in df.columns),
+        None,
+    )
+    width_col = next(
+        (c for c in ["width", "image_width", "original_width", "Columns"] if c in df.columns),
+        None,
+    )
+    height_col = next(
+        (c for c in ["height", "image_height", "original_height", "Rows"] if c in df.columns),
+        None,
+    )
+    if id_col is None or width_col is None or height_col is None:
+        raise ValueError(
+            f"{path} must contain image ID, width and height columns. "
+            f"Found: {list(df.columns)}"
+        )
+
+    meta = df[[id_col, width_col, height_col]].copy()
+    meta.columns = ["image_id", "original_width", "original_height"]
+    meta["image_id"] = meta["image_id"].astype(str)
+
+    duplicated = meta.loc[
+        meta["image_id"].duplicated(keep=False), "image_id"
+    ].unique().tolist()
+    if duplicated:
+        raise ValueError(
+            f"Duplicate image IDs in meta CSV. Examples: {duplicated[:10]}"
+        )
+
+    meta["original_width"] = pd.to_numeric(meta["original_width"], errors="coerce")
+    meta["original_height"] = pd.to_numeric(meta["original_height"], errors="coerce")
+    invalid = meta[
+        ~np.isfinite(meta["original_width"])
+        | ~np.isfinite(meta["original_height"])
+        | (meta["original_width"] <= 0)
+        | (meta["original_height"] <= 0)
+    ]
+    if not invalid.empty:
+        raise ValueError(
+            "Invalid native dimensions in meta CSV. Examples: "
+            f"{invalid.head(10).to_dict(orient='records')}"
+        )
+    return meta
+
+
 def load_evaluation_ids(path: Path, max_images: Optional[int]) -> List[str]:
     """The evaluation CSV defines the denominator, including negative images."""
     df = pd.read_csv(path)
@@ -253,23 +308,64 @@ def heatmap_to_boxes(
 
 def get_gt_boxes(
     annotations: pd.DataFrame,
+    meta: pd.DataFrame,
     evaluation_ids: Sequence[str],
     label: str,
 ) -> List[Box]:
+    """
+    Filter the full VinDr training annotations to the evaluation split and map
+    native-coordinate GT boxes into the model/evaluation 256x256 space.
+    """
     evaluation_set = set(evaluation_ids)
     subset = annotations[
         annotations["image_id"].isin(evaluation_set)
         & (annotations["class_name"] == label)
     ].drop_duplicates(
         subset=["image_id", "class_name", "x_min", "y_min", "x_max", "y_max"]
+    ).copy()
+
+    meta_subset = meta[meta["image_id"].isin(evaluation_set)].copy()
+    missing_meta_ids = sorted(evaluation_set - set(meta_subset["image_id"]))
+    if missing_meta_ids:
+        raise ValueError(
+            f"Meta CSV is missing {len(missing_meta_ids)} evaluation image IDs. "
+            f"Examples: {missing_meta_ids[:10]}"
+        )
+
+    subset = subset.merge(
+        meta_subset,
+        on="image_id",
+        how="left",
+        validate="many_to_one",
     )
+
     boxes = []
     for row in subset.itertuples(index=False):
-        coords = [float(row.x_min), float(row.y_min), float(row.x_max), float(row.y_max)]
-        if not (0 <= coords[0] < coords[2] <= MODEL_SIZE):
-            raise ValueError(f"{row.image_id}: GT x coordinates are not in 256-space: {coords}")
-        if not (0 <= coords[1] < coords[3] <= MODEL_SIZE):
-            raise ValueError(f"{row.image_id}: GT y coordinates are not in 256-space: {coords}")
+        native = [
+            float(row.x_min),
+            float(row.y_min),
+            float(row.x_max),
+            float(row.y_max),
+        ]
+        original_width = float(row.original_width)
+        original_height = float(row.original_height)
+        if not (0 <= native[0] < native[2] <= original_width):
+            raise ValueError(
+                f"{row.image_id}: invalid native GT x coordinates {native} "
+                f"for width={original_width}."
+            )
+        if not (0 <= native[1] < native[3] <= original_height):
+            raise ValueError(
+                f"{row.image_id}: invalid native GT y coordinates {native} "
+                f"for height={original_height}."
+            )
+
+        coords = [
+            native[0] * MODEL_SIZE / original_width,
+            native[1] * MODEL_SIZE / original_height,
+            native[2] * MODEL_SIZE / original_width,
+            native[3] * MODEL_SIZE / original_height,
+        ]
         boxes.append(
             Box(*coords, score=1.0, label=label, image_id=str(row.image_id))
         )
@@ -468,7 +564,10 @@ def run(args) -> None:
     heatmap_index = load_heatmap_index(Path(args.heatmaps_dir))
     preflight(evaluation_ids, heatmap_index)
     annotations = load_annotations(Path(args.annotations_csv))
-    ground_truth = get_gt_boxes(annotations, evaluation_ids, args.label)
+    meta = load_meta(Path(args.meta_csv))
+    ground_truth = get_gt_boxes(
+        annotations, meta, evaluation_ids, args.label
+    )
     maps = load_all_maps(
         evaluation_ids,
         heatmap_index,
@@ -580,6 +679,9 @@ def run(args) -> None:
         "heatmaps_dir": str(Path(args.heatmaps_dir)),
         "evaluation_csv": str(Path(args.evaluation_csv)),
         "annotations_csv": str(Path(args.annotations_csv)),
+        "meta_csv": str(Path(args.meta_csv)),
+        "gt_input_coordinate_space": "native",
+        "gt_evaluation_coordinate_space": [MODEL_SIZE, MODEL_SIZE],
     }
     save_selected_run(
         output_dir,
@@ -605,6 +707,14 @@ def parse_args():
         help="CSV defining every evaluated image, including negatives; first column may be image_id.",
     )
     parser.add_argument("--annotations_csv", required=True)
+    parser.add_argument(
+        "--meta_csv",
+        required=True,
+        help=(
+            "VinDr train_meta.csv containing image_id and each image's native "
+            "width and height."
+        ),
+    )
     parser.add_argument("--output_dir", required=True)
     parser.add_argument("--label", default="Cardiomegaly")
     parser.add_argument("--prefix", default="gradcam")
