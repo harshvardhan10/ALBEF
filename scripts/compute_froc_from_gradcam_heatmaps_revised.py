@@ -78,23 +78,9 @@ def load_meta(path: Path) -> pd.DataFrame:
     """
     df = pd.read_csv(path)
     df.columns = [c.strip() for c in df.columns]
-    id_col = next(
-        (c for c in ["image_id", "dicom_id", "id"] if c in df.columns),
-        None,
-    )
-    width_col = next(
-        (c for c in ["width", "image_width", "original_width", "Columns"] if c in df.columns),
-        None,
-    )
-    height_col = next(
-        (c for c in ["height", "image_height", "original_height", "Rows"] if c in df.columns),
-        None,
-    )
-    if id_col is None or width_col is None or height_col is None:
-        raise ValueError(
-            f"{path} must contain image ID, width and height columns. "
-            f"Found: {list(df.columns)}"
-        )
+    id_col = "image_id"
+    width_col = "dim1"
+    height_col = "dim0"
 
     meta = df[[id_col, width_col, height_col]].copy()
     meta.columns = ["image_id", "original_width", "original_height"]
