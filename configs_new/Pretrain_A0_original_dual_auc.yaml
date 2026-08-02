@@ -1,0 +1,100 @@
+train_file:
+  - 'data/chexmask_manifests/mimic_cxr_chexmask_common_valid_heart_maskcache.json'
+
+view_name: 'original'
+
+
+bert_config: 'configs/config_bert.json'
+text_encoder: 'bert-base-uncased'
+mask_key: 'mask_relpath'
+
+image_res: 256
+vision_width: 768
+embed_dim: 256
+batch_size: 64
+num_workers: 8
+
+temp: 0.07
+mlm_probability: 0.15
+queue_size: 65536
+momentum: 0.995
+alpha: 0.4
+max_words: 30
+max_text_len: 32
+
+optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.02}
+schedular:
+  sched: cosine
+  lr: 1e-4
+  epochs: 30          # maximum; early stopping may finish sooner
+  min_lr: 1e-5
+  decay_rate: 1
+  warmup_lr: 1e-5
+  warmup_epochs: 10
+  cooldown_epochs: 0
+
+# CXR-conservative augmentation: no random crop and no horizontal flip.
+cxr_augmentation:
+  enabled: true
+  rotation_degrees: 5.0
+  translate_fraction: 0.02
+  scale_min: 0.98
+  scale_max: 1.02
+  brightness: 0.10
+  contrast: 0.10
+  photometric_probability: 0.50
+
+train_subset_size: null
+train_subset_seed: 42
+print_freq: 50
+grad_clip_norm: null
+debug_max_batches: null
+cudnn_deterministic: true
+
+# A full checkpoint_last.pth is retained only while training/resuming.
+# It is deleted after a clean finish, leaving the two best checkpoints.
+retain_last_checkpoint_after_success: false
+
+vindr_validation:
+  enabled: true
+  validate_every: 1
+  view_type: 'original'
+
+  labels_csv: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/annotations/checkpoint_validation_2000/multilabel_labels.csv'
+  images_root: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/train'
+  mask_root: null
+
+  label_name: 'Cardiomegaly'
+  batch_size: 64
+  num_workers: 4
+  max_images: null
+  max_text_length: 32
+  threshold_steps: 200
+
+  # Fixed stable-label macro AUC used for checkpoint selection.
+  macro_auc_labels:
+    - Aortic enlargement
+    - Calcification
+    - Cardiomegaly
+    - ILD
+    - Infiltration
+    - Lung Opacity
+    - Nodule/Mass
+    - Pleural effusion
+    - Pleural thickening
+    - Pulmonary fibrosis
+    - Other lesion
+    - Pneumonia
+    - Tuberculosis
+    - Other diseases
+    - No finding
+  min_positive_per_label: 20
+  min_negative_per_label: 20
+
+  cardiomegaly_min_delta: 0.0005
+  macro_min_delta: 0.0005
+
+  early_stopping:
+    enabled: true
+    min_epochs: 15
+    patience: 5
