@@ -24,7 +24,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import f1_score, precision_recall_curve, roc_auc_score
 
 
 REQUIRED_KEYS = {"image_ids", "label_names", "scores", "y_true"}
@@ -194,13 +194,78 @@ def per_label_auc(y_true: np.ndarray, scores: np.ndarray, labels: Sequence[str])
     return result
 
 
+def mean_defined(values: Sequence[Optional[float]]) -> Optional[float]:
+    defined = [float(value) for value in values if value is not None]
+    return None if not defined else float(np.mean(defined))
+
+
+def select_f1_threshold(y_true: np.ndarray, scores: np.ndarray) -> Optional[float]:
+    """Select an exact validation-score threshold maximizing F1."""
+    if np.unique(y_true).size != 2:
+        return None
+    precision, recall, thresholds = precision_recall_curve(y_true, scores)
+    if thresholds.size == 0:
+        return None
+    denominator = precision[:-1] + recall[:-1]
+    f1_values = np.divide(
+        2.0 * precision[:-1] * recall[:-1], denominator,
+        out=np.zeros_like(denominator), where=denominator > 0,
+    )
+    best = np.flatnonzero(
+        np.isclose(f1_values, np.max(f1_values), atol=1e-12, rtol=0.0)
+    )
+    return float(np.max(thresholds[best]))
+
+
+def select_per_label_f1_thresholds(
+    y_true: np.ndarray, scores: np.ndarray, labels: Sequence[str]
+) -> Tuple[np.ndarray, Dict[str, Optional[float]]]:
+    thresholds = np.full(len(labels), np.nan, dtype=np.float64)
+    mapping: Dict[str, Optional[float]] = {}
+    for column, label in enumerate(labels):
+        threshold = select_f1_threshold(y_true[:, column], scores[:, column])
+        mapping[label] = threshold
+        if threshold is not None:
+            thresholds[column] = threshold
+    return thresholds, mapping
+
+
+def classification_metrics(
+    *, y_true: np.ndarray, scores: np.ndarray, labels: Sequence[str],
+    stable_labels: Sequence[str], target_label: str, thresholds: np.ndarray,
+) -> Tuple[Dict[str, Optional[float]], Dict[str, Optional[float]], Dict[str, Optional[float]]]:
+    aucs = per_label_auc(y_true, scores, labels)
+    per_label_f1: Dict[str, Optional[float]] = {}
+    for column, label in enumerate(labels):
+        if np.isnan(thresholds[column]):
+            per_label_f1[label] = None
+        else:
+            predictions = (scores[:, column] >= thresholds[column]).astype(np.int64)
+            per_label_f1[label] = float(
+                f1_score(y_true[:, column], predictions, zero_division=0)
+            )
+    metrics = {
+        "macro_auc": mean_defined(list(aucs.values())),
+        "macro_auc_stable": mean_defined([aucs[label] for label in stable_labels]),
+        "auc_cardiomegaly": aucs[target_label],
+        "macro_f1_at_validation_selected_thresholds": mean_defined(list(per_label_f1.values())),
+        "f1_cardiomegaly_at_validation_selected_threshold": per_label_f1[target_label],
+        "macro_f1_stable_at_validation_selected_thresholds": mean_defined(
+            [per_label_f1[label] for label in stable_labels]
+        ),
+    }
+    return metrics, aucs, per_label_f1
+
+
 def family_run(
     *, name: str, val_paths: Sequence[Path], test_paths: Optional[Sequence[Path]],
-    model_names: Sequence[str], objective_labels: Sequence[str], objective_name: str,
+    model_names: Sequence[str], stable_labels: Sequence[str], target_label: str,
+    objective_labels: Sequence[str], objective_name: str,
     method: str, step: float, epsilon: float, output_dir: Path,
 ) -> Dict[str, Any]:
     val_ids, labels, val_y, raw_val = align_files(val_paths, model_names, f"{name}/validation")
-    missing = [label for label in objective_labels if label not in labels]
+    required_labels = list(dict.fromkeys([*objective_labels, *stable_labels, target_label]))
+    missing = [label for label in required_labels if label not in labels]
     if missing:
         raise ValueError(f"{name}: objective labels absent from score files: {missing}")
     columns = [labels.index(label) for label in objective_labels]
@@ -216,12 +281,18 @@ def family_run(
     equal_weights = np.full(len(model_names), 1.0 / len(model_names))
     ensemble_val = weighted_sum(val_scores, weights)
     equal_val = weighted_sum(val_scores, equal_weights)
+    thresholds, threshold_map = select_per_label_f1_thresholds(val_y, ensemble_val, labels)
+    validation_metrics, validation_aucs, validation_f1s = classification_metrics(
+        y_true=val_y, scores=ensemble_val, labels=labels,
+        stable_labels=stable_labels, target_label=target_label, thresholds=thresholds,
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
     val_output = output_dir / f"{name}_validation_ensemble_scores.npz"
     np.savez_compressed(val_output, image_ids=np.asarray(val_ids, dtype=object),
                         label_names=np.asarray(labels, dtype=object),
                         scores=ensemble_val.astype(np.float32), y_true=val_y.astype(np.int8),
-                        weights=weights.astype(np.float64))
+                        weights=weights.astype(np.float64),
+                        per_label_f1_thresholds=thresholds.astype(np.float64))
 
     result: Dict[str, Any] = {
         "checkpoint_family": name,
@@ -231,9 +302,21 @@ def family_run(
         "weight_step": step,
         "candidate_weight_vectors_evaluated": evaluated,
         "learned_weights": {m: float(w) for m, w in zip(model_names, weights)},
-        "validation_objective_auc": best_auc,
-        "equal_weight_validation_objective_auc": objective(val_y, equal_val, columns),
-        "validation_per_label_auc": per_label_auc(val_y, ensemble_val, labels),
+        "weight_selection": {
+            "metric_name": objective_name,
+            "labels": list(objective_labels),
+            "learned_ensemble_validation_auc": best_auc,
+            "equal_weight_ensemble_validation_auc": objective(val_y, equal_val, columns),
+        },
+        "validation_classification_metrics": validation_metrics,
+        "validation_per_label_auc": validation_aucs,
+        "validation_per_label_f1_at_validation_selected_threshold": validation_f1s,
+        "f1_threshold_selection": {
+            "source": "this checkpoint family's learned-weight validation ensemble",
+            "method": "exact precision-recall thresholds maximizing per-label validation F1",
+            "tie_break": "highest threshold among equal-F1 thresholds",
+            "per_label_thresholds": threshold_map,
+        },
         "validation_score_files": [str(p) for p in val_paths],
         "validation_ensemble_scores_file": str(val_output),
         "zscore_parameters": ({
@@ -258,11 +341,17 @@ def family_run(
         np.savez_compressed(test_output, image_ids=np.asarray(test_ids, dtype=object),
                             label_names=np.asarray(labels, dtype=object),
                             scores=ensemble_test.astype(np.float32), y_true=test_y.astype(np.int8),
-                            weights=weights.astype(np.float64))
+                            weights=weights.astype(np.float64),
+                            per_label_f1_thresholds=thresholds.astype(np.float64))
+        test_metrics, test_aucs, test_f1s = classification_metrics(
+            y_true=test_y, scores=ensemble_test, labels=labels,
+            stable_labels=stable_labels, target_label=target_label, thresholds=thresholds,
+        )
         result.update({
             "test_score_files": [str(p) for p in test_paths],
-            "test_objective_auc": objective(test_y, ensemble_test, columns),
-            "test_per_label_auc": per_label_auc(test_y, ensemble_test, labels),
+            "test_classification_metrics": test_metrics,
+            "test_per_label_auc": test_aucs,
+            "test_per_label_f1_at_validation_selected_threshold": test_f1s,
             "test_ensemble_scores_file": str(test_output),
         })
     return result
@@ -303,13 +392,15 @@ def main() -> None:
     macro_result = family_run(
         name="best_macro_auc", val_paths=[Path(x) for x in args.best_macro_val_files],
         test_paths=None if args.best_macro_test_files is None else [Path(x) for x in args.best_macro_test_files],
-        model_names=names, objective_labels=macro_labels,
+        model_names=names, stable_labels=macro_labels, target_label=args.target_label,
+        objective_labels=macro_labels,
         objective_name="macro ROC-AUC over macro_auc_labels", method=args.method,
         step=args.weight_step, epsilon=args.epsilon, output_dir=output_dir)
     cardio_result = family_run(
         name="best_cardiomegaly_auc", val_paths=[Path(x) for x in args.best_cardio_val_files],
         test_paths=None if args.best_cardio_test_files is None else [Path(x) for x in args.best_cardio_test_files],
-        model_names=names, objective_labels=[args.target_label],
+        model_names=names, stable_labels=macro_labels, target_label=args.target_label,
+        objective_labels=[args.target_label],
         objective_name=f"{args.target_label} ROC-AUC", method=args.method,
         step=args.weight_step, epsilon=args.epsilon, output_dir=output_dir)
 
@@ -319,18 +410,29 @@ def main() -> None:
         "normalization": args.method,
         "best_macro_auc_family": macro_result,
         "best_cardiomegaly_auc_family": cardio_result,
-        "note": "Test labels are used only for final reporting when test files are supplied, never for fitting.",
+        "metric_naming": {
+            "macro_auc": "macro ROC-AUC over every label with both classes in that split",
+            "macro_auc_stable": "macro ROC-AUC over macro_auc_labels (extremely rare labels excluded)",
+            "auc_cardiomegaly": "Cardiomegaly ROC-AUC",
+            "macro_f1_at_validation_selected_thresholds": "macro F1 over all labels using per-label validation-selected thresholds",
+            "f1_cardiomegaly_at_validation_selected_threshold": "Cardiomegaly F1 using its validation-selected threshold",
+            "macro_f1_stable_at_validation_selected_thresholds": "macro F1 over macro_auc_labels using per-label validation-selected thresholds",
+        },
+        "note": "Test labels are used only for final reporting when test files are supplied, never for weights, normalization, or thresholds.",
     }
     output_dir.mkdir(parents=True, exist_ok=True)
-    report_path = output_dir / "learned_ensemble_weights_and_metrics.json"
+    report_path = output_dir / "dual_checkpoint_ensemble_classification_results.json"
     with report_path.open("w", encoding="utf-8") as handle:
         json.dump(report, handle, indent=2)
 
     for result in (macro_result, cardio_result):
         print(f"[{result['checkpoint_family']}] {result['objective']}")
         print(f"  weights: {result['learned_weights']}")
-        print(f"  learned validation AUC: {result['validation_objective_auc']:.6f}")
-        print(f"  equal-weight validation AUC: {result['equal_weight_validation_objective_auc']:.6f}")
+        selection = result["weight_selection"]
+        print(f"  learned validation objective AUC: {selection['learned_ensemble_validation_auc']:.6f}")
+        print(f"  equal-weight validation objective AUC: {selection['equal_weight_ensemble_validation_auc']:.6f}")
+        if "test_classification_metrics" in result:
+            print(f"  test metrics: {result['test_classification_metrics']}")
     print(f"[Output] {report_path}")
 
 
