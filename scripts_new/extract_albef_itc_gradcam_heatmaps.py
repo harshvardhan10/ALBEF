@@ -290,7 +290,7 @@ def extract(args: argparse.Namespace) -> None:
 
     print(f"[Method] standard ALBEF ITC attention Grad-CAM")
     print(f"[Target] positive similarity only; prompts={positive_prompts}")
-    print(f"[ViT] final self-attention block={layer_index} of {num_layers}")
+    print(f"[ViT] final self-attention block={layer_index+1} of {num_layers}")
     print(f"[Data] view={args.view_type} images={len(df)}")
 
     records = []
