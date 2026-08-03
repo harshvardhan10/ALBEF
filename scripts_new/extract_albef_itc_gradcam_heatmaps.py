@@ -70,8 +70,49 @@ def encode_positive_prompts(
     return F.normalize(text_features, dim=-1), prompts
 
 
+class VisualAttentionCapture:
+    """Capture ViT attention probabilities and their gradients.
+
+    In ALBEF's DeiT visual encoder, the output of ``attn_drop`` is the final
+    softmax attention tensor used in ``attention @ value``.
+    Retaining its gradient therefore gives the quantities required by ALBEF
+    ITC Grad-CAM without modifying the model implementation.
+    """
+
+    def __init__(self, attention_module):
+        attn_drop = getattr(attention_module, "attn_drop", None)
+        if attn_drop is None:
+            raise RuntimeError(
+                "The final visual attention module has no .attn_drop module; "
+                "cannot capture its attention probabilities generically."
+            )
+        self.attention_map = None
+        self.handle = attn_drop.register_forward_hook(self._capture)
+
+    def _capture(self, module, inputs, output):
+        if not torch.is_tensor(output):
+            raise RuntimeError("Expected final ViT attn_drop output to be a tensor")
+        self.attention_map = output
+        if output.requires_grad:
+            output.retain_grad()
+
+    def reset(self):
+        self.attention_map = None
+
+    def get_attention_map(self):
+        return self.attention_map
+
+    def get_attn_gradients(self):
+        if self.attention_map is None:
+            return None
+        return self.attention_map.grad
+
+    def close(self):
+        self.handle.remove()
+
+
 def get_final_visual_attention(model):
-    """Return and validate ALBEF's final ViT self-attention module."""
+    """Install a capture hook on ALBEF's final ViT self-attention."""
     visual_encoder = getattr(model, "visual_encoder", None)
     blocks = getattr(visual_encoder, "blocks", None)
     if blocks is None or len(blocks) == 0:
@@ -81,16 +122,8 @@ def get_final_visual_attention(model):
     if attention is None:
         raise AttributeError("The final visual block has no .attn module")
 
-    required = ("get_attention_map", "get_attn_gradients")
-    missing = [name for name in required if not callable(getattr(attention, name, None))]
-    if missing or not hasattr(attention, "save_attention"):
-        raise RuntimeError(
-            "The visual attention module does not provide ALBEF's native "
-            "attention-saving API. Missing: "
-            + ", ".join(missing + (["save_attention"] if not hasattr(attention, "save_attention") else []))
-        )
-
-    return attention, len(blocks) - 1, len(blocks)
+    capture = VisualAttentionCapture(attention)
+    return capture, len(blocks) - 1, len(blocks)
 
 
 def normalize_positive_map(cam: torch.Tensor) -> torch.Tensor:
@@ -110,6 +143,7 @@ def compute_standard_itc_gradcam(
     if image.shape[0] != 1:
         raise ValueError("ITC Grad-CAM extraction requires batch size 1")
 
+    visual_attention.reset()
     model.zero_grad(set_to_none=True)
     image_embeds = model.visual_encoder(image)
     image_feature = F.normalize(
@@ -123,8 +157,8 @@ def compute_standard_itc_gradcam(
     gradients = visual_attention.get_attn_gradients()
     if attention is None or gradients is None:
         raise RuntimeError(
-            "Final-layer attention or its gradient was not captured. Ensure the "
-            "ALBEF ViT registers a hook when save_attention=True."
+            "Final-layer attention or its gradient was not captured from the "
+            "ViT attention-dropout output."
         )
     if attention.ndim != 4 or gradients.shape != attention.shape:
         raise ValueError(
@@ -243,7 +277,6 @@ def extract(args: argparse.Namespace) -> None:
     )
     model.eval()
     visual_attention, layer_index, num_layers = get_final_visual_attention(model)
-    visual_attention.save_attention = True
 
     image_res = int(config["image_res"])
     transform = get_image_transform(image_res)
