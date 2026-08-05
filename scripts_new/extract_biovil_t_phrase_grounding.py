@@ -172,11 +172,11 @@ def minmax(tensor: torch.Tensor) -> torch.Tensor:
 
 def load_biovil_t(device: torch.device):
     try:
-        from health_multimodal.image import get_image_inference
+        from health_multimodal.image.model.pretrained import get_image_inference
         from health_multimodal.image.utils import ImageModelType
-        from health_multimodal.text import get_bert_inference
+        from health_multimodal.text.utils import get_bert_inference
         from health_multimodal.text.utils import BertEncoderType
-        from health_multimodal.vlp import ImageTextInferenceEngine
+        from health_multimodal.vlp.inference_engine import ImageTextInferenceEngine
     except ImportError as error:
         raise RuntimeError(
             "BioViL-T dependencies are missing. Install them with: "
