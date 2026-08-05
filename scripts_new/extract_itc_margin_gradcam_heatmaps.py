@@ -258,7 +258,7 @@ def extract(args: argparse.Namespace) -> None:
     blocks = getattr(model.visual_encoder, "blocks", None)
     if blocks is None:
         raise AttributeError("model.visual_encoder has no .blocks")
-    layer_index = len(blocks) - 1
+    layer_index = len(blocks) - 2
     attention_module = getattr(blocks[layer_index], "attn", None)
     if attention_module is None:
         raise AttributeError("Final visual block has no .attn module")
