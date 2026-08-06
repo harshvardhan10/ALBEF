@@ -172,7 +172,7 @@ def minmax(tensor: torch.Tensor) -> torch.Tensor:
 
 def load_biovil_t(device: torch.device):
     try:
-        from health_multimodal.image.model.pretrained import get_image_inference
+        from health_multimodal.image.utils import get_image_inference
         from health_multimodal.image.utils import ImageModelType
         from health_multimodal.text.utils import get_bert_inference
         from health_multimodal.text.utils import BertEncoderType
