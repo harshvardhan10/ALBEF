@@ -239,7 +239,6 @@ def main() -> None:
                     query_text=prompt,
                     interpolation=args.interpolation,
                 )
-            raw = as_2d_float_tensor(value)
 
             if isinstance(value, torch.Tensor):
                 diagnostic = value.detach().float().cpu()
@@ -255,6 +254,8 @@ def main() -> None:
                 f"neginf={torch.isneginf(diagnostic).sum().item()} "
                 f"finite={torch.isfinite(diagnostic).sum().item()}/{diagnostic.numel()}"
             )
+
+            raw = as_2d_float_tensor(value)
 
             with Image.open(image_path) as image:
                 original_size = tuple(int(x) for x in image.size)  # width, height
