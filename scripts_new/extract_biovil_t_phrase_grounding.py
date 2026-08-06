@@ -240,6 +240,22 @@ def main() -> None:
                     interpolation=args.interpolation,
                 )
             raw = as_2d_float_tensor(value)
+
+            if isinstance(value, torch.Tensor):
+                diagnostic = value.detach().float().cpu()
+            else:
+                diagnostic = torch.as_tensor(value, dtype=torch.float32)
+
+            print(
+                f"[Map diagnostic] image_id={image_id} "
+                f"label={label} "
+                f"shape={tuple(diagnostic.shape)} "
+                f"nan={torch.isnan(diagnostic).sum().item()} "
+                f"posinf={torch.isposinf(diagnostic).sum().item()} "
+                f"neginf={torch.isneginf(diagnostic).sum().item()} "
+                f"finite={torch.isfinite(diagnostic).sum().item()}/{diagnostic.numel()}"
+            )
+
             with Image.open(image_path) as image:
                 original_size = tuple(int(x) for x in image.size)  # width, height
             payload = {
