@@ -149,17 +149,40 @@ def resolve_image_path(images_root: Path, image_id: str) -> Path:
     raise FileNotFoundError(f"No image found for {image_id} under {images_root}")
 
 
-def as_2d_float_tensor(value: Any) -> torch.Tensor:
+def as_2d_float_tensor(value) -> torch.Tensor:
     if isinstance(value, torch.Tensor):
-        tensor = value.detach().float().cpu()
+        heatmap = value.detach().float().cpu()
     else:
-        tensor = torch.as_tensor(np.asarray(value), dtype=torch.float32)
-    tensor = tensor.squeeze()
-    if tensor.ndim != 2:
-        raise ValueError(f"Expected a 2D similarity map, got {tuple(tensor.shape)}")
-    if not torch.isfinite(tensor).all():
-        raise ValueError("Similarity map contains NaN or infinity")
-    return tensor
+        heatmap = torch.as_tensor(value, dtype=torch.float32)
+
+    heatmap = heatmap.squeeze()
+
+    if heatmap.ndim != 2:
+        raise ValueError(
+            f"Expected a 2D similarity map, got {tuple(heatmap.shape)}"
+        )
+
+    if heatmap.shape != (256, 256):
+        raise ValueError(
+            f"Expected a 256x256 BioViL-T map, got {tuple(heatmap.shape)}"
+        )
+
+    valid_crop = heatmap[16:240, 16:240]
+
+    if not torch.isfinite(valid_crop).all():
+        raise ValueError(
+            "BioViL-T central 224x224 map contains NaN or infinity"
+        )
+
+    # Preserve alignment with the original 256x256 image.
+    # BioViL-T's unprocessed 16-pixel border remains zero.
+    aligned_heatmap = torch.zeros(
+        (256, 256),
+        dtype=torch.float32,
+    )
+    aligned_heatmap[16:240, 16:240] = valid_crop
+
+    return aligned_heatmap
 
 
 def minmax(tensor: torch.Tensor) -> torch.Tensor:
@@ -232,6 +255,7 @@ def main() -> None:
             print(f"[{position:03d}/{len(selected):03d}] skip {output_path.name}")
             saved = torch.load(output_path, map_location="cpu")
             raw = as_2d_float_tensor(saved["similarity_map_raw"])
+
         else:
             with torch.inference_mode():
                 value = engine.get_similarity_map_from_raw_data(
@@ -240,34 +264,15 @@ def main() -> None:
                     interpolation=args.interpolation,
                 )
 
-            if isinstance(value, torch.Tensor):
-                diagnostic = value.detach().float().cpu()
-            else:
-                diagnostic = torch.as_tensor(value, dtype=torch.float32)
-
-            finite = torch.isfinite(diagnostic)
-            ys, xs = torch.where(finite)
-
-            print(
-                "[Finite region]",
-                f"y={ys.min().item()}:{ys.max().item() + 1}",
-                f"x={xs.min().item()}:{xs.max().item() + 1}",
-                f"finite_rows={torch.any(finite, dim=1).sum().item()}",
-                f"finite_cols={torch.any(finite, dim=0).sum().item()}",
-            )
-
-            print(
-                f"[Map diagnostic] image_id={image_id} "
-                f"label={label} "
-                f"shape={tuple(diagnostic.shape)} "
-                f"nan={torch.isnan(diagnostic).sum().item()} "
-                f"posinf={torch.isposinf(diagnostic).sum().item()} "
-                f"neginf={torch.isneginf(diagnostic).sum().item()} "
-                f"finite={torch.isfinite(diagnostic).sum().item()}/{diagnostic.numel()}"
-            )
-
             raw = as_2d_float_tensor(value)
 
+            normalized = torch.zeros_like(raw)
+            central_raw = raw[16:240, 16:240]
+
+            central_min = central_raw.min()
+            central_max = central_raw.max()
+
+            normalized[16:240, 16:240] = (central_raw - central_min) / (central_max - central_min).clamp_min(1e-8)
             with Image.open(image_path) as image:
                 original_size = tuple(int(x) for x in image.size)  # width, height
             payload = {
@@ -282,7 +287,8 @@ def main() -> None:
                 "method": "native_patch_text_cosine_similarity",
                 "interpolation": args.interpolation,
                 "similarity_map_raw": raw,
-                "similarity_map_vis": minmax(raw),
+                "similarity_map_vis": normalized,
+                "valid_region": [16, 240, 16, 240],
                 "raw_min": float(raw.min()),
                 "raw_max": float(raw.max()),
                 "raw_mean": float(raw.mean()),
