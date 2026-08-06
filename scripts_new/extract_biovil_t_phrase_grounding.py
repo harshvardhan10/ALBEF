@@ -151,38 +151,23 @@ def resolve_image_path(images_root: Path, image_id: str) -> Path:
 
 def as_2d_float_tensor(value) -> torch.Tensor:
     if isinstance(value, torch.Tensor):
-        heatmap = value.detach().float().cpu()
+        returned = value.detach().float().cpu().squeeze()
     else:
-        heatmap = torch.as_tensor(value, dtype=torch.float32)
+        returned = torch.as_tensor(value, dtype=torch.float32).squeeze()
 
-    heatmap = heatmap.squeeze()
-
-    if heatmap.ndim != 2:
+    if returned.shape != (256, 256):
         raise ValueError(
-            f"Expected a 2D similarity map, got {tuple(heatmap.shape)}"
+            f"Expected BioViL-T map shape (256, 256), got {tuple(returned.shape)}"
         )
 
-    if heatmap.shape != (256, 256):
-        raise ValueError(
-            f"Expected a 256x256 BioViL-T map, got {tuple(heatmap.shape)}"
-        )
-
-    valid_crop = heatmap[16:240, 16:240]
+    valid_crop = returned[16:240, 16:240]
 
     if not torch.isfinite(valid_crop).all():
-        raise ValueError(
-            "BioViL-T central 224x224 map contains NaN or infinity"
-        )
+        raise ValueError("The central BioViL-T map contains NaN or infinity")
 
-    # Preserve alignment with the original 256x256 image.
-    # BioViL-T's unprocessed 16-pixel border remains zero.
-    aligned_heatmap = torch.zeros(
-        (256, 256),
-        dtype=torch.float32,
-    )
-    aligned_heatmap[16:240, 16:240] = valid_crop
-
-    return aligned_heatmap
+    aligned = torch.zeros((256, 256), dtype=torch.float32)
+    aligned[16:240, 16:240] = valid_crop
+    return aligned
 
 
 def minmax(tensor: torch.Tensor) -> torch.Tensor:
@@ -265,37 +250,46 @@ def main() -> None:
                 )
 
             raw = as_2d_float_tensor(value)
-
-            normalized = torch.zeros_like(raw)
             central_raw = raw[16:240, 16:240]
 
+            normalized = torch.zeros_like(raw)
             central_min = central_raw.min()
             central_max = central_raw.max()
 
-            normalized[16:240, 16:240] = (central_raw - central_min) / (central_max - central_min).clamp_min(1e-8)
+            normalized[16:240, 16:240] = (
+                                                 central_raw - central_min
+                                         ) / (central_max - central_min).clamp_min(1e-8)
+
             with Image.open(image_path) as image:
-                original_size = tuple(int(x) for x in image.size)  # width, height
+                original_size = tuple(int(x) for x in image.size)
+
             payload = {
                 "image_id": image_id,
                 "image_path": str(image_path),
                 "original_size_wh": original_size,
                 "label": label,
-                "ground_truth": 1,
+                "ground_truth": int(row.ground_truth)
+                if hasattr(row, "ground_truth")
+                else 1,
                 "prompt": prompt,
                 "model_name": "BioViL-T",
                 "model_type": "biovil_t",
                 "method": "native_patch_text_cosine_similarity",
                 "interpolation": args.interpolation,
-                "similarity_map_raw": raw,
+                "similarity_map_raw_aligned": raw,
                 "similarity_map_vis": normalized,
                 "valid_region": [16, 240, 16, 240],
-                "raw_min": float(raw.min()),
-                "raw_max": float(raw.max()),
-                "raw_mean": float(raw.mean()),
-                "raw_std": float(raw.std(unbiased=False)),
+                "raw_min": float(central_raw.min()),
+                "raw_max": float(central_raw.max()),
+                "raw_mean": float(central_raw.mean()),
+                "raw_std": float(central_raw.std(unbiased=False)),
             }
+
             torch.save(payload, output_path)
             print(f"[{position:03d}/{len(selected):03d}] saved {output_path.name}")
+
+            # Required for both newly generated and previously saved maps.
+        central_raw = raw[16:240, 16:240]
 
         manifest_records.append(
             {
@@ -306,10 +300,14 @@ def main() -> None:
                 "heatmap_path": str(output_path),
                 "map_height": int(raw.shape[0]),
                 "map_width": int(raw.shape[1]),
-                "raw_min": float(raw.min()),
-                "raw_max": float(raw.max()),
-                "raw_mean": float(raw.mean()),
-                "raw_std": float(raw.std(unbiased=False)),
+                "valid_y0": 16,
+                "valid_y1": 240,
+                "valid_x0": 16,
+                "valid_x1": 240,
+                "raw_min": float(central_raw.min()),
+                "raw_max": float(central_raw.max()),
+                "raw_mean": float(central_raw.mean()),
+                "raw_std": float(central_raw.std(unbiased=False)),
             }
         )
 
