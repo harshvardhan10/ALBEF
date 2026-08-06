@@ -245,6 +245,17 @@ def main() -> None:
             else:
                 diagnostic = torch.as_tensor(value, dtype=torch.float32)
 
+            finite = torch.isfinite(diagnostic)
+            ys, xs = torch.where(finite)
+
+            print(
+                "[Finite region]",
+                f"y={ys.min().item()}:{ys.max().item() + 1}",
+                f"x={xs.min().item()}:{xs.max().item() + 1}",
+                f"finite_rows={torch.any(finite, dim=1).sum().item()}",
+                f"finite_cols={torch.any(finite, dim=0).sum().item()}",
+            )
+
             print(
                 f"[Map diagnostic] image_id={image_id} "
                 f"label={label} "
