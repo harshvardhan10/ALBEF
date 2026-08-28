@@ -1,0 +1,127 @@
+# Learned original/lung/heart ALBEF token-fusion pretraining.
+
+# The two manifests are the paired CheXmask manifests generated from the same
+# source MIMIC-CXR manifest. The training script checks image/caption alignment.
+lung_train_file:
+  - 'data/chexmask_manifests/mimic_cxr_chexmask_common_valid_lung_maskcache.json'
+heart_train_file:
+  - 'data/chexmask_manifests/mimic_cxr_chexmask_common_valid_heart_maskcache.json'
+
+lung_mask_root: '/home/woody/iwi5/iwi5362h/data/chexmask/mask_cache/common/lung'
+heart_mask_root: '/home/woody/iwi5/iwi5362h/data/chexmask/mask_cache/common/heart'
+
+image_key: 'image'
+caption_key: 'caption'
+mask_key: 'mask_relpath'
+view_name: 'multiview_fusion'
+
+initial_checkpoints:
+  original: '/home/vault/iwi5/iwi5362h/outputs/A0_original_dual_auc/checkpoint_best_macro_auc_stable.pth'
+  lung: '/home/vault/iwi5/iwi5362h/outputs/A0_lung_dual_auc/checkpoint_best_macro_auc_stable.pth'
+  heart: '/home/vault/iwi5/iwi5362h/outputs/A0_heart_dual_auc/checkpoint_best_macro_auc_stable.pth'
+  shared_components_from: 'original'
+
+bert_config: 'configs/config_bert.json'
+text_encoder: 'bert-base-uncased'
+
+image_res: 256
+vision_width: 768
+embed_dim: 256
+
+# Three online ViTs + three momentum ViTs are much heavier than the old
+# single-view model. Start conservatively and increase only after measuring GPU
+# memory. This is per process/GPU under DDP.
+batch_size: 8
+num_workers: 8
+
+temp: 0.07
+mlm_probability: 0.15
+queue_size: 65536
+momentum: 0.995
+alpha: 0.4
+max_words: 30
+max_text_len: 32
+
+optimizer:
+  opt: adamW
+  lr: 1e-4
+  weight_decay: 0.02
+
+schedular:
+  sched: cosine
+  lr: 1e-4
+  epochs: 30
+  min_lr: 1e-5
+  decay_rate: 1
+  warmup_lr: 1e-5
+  warmup_epochs: 10
+  cooldown_epochs: 0
+
+# One sampled affine and one sampled photometric transform are applied to all
+# three views, preserving patch-to-patch spatial correspondence.
+cxr_augmentation:
+  enabled: true
+  rotation_degrees: 5.0
+  translate_fraction: 0.02
+  scale_min: 0.98
+  scale_max: 1.02
+  brightness: 0.10
+  contrast: 0.10
+  photometric_probability: 0.50
+
+train_subset_size: null
+train_subset_seed: 42
+print_freq: 50
+grad_clip_norm: null
+debug_max_batches: null
+cudnn_deterministic: true
+
+# Setting this true verifies every MIMIC image/mask path before training. This
+# can be slow on a large filesystem; normal __getitem__ still checks each file.
+verify_training_files_at_start: false
+
+retain_last_checkpoint_after_success: false
+
+vindr_validation:
+  enabled: true
+  validate_every: 1
+
+  labels_csv: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/annotations/checkpoint_validation_2000/multilabel_labels.csv'
+  images_root: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/train'
+  lung_mask_root: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/chexmask_mask_cache/train/lung'
+  heart_mask_root: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/chexmask_mask_cache/train/heart'
+
+  label_name: 'Cardiomegaly'
+  batch_size: 32
+  num_workers: 8
+  max_images: null
+  max_text_length: 32
+  threshold_steps: 200
+
+  macro_auc_labels:
+    - Aortic enlargement
+    - Calcification
+    - Cardiomegaly
+    - ILD
+    - Infiltration
+    - Lung Opacity
+    - Nodule/Mass
+    - Pleural effusion
+    - Pleural thickening
+    - Pulmonary fibrosis
+    - Other lesion
+    - Pneumonia
+    - Tuberculosis
+    - Other diseases
+    - No finding
+
+  min_positive_per_label: 20
+  min_negative_per_label: 20
+
+  cardiomegaly_min_delta: 0.0005
+  macro_min_delta: 0.0005
+
+  early_stopping:
+    enabled: true
+    min_epochs: 15
+    patience: 5
