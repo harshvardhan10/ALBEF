@@ -50,7 +50,7 @@ optimizer:
 schedular:
   sched: cosine
   lr: 1e-4
-  epochs: 1
+  epochs: 30
   min_lr: 1e-5
   decay_rate: 1
   warmup_lr: 1e-5
@@ -69,11 +69,11 @@ cxr_augmentation:
   contrast: 0.10
   photometric_probability: 0.50
 
-train_subset_size: 12800
+train_subset_size: null
 train_subset_seed: 42
 print_freq: 50
 grad_clip_norm: null
-debug_max_batches: 200
+debug_max_batches: null
 cudnn_deterministic: true
 
 # Setting this true verifies every MIMIC image/mask path before training. This
@@ -123,5 +123,5 @@ vindr_validation:
 
   early_stopping:
     enabled: true
-    min_epochs: 15
+    min_epochs: 10
     patience: 5
