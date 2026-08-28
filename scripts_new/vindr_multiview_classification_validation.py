@@ -25,7 +25,7 @@ from sklearn.metrics import f1_score, roc_auc_score
 import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
-from src import get_label_text_embeddings
+from .src import get_label_text_embeddings
 
 
 ALBEF_MEAN = (0.48145466, 0.4578275, 0.40821073)
