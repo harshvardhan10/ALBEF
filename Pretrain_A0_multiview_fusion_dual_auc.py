@@ -981,7 +981,18 @@ def _resolve_initial_checkpoint(
 
 
 def main(args, config):
-    utils.init_distributed_mode(args)
+    if args.distributed:
+        utils.init_distributed_mode(args)
+    else:
+        args.distributed = False
+        args.rank = 0
+        args.world_size = 1
+        args.gpu = 0
+        print(
+            "Not using distributed mode (explicit --distributed false)",
+            flush=True,
+        )
+
     device = torch.device(args.device)
 
     seed = int(args.seed) + utils.get_rank()
