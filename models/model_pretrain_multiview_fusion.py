@@ -241,6 +241,36 @@ class ALBEF(nn.Module):
             self.view_fusion(concatenated)
         )
 
+    @staticmethod
+    def _check_finite(name: str, tensor: torch.Tensor) -> None:
+        """Raise immediately when a tensor first becomes NaN/Inf."""
+        finite_mask = torch.isfinite(tensor)
+
+        if finite_mask.all():
+            return
+
+        finite_values = tensor[finite_mask]
+
+        if finite_values.numel() > 0:
+            finite_min = finite_values.min().item()
+            finite_max = finite_values.max().item()
+            finite_mean = finite_values.mean().item()
+        else:
+            finite_min = float("nan")
+            finite_max = float("nan")
+            finite_mean = float("nan")
+
+        raise FloatingPointError(
+            f"[NONFINITE] {name}: "
+            f"shape={tuple(tensor.shape)}, "
+            f"nan={torch.isnan(tensor).sum().item()}, "
+            f"inf={torch.isinf(tensor).sum().item()}, "
+            f"finite_min={finite_min:.6g}, "
+            f"finite_max={finite_max:.6g}, "
+            f"finite_mean={finite_mean:.6g}"
+        )
+
+
     def encode_image_views(
         self,
         image_original: torch.Tensor,
@@ -267,31 +297,62 @@ class ALBEF(nn.Module):
 
         if momentum:
             z_original = self.visual_encoder_original_m(image_original)
+            self._check_finite("momentum/z_original", z_original)
+
             z_lung = self.visual_encoder_lung_m(image_lung)
+            self._check_finite("momentum/z_lung", z_lung)
+
             z_heart = self.visual_encoder_heart_m(image_heart)
+            self._check_finite("momentum/z_heart", z_heart)
+
             image_embeds = self._fuse_tokens(
                 z_original,
                 z_lung,
                 z_heart,
                 momentum=True,
             )
+            self._check_finite(
+                "momentum/fused_image_embeds",
+                image_embeds,
+            )
+
             image_feat = F.normalize(
                 self.vision_proj_m(image_embeds[:, 0, :]),
                 dim=-1,
             )
+            self._check_finite(
+                "momentum/image_feat",
+                image_feat,
+            )
+
         else:
             z_original = self.visual_encoder_original(image_original)
+            self._check_finite("online/z_original", z_original)
+
             z_lung = self.visual_encoder_lung(image_lung)
+            self._check_finite("online/z_lung", z_lung)
+
             z_heart = self.visual_encoder_heart(image_heart)
+            self._check_finite("online/z_heart", z_heart)
+
             image_embeds = self._fuse_tokens(
                 z_original,
                 z_lung,
                 z_heart,
                 momentum=False,
             )
+            self._check_finite(
+                "online/fused_image_embeds",
+                image_embeds,
+            )
+
             image_feat = F.normalize(
                 self.vision_proj(image_embeds[:, 0, :]),
                 dim=-1,
+            )
+            self._check_finite(
+                "online/image_feat",
+                image_feat,
             )
 
         return image_embeds, image_feat
@@ -345,6 +406,10 @@ class ALBEF(nn.Module):
             mode="text",
         )
         text_embeds = text_output.last_hidden_state
+        self._check_finite(
+            "online/text_embeds",
+            text_embeds,
+        )
         text_feat = F.normalize(
             self.text_proj(text_embeds[:, 0, :]),
             dim=-1,
@@ -376,6 +441,12 @@ class ALBEF(nn.Module):
                 return_dict=True,
                 mode="text",
             )
+
+            self._check_finite(
+                "momentum/text_embeds",
+                text_output_m.last_hidden_state,
+            )
+
             text_feat_m = F.normalize(
                 self.text_proj_m(
                     text_output_m.last_hidden_state[:, 0, :]
@@ -524,6 +595,18 @@ class ALBEF(nn.Module):
             probability_matrix=probability_matrix,
         )
 
+        num_mlm_targets = (labels != -100).sum()
+
+        if num_mlm_targets.item() == 0:
+            raise FloatingPointError(
+                "[MLM DEBUG] Zero valid MLM targets in this batch."
+            )
+
+        self._check_finite(
+            "MLM/image_embeds_m_before_teacher",
+            image_embeds_m,
+        )
+
         with torch.no_grad():
             logits_m = self.text_encoder_m(
                 input_ids,
@@ -534,6 +617,24 @@ class ALBEF(nn.Module):
                 return_logits=True,
             )
 
+        self._check_finite(
+            "MLM/teacher_logits",
+            logits_m,
+        )
+
+        soft_labels = F.softmax(logits_m, dim=-1)
+
+        self._check_finite(
+            "MLM/teacher_soft_labels",
+            soft_labels,
+        )
+
+        # Student visual representation.
+        self._check_finite(
+            "MLM/image_embeds_before_student",
+            image_embeds,
+        )
+
         mlm_output = self.text_encoder(
             input_ids,
             attention_mask=text.attention_mask,
@@ -541,10 +642,19 @@ class ALBEF(nn.Module):
             encoder_attention_mask=image_atts,
             return_dict=True,
             labels=labels,
-            soft_labels=F.softmax(logits_m, dim=-1),
+            soft_labels=soft_labels,
             alpha=alpha,
         )
         loss_mlm = mlm_output.loss
+
+        if not torch.isfinite(loss_mlm):
+            raise FloatingPointError(
+                "[NONFINITE] MLM loss became non-finite although upstream "
+                f"diagnostics passed. "
+                f"num_mlm_targets={num_mlm_targets.item()}, "
+                f"alpha={float(alpha):.6f}, "
+                f"temp={self.temp.item():.6f}"
+            )
 
         return loss_mlm, loss_ita, loss_itm
 

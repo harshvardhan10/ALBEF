@@ -565,6 +565,23 @@ def train_one_epoch(
         )
         loss_total = loss_mlm + loss_ita + loss_itm
 
+        if step % 10 == 0:
+            current_model = raw_model(model)
+
+            with torch.no_grad():
+                fusion_w = current_model.view_fusion.weight
+
+                print(
+                    f"[NUMERIC] epoch={epoch} step={step} "
+                    f"loss_mlm={loss_mlm.item():.6f} "
+                    f"loss_ita={loss_ita.item():.6f} "
+                    f"loss_itm={loss_itm.item():.6f} "
+                    f"fusion_W_norm={fusion_w.norm().item():.6f} "
+                    f"fusion_W_absmax={fusion_w.abs().max().item():.6f} "
+                    f"temp={current_model.temp.item():.6f}",
+                    flush=True,
+                )
+
         if not torch.isfinite(loss_total):
             raise FloatingPointError(
                 f"Non-finite loss at epoch={epoch}, step={step}: "
@@ -574,6 +591,15 @@ def train_one_epoch(
             )
 
         loss_total.backward()
+
+        if device.type == "cuda" and step == 0:
+            print(
+                "[GPU MEMORY after backward] "
+                f"allocated={torch.cuda.memory_allocated(device) / 1024 ** 3:.2f} GiB "
+                f"reserved={torch.cuda.memory_reserved(device) / 1024 ** 3:.2f} GiB "
+                f"peak={torch.cuda.max_memory_allocated(device) / 1024 ** 3:.2f} GiB",
+                flush=True,
+            )
 
         grad_clip = config.get("grad_clip_norm")
         if grad_clip is not None:
