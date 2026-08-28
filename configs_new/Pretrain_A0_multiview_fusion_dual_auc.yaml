@@ -31,7 +31,7 @@ embed_dim: 256
 # Three online ViTs + three momentum ViTs are much heavier than the old
 # single-view model. Start conservatively and increase only after measuring GPU
 # memory. This is per process/GPU under DDP.
-batch_size: 64
+batch_size: 32
 num_workers: 8
 
 temp: 0.07
