@@ -69,11 +69,11 @@ cxr_augmentation:
   contrast: 0.10
   photometric_probability: 0.50
 
-train_subset_size: 128
+train_subset_size: 12800
 train_subset_seed: 42
 print_freq: 50
 grad_clip_norm: null
-debug_max_batches: 2
+debug_max_batches: 200
 cudnn_deterministic: true
 
 # Setting this true verifies every MIMIC image/mask path before training. This
