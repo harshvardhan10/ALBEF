@@ -83,7 +83,7 @@ verify_training_files_at_start: false
 retain_last_checkpoint_after_success: false
 
 vindr_validation:
-  enabled: false
+  enabled: true
   validate_every: 1
 
   labels_csv: '/home/woody/iwi5/iwi5362h/data/vindr_cxr/annotations/checkpoint_validation_2000/multilabel_labels.csv'
