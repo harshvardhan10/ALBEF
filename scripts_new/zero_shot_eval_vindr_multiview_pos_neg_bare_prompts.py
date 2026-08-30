@@ -285,7 +285,7 @@ def build_model_and_tokenizer(
     text_encoder_override: str | None = None,
 ):
     """Instantiate the fused ALBEF architecture and load one fused checkpoint."""
-    from models.model_pretrain_multiview_fusion import ALBEF
+    from models.model_pretrain_multiview_transformer_fusion import ALBEF
     from models.tokenization_bert import BertTokenizer
 
     config_path = Path(config_path)
