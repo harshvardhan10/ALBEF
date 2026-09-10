@@ -1,0 +1,98 @@
+alpha: 0.4
+batch_size: 32
+bert_config: configs/config_bert.json
+caption_key: caption
+cudnn_deterministic: true
+cxr_augmentation:
+  brightness: 0.1
+  contrast: 0.1
+  enabled: true
+  photometric_probability: 0.5
+  rotation_degrees: 5.0
+  scale_max: 1.02
+  scale_min: 0.98
+  translate_fraction: 0.02
+debug_max_batches: null
+embed_dim: 256
+enable_finite_checks: true
+grad_clip_norm: null
+heart_mask_root: /home/woody/iwi5/iwi5362h/data/chexmask/mask_cache/common/heart
+heart_train_file:
+- data/chexmask_manifests/mimic_cxr_chexmask_common_valid_heart_maskcache.json
+image_key: image
+image_res: 256
+initial_checkpoints:
+  original: /home/vault/iwi5/iwi5362h/outputs/A0_original_dual_auc/checkpoint_best_macro_auc_stable.pth
+  lung: /home/vault/iwi5/iwi5362h/outputs/A0_lung_dual_auc/checkpoint_best_macro_auc_stable.pth
+  heart: /home/vault/iwi5/iwi5362h/outputs/A0_heart_dual_auc/checkpoint_best_macro_auc_stable.pth
+  shared_components_from: original
+lung_mask_root: /home/woody/iwi5/iwi5362h/data/chexmask/mask_cache/common/lung
+lung_train_file:
+- data/chexmask_manifests/mimic_cxr_chexmask_common_valid_lung_maskcache.json
+mask_key: mask_relpath
+max_text_len: 32
+max_words: 30
+mlm_probability: 0.15
+momentum: 0.995
+num_workers: 8
+numeric_debug_every: 100
+optimizer:
+  lr: 1e-4
+  opt: adamW
+  weight_decay: 0.02
+print_freq: 50
+queue_size: 65536
+retain_last_checkpoint_after_success: false
+schedular:
+  cooldown_epochs: 0
+  decay_rate: 1
+  epochs: 30
+  lr: 1e-4
+  min_lr: 1e-5
+  sched: cosine
+  warmup_epochs: 10
+  warmup_lr: 1e-5
+temp: 0.07
+text_encoder: bert-base-uncased
+train_subset_seed: 42
+train_subset_size: null
+verify_training_files_at_start: false
+view_name: multiview_mean_fusion
+vindr_validation:
+  batch_size: 32
+  cardiomegaly_min_delta: 0.0005
+  early_stopping:
+    enabled: true
+    min_epochs: 15
+    patience: 5
+  enabled: true
+  heart_mask_root: /home/woody/iwi5/iwi5362h/data/vindr_cxr/chexmask_mask_cache/train/heart
+  images_root: /home/woody/iwi5/iwi5362h/data/vindr_cxr/train
+  label_name: Cardiomegaly
+  labels_csv: /home/woody/iwi5/iwi5362h/data/vindr_cxr/annotations/checkpoint_validation_2000/multilabel_labels.csv
+  lung_mask_root: /home/woody/iwi5/iwi5362h/data/vindr_cxr/chexmask_mask_cache/train/lung
+  macro_auc_labels:
+  - Aortic enlargement
+  - Calcification
+  - Cardiomegaly
+  - ILD
+  - Infiltration
+  - Lung Opacity
+  - Nodule/Mass
+  - Pleural effusion
+  - Pleural thickening
+  - Pulmonary fibrosis
+  - Other lesion
+  - Pneumonia
+  - Tuberculosis
+  - Other diseases
+  - No finding
+  macro_min_delta: 0.0005
+  max_images: null
+  max_text_length: 32
+  min_negative_per_label: 20
+  min_positive_per_label: 20
+  num_workers: 4
+  threshold_steps: 200
+  validate_every: 1
+vision_width: 768
