@@ -63,7 +63,7 @@ vindr_validation:
   cardiomegaly_min_delta: 0.0005
   early_stopping:
     enabled: true
-    min_epochs: 15
+    min_epochs: 10
     patience: 5
   enabled: true
   heart_mask_root: /home/woody/iwi5/iwi5362h/data/vindr_cxr/chexmask_mask_cache/train/heart
