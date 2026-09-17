@@ -485,13 +485,16 @@ Retain the matched ALBEF/BioViL-T comparison, multiview comparison, classificati
 
 - [ ] **Step 3: Strip outputs from curated reproducible notebooks**
 
-Run for each selected notebook:
+After exporting any result that exists only in notebook output to `results/summaries/`, run these exact commands:
 
 ```bash
-jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace notebooks/NOTEBOOK.ipynb
+jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace notebooks/compare_original_albef_fc_gated_mean_residual_transformer_heatmaps.ipynb
+jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace notebooks/visualize_biovil_t_same_50_albef_itc_cases.ipynb
+jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace notebooks/visualizing_loss_curves.ipynb
+jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace notebooks/zero_shot_vind_testing.ipynb
 ```
 
-Replace `NOTEBOOK.ipynb` in each command with a path explicitly listed in `docs/notebook_index.md`. Do not strip an output that is the only surviving scientific result until the result is exported into `results/summaries/`.
+If one of these notebooks contains the only surviving copy of a scientific result, export that result first and record its destination in `docs/notebook_index.md`.
 
 - [ ] **Step 4: Record legacy status before moving files**
 
