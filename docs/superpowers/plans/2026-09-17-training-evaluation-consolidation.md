@@ -92,12 +92,45 @@ def test_dataset_returns_three_aligned_views_and_caption(tmp_path):
 
 
 def test_dataset_rejects_manifest_misalignment(tmp_path):
-    with pytest.raises(ValueError, match="misalignment"):
-        # Build two one-record manifests with different image values.
-        build_misaligned_dataset(tmp_path)
-```
+    first_image = tmp_path / "first.png"
+    second_image = tmp_path / "second.png"
+    lung_mask = tmp_path / "lung.png"
+    heart_mask = tmp_path / "heart.png"
+    write_image(first_image, 64)
+    write_image(second_image, 192)
+    write_mask(lung_mask)
+    write_mask(heart_mask)
 
-Implement `build_misaligned_dataset` in the test as a small helper that writes two different image paths.
+    lung_records = [
+        {
+            "image": str(first_image),
+            "caption": "cardiomegaly",
+            "mask_relpath": "lung.png",
+        }
+    ]
+    heart_records = [
+        {
+            "image": str(second_image),
+            "caption": "cardiomegaly",
+            "mask_relpath": "heart.png",
+        }
+    ]
+    (tmp_path / "lung.json").write_text(json.dumps(lung_records))
+    (tmp_path / "heart.json").write_text(json.dumps(heart_records))
+
+    transform = SynchronizedCXRTransform(
+        {"image_res": 32, "cxr_augmentation": {"enabled": False}}
+    )
+    with pytest.raises(ValueError, match="misalignment"):
+        MultiViewCXRPretrainDataset(
+            lung_ann_files=[tmp_path / "lung.json"],
+            heart_ann_files=[tmp_path / "heart.json"],
+            lung_mask_root=tmp_path,
+            heart_mask_root=tmp_path,
+            transform=transform,
+            max_words=30,
+        )
+```
 
 - [ ] **Step 2: Run tests and confirm import failure**
 
