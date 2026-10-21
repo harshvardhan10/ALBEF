@@ -1,6 +1,6 @@
 # Proposed generated-artifact removals
 
-Pending explicit approval. These 70 generated Python files are still tracked. No source or local data would be removed. The data manifest is a separate local-preserving untracking decision.
+Approved by the user on 2026-10-22. These 70 generated Python files and data/mimic_cxr.json are no longer tracked. Local working copies are preserved; no source files or Git history are deleted. Before updating an older server checkout, back up its tracked generated files and manifest as described in cross_attention_refactor_check.md, because a Git pull can remove files dropped from tracking.
 
 - `anatomy_prior/__pycache__/attention_extract.cpython-38.pyc`
 - `anatomy_prior/__pycache__/attention_extract.cpython-39.pyc`

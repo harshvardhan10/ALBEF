@@ -9,7 +9,8 @@ This cleanup makes the implementation reviewable for the thesis supervisor. The 
 - [Supervisor reading guide](docs/supervisor_review_guide.md)
 - [Experiment catalogue](docs/experiment_catalogue.md): hypotheses, code, configurations and launch records
 - [Model architecture](docs/model_architecture.md): differences among the six fusion variants
-- [Cross-attention validation](docs/cross_attention_validation.md): precise server commands for the completed training run
+- [Cross-attention refactor check](docs/cross_attention_refactor_check.md): compare the consolidated model with your saved baseline
+- [Original baseline setup](docs/cross_attention_validation.md): precise server commands for the completed training run
 - [Reproduction](docs/reproduction.md), [checkpoints](docs/checkpoints.md) and [limitations](docs/limitations.md)
 - [Source provenance](docs/source_provenance.md) and [cleanup progress](docs/superpowers/cleanup-progress.md)
 
@@ -22,7 +23,7 @@ This cleanup makes the implementation reviewable for the thesis supervisor. The 
 5. Compare prediction ensembles, heatmap ensembles and joint view fusion.
 6. Interpret quantitative classification and matched qualitative localization, including failures.
 
-Cross-attention training is **complete, evaluation pending**, as confirmed by the author on 2026-10-20. Checkpoint files and results remain on the server. The original model and trainer implementations remain intact while baseline validation is pending.
+Cross-attention training is **complete, evaluation pending**, as confirmed by the author on 2026-10-20. Checkpoint files and results remain on the server. The baseline and repeat comparisons passed according to the author. The six fusion models now share common ALBEF code while retaining their historical import/checkpoint interfaces; the refactored model awaits the server before/after comparison. Training scripts remain unchanged.
 
 ## Repository map
 

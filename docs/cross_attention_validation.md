@@ -4,14 +4,20 @@ This is a baseline checkpoint smoke test before model refactoring. Training is c
 
 ## 1. Transfer and select the cleanup checkout
 
-No changes have been pushed. Transfer the supplied patch to your server, or authorize a branch push separately. In a separate ALBEF checkout on the server (not a running-job directory), check out `thesis-repository-cleanup`. Verify that the branch starts at `6320a2e93ce63bf2a77f3c716278c4379e9114f1` before applying the patch. Run `git status --short` and ensure it is clean. Then:
+The baseline validation changes are already on GitHub's `thesis-repository-cleanup` branch. Use a separate checkout so experiments in your original ALBEF folder are unaffected. If you already created `ALBEF-cleanup-validation`, use that folder; do not clone into it again.
+
+For a new checkout:
 
 ```bash
-git apply --check /path/to/thesis-cleanup-baseline.patch
-git apply /path/to/thesis-cleanup-baseline.patch
+cd /home/woody/iwi5/iwi5362h
+git clone --single-branch --branch thesis-repository-cleanup \
+  https://github.com/harshvardhan10/ALBEF.git ALBEF-cleanup-validation
+cd ALBEF-cleanup-validation
 ```
 
-If either check fails, stop and reconcile the checkout; do not force application. Read `docs/cleanup_validation.md` for exactly what has been verified locally. Record `git rev-parse HEAD`; the manifest also hashes the extractor and model source and records a dirty checkout.
+For an existing checkout, first check that `git status --short` is empty. The new cleanup update stops tracking generated files and the real MIMIC manifest, so use the **backup, pull and restore instructions in Step 1 of [cross_attention_refactor_check.md](cross_attention_refactor_check.md)**. This preserves your server copies before Git applies the tracked removals.
+
+**Skip the old `git apply` commands.** The patch was an alternative to pulling the branch; do not apply it on top of an updated checkout. Record `git rev-parse HEAD`. If you have already completed the baseline and repeat checks, proceed to [cross_attention_refactor_check.md](cross_attention_refactor_check.md) instead of repeating these setup steps.
 
 ## 2. Establish the run inputs
 

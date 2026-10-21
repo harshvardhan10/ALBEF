@@ -8,7 +8,7 @@ The author confirmed cross-attention training completed. Both files are reported
   checkpoint_best_macro_auc_stable.pth
 ```
 
-The first selects cardiomegaly validation AUC; the second selects stable-label macro validation AUC. A last checkpoint is for recovery, not a third scientific selection role. Checkpoint existence/content has not been independently inspected. Exact training commit and saved resolved config are still required from server records.
+The first selects cardiomegaly validation AUC; the second selects stable-label macro validation AUC. A last checkpoint is for recovery, not a third scientific selection role. The author confirmed both checkpoints loaded successfully during baseline and repeat extraction. Both comparisons passed with no all-zero CAM warnings. These are user-confirmed results; logs/manifests remain on the server. The saved config is `<checkpoint directory>/config.yaml` and the author confirmed it matches the checked-in config except comments. The exact training commit remains unconfirmed.
 
 For each result record: experiment identifier, training and extraction commits, checkpoint SHA-256/role, resolved config, case/split identity, label order, prompts, threshold source, extraction/evaluation command and output manifest. Other experiments' checkpoint paths and evaluation coverage remain pending inventory; do not invent them from this run's names.
 

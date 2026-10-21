@@ -13,3 +13,6 @@ __pycache__/
 logs/
 validation_outputs/
 configs/environments/*.local.yaml
+
+# Real machine-specific training manifest; keep local, do not track.
+data/mimic_cxr.json

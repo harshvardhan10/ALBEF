@@ -28,3 +28,24 @@ Verification notes: TDD failures observed for absent extractor/comparator/render
 Next action: user runs fixed-case baseline twice for both checkpoint roles using docs/cross_attention_validation.md, supplies training commit/resolved-config location and logs/manifests/comparison evidence. Continue independent launcher/documentation migration while available; do not begin fusion/model consolidation before baseline acceptance. 70 tracked generated Python artifacts are listed in docs/proposed_generated_removals.md for specific approval. No destructive hygiene performed.
 
 Import correction: final notebook inspection found generated outputs in five companion notebooks. Stripped only outputs/execution counts/widget state in these newly imported copies, as the approved plan requires; source cells retained and source/destination hashes recorded. Original ALBEF notebooks and source repositories remain unchanged.
+
+## 2026-10-22 — baseline accepted and model consolidation started
+
+User reports both baseline/repeat comparisons PASS, both checkpoint roles completed, six overlays per role, and no all-zero CAM warnings. Evidence files remain on the server and were not independently inspected. Saved training config matches the repository config except comments. Training commit remains unconfirmed. Baseline: /home/vault/iwi5/iwi5362h/outputs/cleanup_validation/baseline_20261022_003021.
+
+Ruling: accept the user's explicit report as the baseline gate, as agreed in chat; retain the distinction between user-confirmed and independently inspected evidence. Cost: manifest/log details cannot be audited locally.
+Ruling: reconcile local 7468e42 and API-created 639fc12 via a content-identical merge, without rewriting either history. Cost: an extra local merge commit; main untouched.
+Ruling: FC retains top-level view_fusion_norm and separate momentum normalization rather than nesting them in the extracted fusion module. This preserves historical checkpoint keys and parameter order. Five other fusion classes are extracted without internal changes.
+Ruling: shared objective uses the stable mean-model body; FC retains unconditional finite checks. Only FC's exception wording/diagnostic scalar formatting changes; finite-data objective calculations are compared against the frozen FC source. Cost: legacy error messages differ, not scientific computations.
+
+Model work: six historical model modules become compatibility subclasses; models/model_pretrain_multiview.py owns common objective/queue/momentum logic; models/fusion owns architecture-specific math. Tests retain compressed independent original sources and compare all six model variants with tiny synthetic encoders. A failing FC feature comparison exposed a missing normalization dispatch; fixed before acceptance. 24 focused CPU tests currently pass (5 new test methods cover all six variants), actual server candidate comparison still required.
+
+Do not accept Task 5 as runtime-validated until both fixed-case server baseline/candidate comparisons pass. Task 6 full trainer consolidation remains behind that acceptance gate. Broad historical launcher migration, anatomy/patch helper extraction, immutable configs and metadata integration remain pending. No model-training changes or generated-file removal has yet occurred in this slice.
+
+Independent model review: no blocker for staging server comparison. Five extracted fusion classes AST-identical; all six state/RNG-order comparisons pass under synthetic encoders. Actual encoder initialization, GPU/AMP/dropout/DDP coverage remains pending. No training-script changes were made.
+
+Training audit finding for Task 6: mean/gated/residual checkpoint payloads currently copy the Transformer architecture string despite selecting the correct model imports. Correct that metadata when consolidating trainers; do not retrospectively relabel historical checkpoints as newly verified runs. Gated/mean/residual also guard last-checkpoint removal on both best files existing; FC/Transformer/cross-attention have a different cleanup policy. Do not silently unify these behaviors.
+
+2026-10-22 user approved stopping tracking all 70 listed generated .pyc files and data/mimic_cxr.json, preserving local copies. Verified every local file against its baseline hash before git rm --cached; all 71 still exist afterward. Ignore rule added for the real manifest. Server guide backs up these files before pulling, since remote tracked removals otherwise remove working copies. Source/history unchanged. Task 7 generated-artifact/manifest untracking complete; remaining hygiene/config/dependency work still pending.
+
+Manifest hygiene follow-up: added data/mimic_cxr.example.json with synthetic image/caption fields confirmed against dataset/caption_dataset.py, and documented the imported preparation CLI. Server backup includes all tracked .pyc paths, including older generated files outside __pycache__.

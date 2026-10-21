@@ -20,7 +20,7 @@ class HeatmapTests(unittest.TestCase):
     def test_extraction_writes_complete_comparable_artifacts_through_real_fusion(self):
         # Only replace the unavailable heavyweight model/tokenizer assembly.
         # Execute the actual anchored-fusion classes from the untouched source.
-        tree = ast.parse((heatmaps.REPOSITORY_ROOT/'models/model_pretrain_multiview_cross_attention_fusion.py').read_text())
+        tree = ast.parse((heatmaps.REPOSITORY_ROOT/'models/fusion/cross_attention.py').read_text())
         classes = [n for n in tree.body if isinstance(n, ast.ClassDef) and n.name in {'AnchoredCrossAttentionLayer', 'ViewCrossAttentionFusion'}]
         namespace = {'torch': torch, 'nn': torch.nn}
         exec(compile(ast.Module(body=classes, type_ignores=[]), 'legacy_fusion', 'exec'), namespace)

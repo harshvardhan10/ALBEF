@@ -1,0 +1,6 @@
+[
+  {
+    "image": "/absolute/path/to/authorized/mimic-cxr/image.png",
+    "caption": "Synthetic example report. Replace with an authorized report."
+  }
+]
