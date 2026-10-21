@@ -1,0 +1,2157 @@
+[
+  {
+    "path": "CODEOWNERS",
+    "classification": "existing code/config; retained",
+    "sha256": "705bcbed428201fffc24a39d805ce02ebb6bcdbd7ab2117d57b476e7d8154dd6"
+  },
+  {
+    "path": "CODE_OF_CONDUCT.md",
+    "classification": "existing code/config; retained",
+    "sha256": "f3a85a7a59adcfdbe731fe50f089b027b22b54319d77920ddd1d9b144263e5f6"
+  },
+  {
+    "path": "Grounding.py",
+    "classification": "existing code/config; retained",
+    "sha256": "09f1ab810406cdb3f672dc10e33935dac05f893e08c5f3471985e82efb5e5fcc"
+  },
+  {
+    "path": "LICENSE.txt",
+    "classification": "existing code/config; retained",
+    "sha256": "4637ec5716603169de9d96e549661ee2b662e58af7fa3d2463cfa063e39374b7"
+  },
+  {
+    "path": "NLVR.py",
+    "classification": "existing code/config; retained",
+    "sha256": "efb17c0cf6a704e764da0a5de119193f18be37c33d21c9717679a2dcfb85dcc2"
+  },
+  {
+    "path": "Pretrain.py",
+    "classification": "existing code/config; retained",
+    "sha256": "fea1fe56ca0ef33978ead6bdac657731fd9746bcb240648b5123da9bf2bce780"
+  },
+  {
+    "path": "Pretrain_A0_chexmask.py",
+    "classification": "existing code/config; retained",
+    "sha256": "410f05a24321d696f43c67c253b8736f04186498959e131ab205c5ffd4dd4e9f"
+  },
+  {
+    "path": "Pretrain_A0_maskcache.py",
+    "classification": "existing code/config; retained",
+    "sha256": "dc2325c7aad335d68664401ad028d9401f558189c5253f3c11c1e65c03bd0d4b"
+  },
+  {
+    "path": "Pretrain_A0_multiview_cross_attention_fusion_dual_auc.py",
+    "classification": "existing code/config; retained",
+    "sha256": "9a14dacdf9e95741056ba87a51c4059551cfaba55c8c7bbb3317973f5053f449"
+  },
+  {
+    "path": "Pretrain_A0_multiview_dual_auc.py",
+    "classification": "existing code/config; retained",
+    "sha256": "9bc24e7ab530be9b95f1bff50280819ac5d9340998ee144c896a6708fd21ccf8"
+  },
+  {
+    "path": "Pretrain_A0_multiview_fusion_dual_auc.py",
+    "classification": "existing code/config; retained",
+    "sha256": "21e0c3fde80b78f5d436d54f67c1ccbc57184dbfbd35eb61cfe159bd42635acd"
+  },
+  {
+    "path": "Pretrain_A0_multiview_gated_fusion_dual_auc.py",
+    "classification": "existing code/config; retained",
+    "sha256": "c38033ed4e4f1242d2bdb0e492b235273d7ebde525804997f8bf7011d4d32b99"
+  },
+  {
+    "path": "Pretrain_A0_multiview_mean_fusion_dual_auc.py",
+    "classification": "existing code/config; retained",
+    "sha256": "1bdeeb6efaaa0b4898c59252df36e2f5f12fed3cd60b05e1a4c59813a602d809"
+  },
+  {
+    "path": "Pretrain_A0_multiview_residual_fusion_dual_auc.py",
+    "classification": "existing code/config; retained",
+    "sha256": "72d01c93d93e94ea5e98f562f8372c25f649871b677696569d0499125ef9c1ee"
+  },
+  {
+    "path": "Pretrain_A0_multiview_transformer_fusion_dual_auc.py",
+    "classification": "existing code/config; retained",
+    "sha256": "5dca83a6af1cbdb728db22dcdce1e2332b1fb83577abf11e102182bc639902ec"
+  },
+  {
+    "path": "Pretrain_A0_precomputed.py",
+    "classification": "existing code/config; retained",
+    "sha256": "8ee8377a668fd3e34ed4fc8891eccf30ad7f7d86b213071d4c0f6e021c929474"
+  },
+  {
+    "path": "Pretrain_anatomy_prior.py",
+    "classification": "existing code/config; retained",
+    "sha256": "2b4d0e73556249dee5433406a5d5875e5a8919bd6f4f478f28d1c30afccb1d7b"
+  },
+  {
+    "path": "Pretrain_anatomy_prior_A4.py",
+    "classification": "existing code/config; retained",
+    "sha256": "c73a03bd40940554cd97ad1d3d289f955ffa17ff2d6bad354288e5ed1f2138de"
+  },
+  {
+    "path": "Pretrain_anatomy_prior_A5_patch_head.py",
+    "classification": "existing code/config; retained",
+    "sha256": "ec9af17c7e1920adf4b3d8d0a64f4cc0a28ec968991f6e0b664c69a6ef369aca"
+  },
+  {
+    "path": "Pretrain_anatomy_prior_A6_1_frozen_A0_patch_head.py",
+    "classification": "existing code/config; retained",
+    "sha256": "aec6ca3daee75c2f4e10a3b52611f8df51c212155598d16e8a1074e4c9308af9"
+  },
+  {
+    "path": "Pretrain_nlvr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "c5e2a39f7d19293b915246f4da91c627482babbf44324cb759af7fc5bf044024"
+  },
+  {
+    "path": "README.md",
+    "classification": "existing code/config; retained",
+    "sha256": "7eadbbc0c7ef214ec0f030a11baf6bc79ff15e67f707dc8177c901f7bf3c3482"
+  },
+  {
+    "path": "Retrieval.py",
+    "classification": "existing code/config; retained",
+    "sha256": "d104a40cb90c34aeccad28fc3b310581fb6f90cc9b1112afbda096e2c89c5010"
+  },
+  {
+    "path": "SECURITY.md",
+    "classification": "existing code/config; retained",
+    "sha256": "33b8f53ac8008c1ee8b53c1eaf85bdbd526ef36a918e6690686723ddf93d426c"
+  },
+  {
+    "path": "VE.py",
+    "classification": "existing code/config; retained",
+    "sha256": "414d52bb8ffb873526bff1fe59dde9f7c3dcf9205cf91c7966350f70d103bf77"
+  },
+  {
+    "path": "VQA.py",
+    "classification": "existing code/config; retained",
+    "sha256": "04aa93b8ea88138aeb1ccd94b0dbec3450454a18e6e0e45205ea1b82c0b7abd2"
+  },
+  {
+    "path": "anatomy_prior/__pycache__/attention_extract.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "22e0d95186d46502b33e69e8a078b657abf00161a2643a939edfa6bde8dc71aa"
+  },
+  {
+    "path": "anatomy_prior/__pycache__/attention_extract.cpython-39.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "a9d710b4d8cc471f29ff8cbca82f85f5e97392c8c6c699c4eabf833cdade19cf"
+  },
+  {
+    "path": "anatomy_prior/__pycache__/losses.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "2d904019062abf6a8faa47d599f7d44053e49147fbfe1667d02670bdb68d9bf9"
+  },
+  {
+    "path": "anatomy_prior/__pycache__/losses.cpython-39.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "a7f0a7489551443d032811c6d19fa818f76b03e7a00b58c7cb4d7d37852a998d"
+  },
+  {
+    "path": "anatomy_prior/__pycache__/patch_head.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "6984d20b71bdb86a18e8c57e6ba45c9e2fd35f39f5314e8c246918dc86ffdb7a"
+  },
+  {
+    "path": "anatomy_prior/__pycache__/token_utils.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "f221496b27d1c2d4840650db5ab6115519d3352835a6006440a8c1c30ac0e7d0"
+  },
+  {
+    "path": "anatomy_prior/__pycache__/token_utils.cpython-39.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "6c78373bcd4366d4ef188cc70f676a98f6237e9f4c134f729b0ed7a64673ec3a"
+  },
+  {
+    "path": "anatomy_prior/attention_extract.py",
+    "classification": "existing code/config; retained",
+    "sha256": "4bf085d5ad3710e19165b4fe131e51c6408f03aa8b681f71ecf561a105173762"
+  },
+  {
+    "path": "anatomy_prior/losses.py",
+    "classification": "existing code/config; retained",
+    "sha256": "695e5e87b9385dc4c4d2ee3512a0c271e7d9f8352bf746ac121fad353a5ae477"
+  },
+  {
+    "path": "anatomy_prior/patch_head.py",
+    "classification": "existing code/config; retained",
+    "sha256": "9c4d4e7f2734d196fc095471d4808ece2be27f9572e8695cc8204295d6fe0675"
+  },
+  {
+    "path": "anatomy_prior/token_utils.py",
+    "classification": "existing code/config; retained",
+    "sha256": "c5b929cbc2449557bda7ade7f7ca0ddb0148fcd1a58aaa4267a5ba7b605242ea"
+  },
+  {
+    "path": "anatomy_priors/vindr_train_heart_prior_256.npy",
+    "classification": "existing code/config; retained",
+    "sha256": "c94d29692f9daf39bac8953a4b80d5ff67ab0d893c5f701fa37b0f1dc0c97688"
+  },
+  {
+    "path": "anatomy_priors/vindr_train_heart_prior_256.png",
+    "classification": "existing code/config; retained",
+    "sha256": "2396defe261e7a49db52d460a3ed353f6f88d2ef7c85ef47b47adc217157c1d0"
+  },
+  {
+    "path": "anatomy_priors/vindr_train_heart_prior_256_diagnostics.csv",
+    "classification": "existing code/config; retained",
+    "sha256": "ce09e2d85cedcd6b65ede325d4b9e98566d652f552c738b2a2ac735f31165e2d"
+  },
+  {
+    "path": "anatomy_priors/vindr_train_heart_prior_256_metadata.json",
+    "classification": "existing code/config; retained",
+    "sha256": "975f4e64badd9f75d6bdaf208a830539aba80eeeba0efd8982b9d8e6928a931d"
+  },
+  {
+    "path": "cog.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "335b4a676b981ad166b884d8afae7d46756de71511299469f89be3847ffd2fb1"
+  },
+  {
+    "path": "configs/Grounding.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "c165e4d5110bc81084d2386f135c421583d4faa497320086aa0990125035ecc4"
+  },
+  {
+    "path": "configs/NLVR.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "5d3856523b77fa29c5eec28391b2b58b365fa653e718fa173cb8fd42aaf10f6e"
+  },
+  {
+    "path": "configs/NLVR_pretrain.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "93c25fde38988c2318190264cb2df58d82cd3915089cd022f3b112bb2615c7ad"
+  },
+  {
+    "path": "configs/Pretrain.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "e4b3b2f161e1937c35d8cedea66115c59a72b2b8ad05d8e8f5e11178de1c3d3f"
+  },
+  {
+    "path": "configs/Pretrain_A0_heart_chexmask.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "7ca4860f917a61ba8e474379ea44af73214bd386f59ca5a310653e4772bb9edb"
+  },
+  {
+    "path": "configs/Pretrain_A0_heart_chexmask_common.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "68495b9da57e5ff420dc8e13437d73b0557d7a508624432e6a048799ffd06726"
+  },
+  {
+    "path": "configs/Pretrain_A0_heart_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "e006337644458e9007f8dd498288d1edc21ee9f00a39a1adfcd74ac10305953b"
+  },
+  {
+    "path": "configs/Pretrain_A0_heart_maskcache_common.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "19dbdb7045674444e2b074488665d2a77ebed5344e8c568c2ad9d95804ae6a03"
+  },
+  {
+    "path": "configs/Pretrain_A0_heart_maskcache_common_vindr_val.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "f0053f978a2bdc8e60ec7a8c80c3073dfbe7ed5c8c8a645e75209ac57e268a65"
+  },
+  {
+    "path": "configs/Pretrain_A0_heart_precomputed_common.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "b6114c0f50454911f74e463c40f6d4c9901b72a24a94529995185491ddf2ff75"
+  },
+  {
+    "path": "configs/Pretrain_A0_lung_chexmask.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "6102ec5130b997231a875917a26724e650505d4892a8396aab27b88908b88cb2"
+  },
+  {
+    "path": "configs/Pretrain_A0_lung_chexmask_common.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "ed5a9b34ce62c2261be167422201991f7cb045da635f3b72b9ab86ee332659dc"
+  },
+  {
+    "path": "configs/Pretrain_A0_lung_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "39470793489c3683aa5d20f5b70742143c219febecae18b6469742e73935ffc6"
+  },
+  {
+    "path": "configs/Pretrain_A0_lung_maskcache_common.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "8b5e512fa2731ca00e3148b8f55bde8f16de2209cb1b78dce7e79e8270232aa6"
+  },
+  {
+    "path": "configs/Pretrain_A0_lung_maskcache_common_vindr_val.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "694fa5a202d7d318e370224a2d3348e7d4857a99d18a3daae6f6232c25a0e1ed"
+  },
+  {
+    "path": "configs/Pretrain_A0_lung_precomputed_common.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "8f3404e27af012fe7ee42dffe57f8462963724d16089c473934b2ea955d226b1"
+  },
+  {
+    "path": "configs/Pretrain_A0_original_chexmask_common.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "f10e7f4b58132a3e7f34c30c0da9b30dbee296d11022459e8850523ea9650428"
+  },
+  {
+    "path": "configs/Pretrain_A0_original_common_vindr_val.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "60f5723e046cb8f9c04548aa9d09ee5b576e29dfdd564fb690d9e386a0c488b1"
+  },
+  {
+    "path": "configs/Pretrain_A0_original_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "2a4959f59760bb87190e854062694c70b190e44f2f489b32a9cd279aeadab20e"
+  },
+  {
+    "path": "configs/Pretrain_A5_patch_head.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "04660f7c6466746a29ace560ffd0b9364c8fb0c9a3a7684b0575f3e3127b82b3"
+  },
+  {
+    "path": "configs/Pretrain_A6_1_frozen_A0_patch_head.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "9c7e5a9ea868f49b53bdfdab18b57eea92c85b139d79ac1f54b4b955d6f82a9d"
+  },
+  {
+    "path": "configs/Pretrain_anatomy_prior.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "2790249a318182daf45a85216819e86c6ab38b0215074e6f675b9a60e43d8313"
+  },
+  {
+    "path": "configs/Pretrain_anatomy_prior_A0.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "d90a5942351184d7895d8a505c0f79631155c4a10fd4526afa4bd14120fe9b00"
+  },
+  {
+    "path": "configs/Pretrain_anatomy_prior_A1.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "69a929838cabe4b2687158464ff8b7c075003398e560c079de7f25f1fcc81c9d"
+  },
+  {
+    "path": "configs/Pretrain_anatomy_prior_A2.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "4c002cb363f1cd19adae05b53ce42e2c6b951ab93539b2b81bbc0cd2499a78a4"
+  },
+  {
+    "path": "configs/Pretrain_anatomy_prior_A3.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "a745e5af36be8b20ed99521756d6339aca90c3b78aa0b0f0e78c3de4b6f7b500"
+  },
+  {
+    "path": "configs/Pretrain_anatomy_prior_A4.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "a70b16224e3f8cafaa40b823b88865fcfb3cef26a3839403992b55538c48914e"
+  },
+  {
+    "path": "configs/Pretrain_debug.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "26a1cf41f0486822f992ce554ae69d867509b83014dff22fdfad00da7153eed1"
+  },
+  {
+    "path": "configs/Pretrain_rtx3080.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "8450eba689334a272b991a319006dd22bf5a978cf50ef8cb77e122de102c4369"
+  },
+  {
+    "path": "configs/Pretrain_rtx3080_8gpu.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "8a72f8914f21883fb9dc61b1a28ca6cd8d2a93a1e6ebbe1c68e776aad354c615"
+  },
+  {
+    "path": "configs/Pretrain_rtx3080_ngpu.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "94a8b15b5e328befd7a93cfd35318a00d436b144012a49f82e8fbf3522776247"
+  },
+  {
+    "path": "configs/Retrieval_coco.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "c6faa629d8c2b4357e30cf6f6516c8fa474cf9a052a64d7e51a765575f423aa7"
+  },
+  {
+    "path": "configs/Retrieval_flickr.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "3ccf57984b884350a955a683aef60c7af26b80b6dc6d0cc7c2205334c23b611a"
+  },
+  {
+    "path": "configs/VE.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "8b1431e751c4d3f8a4ccbe14b36247cbb54a94eb67bb83b079e36f7871c19293"
+  },
+  {
+    "path": "configs/VQA.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "32a12178a0e11e126c2b39def21bee29663e1b35446c0231425ae03e723fb8dd"
+  },
+  {
+    "path": "configs/config_bert.json",
+    "classification": "existing code/config; retained",
+    "sha256": "e20759eceda36082f9880ead487083abdd55de7d2161a0fcec3683570a4235f5"
+  },
+  {
+    "path": "configs_new/Pretrain_A0_heart_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "e006337644458e9007f8dd498288d1edc21ee9f00a39a1adfcd74ac10305953b"
+  },
+  {
+    "path": "configs_new/Pretrain_A0_lung_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "39470793489c3683aa5d20f5b70742143c219febecae18b6469742e73935ffc6"
+  },
+  {
+    "path": "configs_new/Pretrain_A0_multiview_cross_attention_fusion_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "83644789369686d02ccc2b3a9f7c2c7dc8bd8b633a38e5213b31cc76beb3941c"
+  },
+  {
+    "path": "configs_new/Pretrain_A0_multiview_fusion_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "3052ccd92d5b03e3050b437bf0cd52b026f2f6b17da585d8d9e2430719f446b5"
+  },
+  {
+    "path": "configs_new/Pretrain_A0_multiview_gated_fusion_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "8a84352ac2b05626ad57d3f4d3f93290cab108c6fde2666657230723e0951ca8"
+  },
+  {
+    "path": "configs_new/Pretrain_A0_multiview_mean_fusion_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "d92fbf5b1fc9c83ebd1a061143b479d42f366f8f01609f34d3ae773f202d3de5"
+  },
+  {
+    "path": "configs_new/Pretrain_A0_multiview_residual_fusion_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "b9ce59a1a9817fb95bc3111cf6f61cf57a0d8b903355f379c55e047ebb2ceee0"
+  },
+  {
+    "path": "configs_new/Pretrain_A0_multiview_transformer2_mean_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "fec251cd7043508663d13873f886a80cea150729acb4581ed11d8330cb584d64"
+  },
+  {
+    "path": "configs_new/Pretrain_A0_original_dual_auc.yaml",
+    "classification": "existing code/config; retained",
+    "sha256": "2a4959f59760bb87190e854062694c70b190e44f2f489b32a9cd279aeadab20e"
+  },
+  {
+    "path": "data/mimic_cxr.json",
+    "classification": "data manifest; local-preserving untracking pending approval",
+    "sha256": "d434cc0eeff6c893dc76ee64e4c9ae75516dcc38eb03d0478c4fde2468507961"
+  },
+  {
+    "path": "data/mimic_cxr_debug.json",
+    "classification": "existing code/config; retained",
+    "sha256": "c16931d65b20a560b32a9ec51702a510d93143685516bfd6b398de78d809a1b4"
+  },
+  {
+    "path": "dataset/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "3ab47e9e40bce00765cc4ad3d7eb73680a50a348eb96ebfcb593d31bc4cc5660"
+  },
+  {
+    "path": "dataset/caption_dataset.py",
+    "classification": "existing code/config; retained",
+    "sha256": "2516dcdac990eb7dd002f1a94220babefe5c7c6a3b97b28da1e475d37d6e5681"
+  },
+  {
+    "path": "dataset/chexmask_cached_mask_dataset.py",
+    "classification": "existing code/config; retained",
+    "sha256": "b5ad579d99b06011d07797d60fb88b49c4b2b7fc149ef26db2c5aa9ca830b12e"
+  },
+  {
+    "path": "dataset/chexmask_view_dataset.py",
+    "classification": "existing code/config; retained",
+    "sha256": "a0e818aa020295feae3825be99d7e3881793b21bf42818056ca505d176b63549"
+  },
+  {
+    "path": "dataset/grounding_dataset.py",
+    "classification": "existing code/config; retained",
+    "sha256": "18b8fcb50b703873849559fa129652ab9915ee3560bc8338d187a4381ca91a35"
+  },
+  {
+    "path": "dataset/nlvr_dataset.py",
+    "classification": "existing code/config; retained",
+    "sha256": "9ff09226322fff30cbac4e41aa0be159677a92dbd3d63f534f238ec4547bae0e"
+  },
+  {
+    "path": "dataset/randaugment.py",
+    "classification": "existing code/config; retained",
+    "sha256": "9685d968c3530b9324a79e8cd6aa7f55a7e3b3cb5c4924fde4aca9d0c1b1fc01"
+  },
+  {
+    "path": "dataset/utils.py",
+    "classification": "existing code/config; retained",
+    "sha256": "e95dafc67da2a1f038d32d623a30b1c73e5c8eb68d72c5ffb9414f612f94f4a5"
+  },
+  {
+    "path": "dataset/ve_dataset.py",
+    "classification": "existing code/config; retained",
+    "sha256": "4cae2a2d2f751d334f84e76c0607c07974b912a14ee414bd7c65bf73bb0c4e64"
+  },
+  {
+    "path": "dataset/vqa_dataset.py",
+    "classification": "existing code/config; retained",
+    "sha256": "17a33c16423879010c468e21c71b14fef03e2f2c348443a2c1ec94fe5692c082"
+  },
+  {
+    "path": "docs/superpowers/plans/2026-09-17-multiview-model-consolidation.md",
+    "classification": "historical plan/spec; retained",
+    "sha256": "053fad7f9c13a2c93774e5d919b0199dffc6a8522844d4fcead41c09ffda6539"
+  },
+  {
+    "path": "docs/superpowers/plans/2026-09-17-repository-navigation-hygiene.md",
+    "classification": "historical plan/spec; retained",
+    "sha256": "098e4ef58bff74ec7ebcc7cb51b93b49e1a6357b15efed4aeff99ffaa534ecab"
+  },
+  {
+    "path": "docs/superpowers/plans/2026-09-17-training-evaluation-consolidation.md",
+    "classification": "historical plan/spec; retained",
+    "sha256": "e301f351646b4dfc69e4bc5c79847a5d8a2bd00d2463a1a0b2291d934da2e808"
+  },
+  {
+    "path": "docs/superpowers/specs/2026-09-17-thesis-repository-cleanup-design.md",
+    "classification": "historical plan/spec; retained",
+    "sha256": "6a101ea6cb60ccef87f5955fe2ac233669fe1eec01554e4d946baa2f3db84da9"
+  },
+  {
+    "path": "examples/image0.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "e4d58abb24655f12e70e056631e96915a142e1e60fb0b1f75372269bad764828"
+  },
+  {
+    "path": "examples/visualization.png",
+    "classification": "existing code/config; retained",
+    "sha256": "a675594cffb31dbc28de0b33826e2b1c6b635c23a6165680628f121f8a97a269"
+  },
+  {
+    "path": "extract_a6_0_identity_patch_head_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "69a7e261f33955a4d3e4701b04ea7f568a1b724e5d1d8b7d3f249c1525d351d6"
+  },
+  {
+    "path": "img.png",
+    "classification": "existing code/config; retained",
+    "sha256": "3578e9b56fbced45522b0f0172322822d755864060f8e2fb071005ff6895ce2e"
+  },
+  {
+    "path": "models/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "models/model_nlvr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "50538581fe08cbd211b8c71f88ad8989ed4086558e109e67350598b2b04b4870"
+  },
+  {
+    "path": "models/model_pretrain.py",
+    "classification": "existing code/config; retained",
+    "sha256": "bc07169323c89f819e6b56325fca7f70bfa6ee628509dd7a0e2b22e454bce63b"
+  },
+  {
+    "path": "models/model_pretrain_multiview_cross_attention_fusion.py",
+    "classification": "existing code/config; retained",
+    "sha256": "12109d66cb288a2933a283bfe5956d58440e03a636806a1992ee8340e146e60c"
+  },
+  {
+    "path": "models/model_pretrain_multiview_fusion.py",
+    "classification": "existing code/config; retained",
+    "sha256": "67418d41f7a5a8cbc23b3a01feed5584024657622743f29a20c76555ec7240b6"
+  },
+  {
+    "path": "models/model_pretrain_multiview_gated_fusion.py",
+    "classification": "existing code/config; retained",
+    "sha256": "af2f8f4a38cb9fefb04d24582fabf58255c54be0318bc53d79ad9ed572be1aa8"
+  },
+  {
+    "path": "models/model_pretrain_multiview_mean_fusion.py",
+    "classification": "existing code/config; retained",
+    "sha256": "3fe3aa033e32618b64a042fa8346799488055c9fe81f4e0c48c3058f27df0071"
+  },
+  {
+    "path": "models/model_pretrain_multiview_residual_fusion.py",
+    "classification": "existing code/config; retained",
+    "sha256": "82da47f5a047db03030ee405bf0b07381ac3ce7735ef79d0562a63ea319e72b4"
+  },
+  {
+    "path": "models/model_pretrain_multiview_transformer_fusion.py",
+    "classification": "existing code/config; retained",
+    "sha256": "444158f6b0b041b8f9b6703dd0b64133059eebaa321a307b77ecd0867d819c6c"
+  },
+  {
+    "path": "models/model_pretrain_nlvr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "f80968da9ee165c00f697cada5b52b719e86e5d5af069ec5167f22b78281f8f8"
+  },
+  {
+    "path": "models/model_retrieval.py",
+    "classification": "existing code/config; retained",
+    "sha256": "64645550da1e44d934ca8ff420a9dd45224fe828cdaae0d7734f1366e356a3fe"
+  },
+  {
+    "path": "models/model_ve.py",
+    "classification": "existing code/config; retained",
+    "sha256": "8da794c48604fa2fd33ca1c7637a2660d1dc647c8359c044a887a8f19fa0aefe"
+  },
+  {
+    "path": "models/model_vqa.py",
+    "classification": "existing code/config; retained",
+    "sha256": "6e8f533842e15f18f4e41d98cb11bb30e624e2d4ada544caba41ddbe10489b68"
+  },
+  {
+    "path": "models/tokenization_bert.py",
+    "classification": "existing code/config; retained",
+    "sha256": "7f8ef5d3411923010ae0e64b8ef5f149881253caf960cd7ee1e9304fe82c00fe"
+  },
+  {
+    "path": "models/vit.py",
+    "classification": "existing code/config; retained",
+    "sha256": "67cc0072ec97a8e8f40e18dd1291ce41ab2497b56211099ba4228d0df0cf50fb"
+  },
+  {
+    "path": "models/xbert.py",
+    "classification": "existing code/config; retained",
+    "sha256": "fe19034db75b01791924ffd791bcf8a0e695c78c16080a5e98d54a14cf69b5d0"
+  },
+  {
+    "path": "notebooks/CLARity_style_anatomy_gated_diagnostic.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "d1df9f15986e92edc042bd1ca9941dc92ac8468c0a4ef996bc9bdbda68603d0d"
+  },
+  {
+    "path": "notebooks/compare_original_albef_fc_gated_mean_residual_transformer_heatmaps.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "16ed9fea4303c9163691e9d36ecb7bd5a2a138c05ca2ee0482fe71efa20c72ba"
+  },
+  {
+    "path": "notebooks/compare_original_albef_vs_fc_fused_heatmaps.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "1b50b5182ebb657a9c58ae4a42563bff261748d73faebbf740d323cfb8701832"
+  },
+  {
+    "path": "notebooks/eda.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "9b1e619282b90cc0a275322eface3f8522fef34272f0df9f0ad8395bcae7b2b3"
+  },
+  {
+    "path": "notebooks/end-to-end cardiomegaly evaluation.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "59e6ab28a101b010f4faa2969b1916361b114b99b4d67a0fd7c992d5f36d5f63"
+  },
+  {
+    "path": "notebooks/evaluate_vindr_heatmaps.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "49bddb75bfb304dc873f4993a2565490216cb347cfcc5b4356a577143cab1ac3"
+  },
+  {
+    "path": "notebooks/extract_heatmap_att.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "1b1f93f5ef6042b57897c72e0257dbafb45bb6f76b3a9f20b29b8b6972a85502"
+  },
+  {
+    "path": "notebooks/extract_heatmap_gradcam_with_hooks.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "ce78d20985bee64944407fbe432d9d4a72bfef533414dc65e2e0235555a84ac7"
+  },
+  {
+    "path": "notebooks/extract_heatmaps.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "26f0d24e2d25d31a6920a69c3c254731f9672579660548f17dd020403169ae72"
+  },
+  {
+    "path": "notebooks/extract_heatmaps_crossattn.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "87427b46afac6138e0966518807ec64adb76249d93640d91ee14fc1521297110"
+  },
+  {
+    "path": "notebooks/extract_heatmaps_gradcam.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "266a1a3866c4310328a557204d91681e1fa16c3cac412da69b84cc8a02019b96"
+  },
+  {
+    "path": "notebooks/stress_test_CLARity_results.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "66e07d78d4bdf6fbd92b75e3f211468709ce455072996f8718e6061a84ed5580"
+  },
+  {
+    "path": "notebooks/visualize_biovil_t_heatmaps.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "1da0d6f79331c3318e9e534c18334d4218655e3afaaa290aea1f5fc718d5143c"
+  },
+  {
+    "path": "notebooks/visualize_biovil_t_same_50_albef_itc_cases.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "4631713e242cb6b45e3fb0f8dd06859a770e79b1fd4fc20db4f6a68f47ad2756"
+  },
+  {
+    "path": "notebooks/visualize_cardiomegaly_grad_cams.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "55fe1de8fedff92480d7529f34e4e59ff661032f765ad17389f92fbeeeba78dc"
+  },
+  {
+    "path": "notebooks/visualize_cardiomegaly_pleural_effusion_itc_heatmaps.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "14e5129dbf3c5a9aa293b328957937823e114a40403fe78f3bab2f08f9761dbc"
+  },
+  {
+    "path": "notebooks/visualize_cardiomegaly_pleural_effusion_itc_heatmaps_margin.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "efd96856ee24b8ceb77d0b26ba905597ca2ee7e853184b67991b8e40aa51a447"
+  },
+  {
+    "path": "notebooks/visualize_chexzero_checkpoints_and_model_comparison.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "078f2d64f868abfcecff174bff36e89de4d8e875fc8c2547a5fae4bd3eed3db5"
+  },
+  {
+    "path": "notebooks/visualize_heatmaps.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "2eaca3709da93f98f95493e580ef7e4361a282660b73894eeeeeec2f8616993d"
+  },
+  {
+    "path": "notebooks/visualize_itc_margin_gradcam_heatmaps.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "b8bdc3e1702d1a8315b108a4c636e46980fb180826f5dd203f0821cbc6b4bc22"
+  },
+  {
+    "path": "notebooks/visualize_itc_margin_gradcam_heatmaps_layer_10.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "3f19e2ac3c5d01384c1f2e2131307135b3db10b68de29c4c11b16fc6ac9b5857"
+  },
+  {
+    "path": "notebooks/visualize_transformer_vs_original_albef_gradcams.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "878a5bdfe7eb3e968ede9552dc1c954081a649b6593b4d195960ca398e5bdb5a"
+  },
+  {
+    "path": "notebooks/visualizing_loss_curves.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "b2ba50fe1d5b28b8c7dbe1565561f755612901e8d7f149c2b1c22a70210ca8ea"
+  },
+  {
+    "path": "notebooks/zero_shot_vind_testing.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "44ba1111a713cc482265a1ab362af3fcce2f896796228099974bd6bea404766b"
+  },
+  {
+    "path": "optim/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "5abc4ca1bbf4d76844bd009af5d81b1e80268a1e6ce7ad088b45ed36c4b267e8"
+  },
+  {
+    "path": "optim/adafactor.py",
+    "classification": "existing code/config; retained",
+    "sha256": "33519b74a769488d34d8e4b91790848b89998cc96fc3df7910a991cf8a9a5914"
+  },
+  {
+    "path": "optim/adahessian.py",
+    "classification": "existing code/config; retained",
+    "sha256": "bc9b50f1b65318bae4318b863ce25d80efb957c86356f336225f874aa839f40a"
+  },
+  {
+    "path": "optim/adamp.py",
+    "classification": "existing code/config; retained",
+    "sha256": "311a1b886c8f02041705a09dabe02900731845c37bb9d455c87b9c7773b356a5"
+  },
+  {
+    "path": "optim/adamw.py",
+    "classification": "existing code/config; retained",
+    "sha256": "32331eeca262241f1907194b623b82c40717ee2bfbb72fc998c56d9a0df02029"
+  },
+  {
+    "path": "optim/lookahead.py",
+    "classification": "existing code/config; retained",
+    "sha256": "7bfed9e0a55a005924bb55424d8617a97f4767027fb0af0b23711aaaf36fcb5a"
+  },
+  {
+    "path": "optim/nadam.py",
+    "classification": "existing code/config; retained",
+    "sha256": "b288c8645ac8eb4f2c8e2a5c0264069bc65823a6a7df0102fe7e194d0d3a2987"
+  },
+  {
+    "path": "optim/novograd.py",
+    "classification": "existing code/config; retained",
+    "sha256": "85caf09387410397d6f7cba87c1a0db40c86fa578a05e518b9a803d4f6a34570"
+  },
+  {
+    "path": "optim/nvnovograd.py",
+    "classification": "existing code/config; retained",
+    "sha256": "88cd66af428b64a3b283f124f34ddc017884777ec7b56d594597a96807bd8e5f"
+  },
+  {
+    "path": "optim/optim_factory.py",
+    "classification": "existing code/config; retained",
+    "sha256": "ec969315eb7f1fa45dd71796e24931ee7311eff2cfe0a16a174120ea76bf66fc"
+  },
+  {
+    "path": "optim/radam.py",
+    "classification": "existing code/config; retained",
+    "sha256": "7c947f26ca01f1af09aa936e35527847221b2d409c23a73d8bcdf42ecd230faf"
+  },
+  {
+    "path": "optim/rmsprop_tf.py",
+    "classification": "existing code/config; retained",
+    "sha256": "30708c92097bb654085083c70355f2437f424fd8f4693f175e32908f891c0df1"
+  },
+  {
+    "path": "optim/sgdp.py",
+    "classification": "existing code/config; retained",
+    "sha256": "20de1e18ad152964ee123bffe20ba9fd4574fa4fcfa85c6bcd66c84f88996e10"
+  },
+  {
+    "path": "predict.py",
+    "classification": "existing code/config; retained",
+    "sha256": "a124eb2ed4cfbd82db0fd48cb686772abbc379cf9b400e423326cfd2a1fb471c"
+  },
+  {
+    "path": "previews/chexmask/0009a9fb-eb905e90-824cad7c-16d40468-007f0038.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "b4caca327984cf1ed303a8d191e9eabeea8c561a09147701433e0bf5852a2be2"
+  },
+  {
+    "path": "previews/chexmask/02aa804e-bde0afdd-112c0b34-7bc16630-4e384014.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "e9a8ab423461540f3c56b8863afb00686c1e9a70976dea21523b045c6b629b7e"
+  },
+  {
+    "path": "previews/chexmask/07b9ddda-9a4a1e1a-4495463d-4c77d947-ed368713.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "a593df2efd0e5d7acd754e6ed4e298d01cd9f40714fa7f24f16e7166f9180a98"
+  },
+  {
+    "path": "previews/chexmask/096052b7-d256dc40-453a102b-fa7d01c6-1b22c6b4.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "ede6cf2142364b6e6fd60e8aef8674b3aa0724f16d6398d7987e229e95c97668"
+  },
+  {
+    "path": "previews/chexmask/1fe73f8e-036bd24e-4578c891-33c1746e-864884a7.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "8ed26202d250fe58bc77763b24570bbb967b9766d82c683720002a11c18747e5"
+  },
+  {
+    "path": "previews/chexmask/28fad2ac-d6001216-b4f72c5b-2d4d452e-17b6c9a5.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "bfee80c3f5b4588f13095b267b0a275f8b56f9a9ad6242c5e5d64d564191b032"
+  },
+  {
+    "path": "previews/chexmask/2a2277a9-b0ded155-c0de8eb9-c124d10e-82c5caab.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "c5b6174714ee6ea63cd1951c65b43bb892ba4b2b3990f4fcd31ff441c2f1b7f8"
+  },
+  {
+    "path": "previews/chexmask/2a280266-c8bae121-54d75383-cac046f4-ca37aa16.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "b3a704631d83a7a48bc20c3bfa3b75f76138f3985a34b0fe0f2cc00cf112785a"
+  },
+  {
+    "path": "previews/chexmask/3b8b1b7d-054490d5-385641e7-ff43d2c8-9505f058.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "74b86e8c7bc956644c59bf1cc1c7bbfbe12af7ba491e9e70456948ed758ca01f"
+  },
+  {
+    "path": "previews/chexmask/54affd39-8bf24209-232bac8a-df6c277a-398ee8a5.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "a22b5903e771e55a0e975152db5259abd9f567b479be742c03f326d4e10b8d65"
+  },
+  {
+    "path": "previews/chexmask/5aa15ba6-55f5e96e-39cea686-7c3b28b2-b8c97a88.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "f26c0da5afe9918670c02386bdf81a0154c3347d9847d01911fdaaff198afc3f"
+  },
+  {
+    "path": "previews/chexmask/5e54fc9c-37c49834-9ac3b915-55811712-9d959d26.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "6783b080a60079324e125f50e3a806bcc1d160ad1d901040c7f0007498d3a757"
+  },
+  {
+    "path": "previews/chexmask/68b5c4b1-227d0485-9cc38c3f-7b84ab51-4b472714.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "50c0c05ae9a779f75b46a28b306f7b012b255012dc1f039eeba74b0936db10ff"
+  },
+  {
+    "path": "previews/chexmask/6ad03ed1-97ee17ee-9cf8b320-f7011003-cd93b42d.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "cfd2067a5904b6a69e8f4a0fa95be6a9c497d70c997590906972300f7d13705f"
+  },
+  {
+    "path": "previews/chexmask/6ad819bb-bae74eb9-7b663e90-b8deabd7-57f8054a.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "f5f10ed2f72d7f2b899b10cb9bd6d2e6691afe4662c42df9a0e3f3f78cf8b745"
+  },
+  {
+    "path": "previews/chexmask/8061113f-c019f3ae-fd1b7c54-33e8690d-be838099.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "3fb46583df9b064f1e0419411802804551eb2e50ebb72d4745038b55341178b9"
+  },
+  {
+    "path": "previews/chexmask/88498b37-c21dc7ba-bc202800-b517a62d-f7ac5bcf.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "316fef6e1caee227d24a60474dad28db5f582ced23e2a6d7e44a2df0ccbdd332"
+  },
+  {
+    "path": "previews/chexmask/8e3f2822-0c1d4b71-2a265bbf-5b96e531-ccf5fa30.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "66498274b1e2c2bf8205e06a7e99ef3a4d5f188b0958ab7a5f72f59c0c38be2e"
+  },
+  {
+    "path": "previews/chexmask/925b9496-a956d7b2-05185e52-bb33313b-c06ee522.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "7605a06de06c362fcaf526266c93ff2c815fd343b9475547bd1d17b0a9ccf42a"
+  },
+  {
+    "path": "previews/chexmask/943486a3-b3fa9ff7-50f5a769-7a62fcbb-f39b6da4.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "8f1065fc5c8443c073838705d470d213c8f936ef5ac79e8b93fa9b6594f8dffa"
+  },
+  {
+    "path": "previews/chexmask/9b314ad7-fbcb0422-6db62dfc-732858d0-a5527d8b.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "603646f2b90ff98e8ead1c793bbebfb442caac43b3fcdd6037f34d15058328f4"
+  },
+  {
+    "path": "previews/chexmask/a75a1fbe-802065ad-717eb7c1-e2ce3552-646276a6.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "7a75366c1695b74e279094d41942ed1bf13bfe0bb9b61c5371b195570cd60968"
+  },
+  {
+    "path": "previews/chexmask/a917c883-720a5bbf-02c84fc6-98ad00ac-c562ff80.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "1d2848e44ab5f3c0fb588831a5248edc4a0e4ec49352ee8844c353c9a1d4f870"
+  },
+  {
+    "path": "previews/chexmask/b75df1bd-0f22d631-52d73526-2ae7b85a-d843b39d.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "3c76777889a01273873dc944b8707652fd294148cda15185ee317d9c446e4635"
+  },
+  {
+    "path": "previews/chexmask/c50494f1-90e2bff5-e9189550-1a4562fd-6ab5204c.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "cf7ca0de73c4fa4c1c47a863f9b668fd17e5d669073f84ea795eaebed066ef24"
+  },
+  {
+    "path": "previews/chexmask/c7526473-7b7214ee-a5d58d12-29d1f67f-9f4edf00.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "1d4ff445d1db2bebf748de3323af4c0acb4edb5ba3cde62d72cd9186e4d787f5"
+  },
+  {
+    "path": "previews/chexmask/cfb03587-782edf6c-1bf392e1-98196cd5-365d69e8.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "9151522204741327f547f8ff1974b3c199665e840287b049d7e47aaf7f5a4b62"
+  },
+  {
+    "path": "previews/chexmask/d0b71acc-b5a62046-bbb5f6b8-7b173b85-65cdf738.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "1e002064744a50246b4612e387d51bc526e2d8ed6bc8ff83d9f128e3026d0dd7"
+  },
+  {
+    "path": "previews/chexmask/ea030e7a-2e3b1346-bc518786-7a8fd698-f673b44c.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "1d99030fd4a0ad56d654cb1006fb71441587b99abd73e1957c333018c9b0149f"
+  },
+  {
+    "path": "previews/chexmask/f1adcae3-2921c0a8-5d9652f9-4191ecd7-f2a96f35.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "c691b667f25ffafac467a396b161d2335f8a88ef33b162c74fd381f3f066a85a"
+  },
+  {
+    "path": "previews/chexmask_excluded/contact_sheet_001.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "5b606ee3b24660ee3d86aa361d2966257162fbffb1abaaf62505ac643da505b3"
+  },
+  {
+    "path": "previews/chexmask_excluded/contact_sheet_002.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "56c85491123ab3b9ddc907320573d65648208573a1530f75f63e1052cfa5cabc"
+  },
+  {
+    "path": "previews/chexmask_excluded/contact_sheet_003.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "6f5ae998e340e72197d5a2e5cf32ae8c7b4250bb0fc05409989c71d90d70abc5"
+  },
+  {
+    "path": "previews/chexmask_excluded/contact_sheet_004.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "6dc65ed7d5bc19513940a6429e2c8f9bd63e3ac20a6d6fc3f60e0db4dad85283"
+  },
+  {
+    "path": "previews/chexmask_excluded/contact_sheet_005.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "94ba6d89c01535f91915674a3a84e5d348447ea21a42f4b4085242e2315df6d2"
+  },
+  {
+    "path": "previews/chexmask_excluded/contact_sheet_006.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "4ff55761bd86807465b46614d671b08bd4231d972092c828ba9c21394bae0e1e"
+  },
+  {
+    "path": "previews/chexmask_excluded/contact_sheet_007.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "217ced94b827904672180a998759fb8541a7233230dabcc4662885ddaca42ba3"
+  },
+  {
+    "path": "previews/chexmask_excluded/contact_sheet_008.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "c13ef883117d2b29e2f86a4e222fb31de0c62600d4bc622bfed4d49283333783"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0001_13399e29-30960e27-95b31066-4c539cf7-b84f7fd9.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "3f23ff154751ace092e0fcf492eb91893be74919f6def987e5b0f8401fe9e27d"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0002_64087e17-b2c4c1e2-7b02c4e0-05cc4bea-960a28c7.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "2faa7f09a93b98e107923e9b8f9a6d0ac1cac32e776b3b81a39f9bd0b90acff1"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0003_d91239af-36377cfd-acb383a8-ae0e7747-8b10a381.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "adfdab6ae2a8b07348338885b2c1eec56f826324389bf6e552aa58c0084169d4"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0004_873e234b-84ff0a56-03f7c9f0-08eaea95-d8af93ff.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "6a71920cdafc259dc52d64cab11b85a3726ec1f5bbc152b032fba442b6b40e42"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0005_055ecce9-5fda7493-8066c1cb-f3884519-bb7de74a.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "f0ee352e8259ce620c8d541e541c4ef742c6262f68f338c377bfcf80872f1d74"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0006_c5be89f5-8148427a-1d3a71e6-e2469c34-b6ada28e.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "d1205cce53007b87e219f8d90f9342e95bc5798cef3a41bfe66a734a47994822"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0007_88ef1751-1b52cfab-7f3f0cc7-05d1e555-d113c093.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "b55b285a6ebaf6e5af3edeeafc9a58298356e3bae781231d566984dcc3ac00de"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0008_fc0664cb-1f1a8826-22488db0-e4f2f338-347ba1c2.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "431415422b25d8dad2ccf81a168d07f42e95e7d820ab955d29c60e5adc0f1275"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0009_d2c6ebb1-b27539fa-8a103d48-258ddb50-21c711c7.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "f57747db74f4e2cff2ebfbe82d62e0bece049aed8bbd64caf2c705364fa438a8"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0010_1ea0748c-640461a8-9cacc45a-d79fd65f-eeee622d.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "77b97f87fbc6cba4925e268aa2cf38f6ee3c47004e904310c790885ddc0cf081"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0011_946b7d6f-a3c96616-8e7ce155-93af6bbb-5eaab2ed.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "bc39864b2770958349ef9b47bc4396826e968f1e849215215d5ec348b3119924"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0012_3d583775-36ea65c1-69d6b389-b2bc25cb-fa8d6e4d.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "98cedf090e49a552601ec316a13b44a749fba5add52292ca82b8491b11ee7ae4"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0013_7ed13d75-3847f9fa-63e3e923-23863aef-5d39c5e9.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "5cf6c65a3555d9a40b5e04ce5abad92093f924627fa4deaff1cb02444dd864c2"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0014_31a084e5-e296bcb6-193808ec-cd58c86d-13292f25.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "34425afea6858ddd9b2e9e3264f713e9ad1ce2f97aa19a285ab38b4bac19219f"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0015_66e7e295-71c26d65-1db07baf-8b09c3eb-a5f347a9.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "4bc8283fc9845734a29d9120d4cf9dd59d48db5d5351d5996f83d6d03b313b04"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0016_1ed1cd47-ef068eed-c79df960-1405454e-794e70e3.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "e16a022df59567f1edeccb0b6ae74326ae7fb8b5bbecbb9a7538116e6dcbd199"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0017_72396311-e56818e7-dc28b0b2-07adf415-e51f70da.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "fd52ae7060493fa1f4240bef3d8c0ff0b4c66773b5bc92648fdc56d257aa830e"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0018_31ec769b-463d6f30-a56a7e09-76716ec1-91ad34b6.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "3c7b4d8bbffdd12df3722447bec4dfc225fa3c47a801f11c0b25a43205db65ad"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0019_9625f871-993b8841-ebe06f8a-175d3e14-d0d1b6e4.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "a89d2eea259c189ab07f088b9ef0c032d27d3a24f0ea9ac917d3ce33f2399112"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0020_f2f2225b-522b3c94-f361fdab-76d3e1cf-5606ac0f.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "0e37a149c0b1edcada2b25309116837e8b36ad28a183274fee0e88282f3ab5af"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0021_f0ce25dd-eac35b77-863e8dff-44a0b29e-8996493d.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "284268b11558a2574e6ab43a492a3eee24d0008d737ae4a25c333e6af169a861"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0022_b13430b7-a4d88648-9c294a90-fb91ce6b-b8a72a9b.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "a077d34dd55e3da92a668d86224d76743b6782f2d1b75d4921d7e55fc70702be"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0023_0f9d6220-99264d5d-32f5766f-9117c7d5-bac268cf.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "8fe9ce244d8ce45829c822565e135b4c5c59700d44e66da6af6a175f39185d45"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0024_d79c3e8e-f6682ded-93332253-905ac7ed-92fe2aba.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "b76b832f46c50fe9e88fc59717cff0cc8b73daedc3905d1820d877d95df5673b"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0025_57cefc78-c82461ae-bf066b8c-51835db4-39690c71.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "b24c2377575a95196470043690815984de262b7283b708c65e2aa9db6503e4d1"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0026_d6075e5f-93b30995-32d48431-fa26833d-4a3526fb.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "fe45a4a377c78b064fa84bfda7a66f66dfeb4aef34c85917fe1e61539bea6799"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0027_42828320-0e8f42ed-7b878504-c9619e8f-3760e6f9.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "9f1156b99f86f199c65b86bb32d3d498f5d01f8cdbcc17e021062d57a6e0972a"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0028_bd57c39d-d4dfb38e-3f0ae4f9-aa76de26-2201390e.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "ee5147e618a5f02fdb25e9829dcf4ba39cb80e06881b6b0642aaae49fe052703"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0029_0bf6f395-2ce7c053-98d61f0f-b96feeb5-d10c5ba2.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "ed65fbb2f54bf607c7a3bad4bddfa52cd2bd21417fb7134ed6688c0e45aec111"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0030_fc031fa9-79a1b8a4-af0c470d-43c92983-a1e21e5f.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "5c1bf45318f0a6609c8221ad9d63a6028c3cbc19fca3dc6f4fd54cd5801554e5"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0031_d9d7ae3f-65786a66-9b5b5e81-6a731fe2-58f71c6d.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "2568288f509caeaa9fd9057e4e603cc25c3710d95dbab271ec46ca7c9cc21691"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0032_37043634-daceb160-192699e5-58549ca3-d9267875.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "259574c34672d82d6453805e5662648fe61f095fb954dacf49f18e663baf0d9b"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0033_af1298e0-c2a42462-f8a4f6b1-e1d00f06-379de521.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "f87c94d6e99d3ecfc6d73621ef94331eccbfd8d9d22e4e6c329af0faa53de17d"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0034_f782ba18-9069f1a2-9c249826-1403bbb2-5d16a1bd.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "1c36c0a5bf596f9249516e41069e563cb10b692e4c8a4faab3f3e260385a690d"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0035_6948f265-7022a950-b130c800-4f96dab9-1c69237e.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "12129b8fb8a71a0e92ded4f9c9727ac2045c38dfe38aa9467ffdf6bb0f4142bf"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0036_f04b576e-07862a9c-6745acad-56e584a5-b9476713.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "9e435abb5fd30e4bdf6fca8756de2c95d1ac755f7b0e83cdc685b68c87c26686"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0037_7bdfad9b-36b015dc-91dd01f6-1ff1c469-1d3a66be.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "734a3db2896f07b6663e784015ea4f34c6c1a1f165c10d7447183bcc316039c0"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0038_f0cf4ad5-a19c278e-2f2695b8-44c8a6c2-713ffcc2.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "cf2b4d2fb84eff2d9eb037d86b955de6551ec21f3812ca4537a6d36f6802a221"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0039_9218befc-5a03b9ec-c53ca558-cc560586-80802ff5.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "a343b39053660d9cc74bdb820411b9be118bc799133f19eafdf2ae9c65ac474a"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0040_753e7632-61fbe639-793a9e1d-64ee238c-d428293e.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "5d77e1568adccfbb6febc003fffad6282f153ff3f4843416c4a96ba1d21f670d"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0041_c59acd96-e9c9cc5b-a9e7c158-1faaa4db-193b33c2.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "92c08532e538c491a84a2129bb586767557252150843e51e589de19390bb5804"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0042_587d0f0d-194111cd-7ac93126-b50aa6b3-8836d5e0.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "b56414f413ead5fb8862d844aa33f990196098597134beb50b03798c42e41d0a"
+  },
+  {
+    "path": "previews/chexmask_excluded/individual/0043_4e894097-7fef6d39-1d6bf57f-fbcfe7ee-d91bd0e0.jpg",
+    "classification": "existing code/config; retained",
+    "sha256": "ce6044585b44ace8f80481560f5c469f0c96cae863b35c9489bcad3d9b8bd566"
+  },
+  {
+    "path": "previews/chexmask_excluded/inspection_index.tsv",
+    "classification": "existing code/config; retained",
+    "sha256": "691ec63cc16363a550edb76c067c93c14a56606bea160a942081f5cb2ae8f7fb"
+  },
+  {
+    "path": "refTools/__pycache__/refer_python3.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "1127361e4d884fd7c8c752efab77e2efc9aa60369c4a0ecb9cb9a8f68e5caa43"
+  },
+  {
+    "path": "refTools/__pycache__/refer_python3.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "522e393f8c9d03b5adbbd03090787144f6dd1d6f12c1ceab3f570a0f46b3e911"
+  },
+  {
+    "path": "refTools/evaluation/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "6da216f4c01d39b1cbf255e99209feba1bcf27f3eb61727ac0ee30a05ce4f095"
+  },
+  {
+    "path": "refTools/evaluation/__pycache__/__init__.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "fb7c928682a7b5bbb20838cfd4173ee9a3e04c37e55ace9cdc082c9053a36cca"
+  },
+  {
+    "path": "refTools/evaluation/__pycache__/__init__.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "6de844d79563d4880cab5dfe0a19527203e984b3f704e980fddc96a33ff5e11a"
+  },
+  {
+    "path": "refTools/evaluation/__pycache__/refEvaluation.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "57676fa61a4b4c2279675f87c85ad556fd980ea18fc98c6ab644f88c65d3a75c"
+  },
+  {
+    "path": "refTools/evaluation/__pycache__/refEvaluation.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "9953066a1201efacca2f567e4c58ad4268846bdd4b9fdd360f1a5259af173db5"
+  },
+  {
+    "path": "refTools/evaluation/bleu/LICENSE",
+    "classification": "existing code/config; retained",
+    "sha256": "f830ffb6b163eeced2bcab2acbb8526fe365e40e865c364db691620a5840a252"
+  },
+  {
+    "path": "refTools/evaluation/bleu/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "d02e91fe125b82e6e5f0642b897f7439094506d06f32771b40d00170deb8eae1"
+  },
+  {
+    "path": "refTools/evaluation/bleu/__init__.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "c76c195a566e8603be196e880b8bec746c75515cc40476d2a5e2b15326894c61"
+  },
+  {
+    "path": "refTools/evaluation/bleu/__pycache__/__init__.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "a2ba9dc70040ba247da03a3a55df076ba7bd163e9c05366e495172e41148bc4f"
+  },
+  {
+    "path": "refTools/evaluation/bleu/__pycache__/__init__.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "38ef990a20d95ab6d5099eb74395c32c3524ad94462ad72b4c930884c3206171"
+  },
+  {
+    "path": "refTools/evaluation/bleu/__pycache__/bleu.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "0849173eb806d7dc131a345e2fc350164171d7382f91f8abd19773da10819e4d"
+  },
+  {
+    "path": "refTools/evaluation/bleu/__pycache__/bleu.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "464d3243918a9964648d6cb05e4d1b68647c0028cd08944a0e9a422b26acb994"
+  },
+  {
+    "path": "refTools/evaluation/bleu/__pycache__/bleu_scorer.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "d2c8e20b51b9e64bd87cea93a3033ad3a5b101968d2dc42a9d9141eba856f340"
+  },
+  {
+    "path": "refTools/evaluation/bleu/__pycache__/bleu_scorer.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "30e5a4f1f8479d1dd4b1611c46a0918cfff1b838d9ae4b0e9ad7ca9749d4ef72"
+  },
+  {
+    "path": "refTools/evaluation/bleu/bleu.py",
+    "classification": "existing code/config; retained",
+    "sha256": "5fbe2ebb44092c0ca9d9cb4de264a982f82fc6596c68bac486cce7287f0f758e"
+  },
+  {
+    "path": "refTools/evaluation/bleu/bleu.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "9eb3e45f155ddfbf530fdf0b037aa41240ffddb18d3109b5a4a244d0226032da"
+  },
+  {
+    "path": "refTools/evaluation/bleu/bleu_scorer.py",
+    "classification": "existing code/config; retained",
+    "sha256": "5e9327649d07ae6670bf84952deb52d5de1bef09c3a13c27fdaf0a48c70a5fa0"
+  },
+  {
+    "path": "refTools/evaluation/bleu/bleu_scorer.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "3a50a0088b24c41a5baa5c24e79f7904d789788bbd11c59e352e52cf98f9208f"
+  },
+  {
+    "path": "refTools/evaluation/cider/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "d02e91fe125b82e6e5f0642b897f7439094506d06f32771b40d00170deb8eae1"
+  },
+  {
+    "path": "refTools/evaluation/cider/__init__.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "7a98aa992d8c05e0ffc66b77d167ee2e4a0aec92767126fb9c854c5870323406"
+  },
+  {
+    "path": "refTools/evaluation/cider/__pycache__/__init__.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "99fc6d7f31d3d383875613f0b7b4539dd324a550b688830701e648b852f7eae5"
+  },
+  {
+    "path": "refTools/evaluation/cider/__pycache__/__init__.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "d420bd736884e9ca61860f00d3916f1cf761f7f4de5a537b8a65ea776f7ecda7"
+  },
+  {
+    "path": "refTools/evaluation/cider/__pycache__/cider.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "06a4acfb4f52bad85570bf22191d56d539daff71336923f97ffb10114c73d891"
+  },
+  {
+    "path": "refTools/evaluation/cider/__pycache__/cider.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "1cafd5cba977a4d8306ba91c21b86e1de4fbb6ede76202d302656a6aa642319b"
+  },
+  {
+    "path": "refTools/evaluation/cider/__pycache__/cider_scorer.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "388d7118917b88b0d51e838125bdd24b3044a9479729b9a56e71ab8c57edada8"
+  },
+  {
+    "path": "refTools/evaluation/cider/__pycache__/cider_scorer.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "e1a03e5cb8dc7b6ad7108fa60530531543cf7d4129a2ad70092ec25b60d70485"
+  },
+  {
+    "path": "refTools/evaluation/cider/cider.py",
+    "classification": "existing code/config; retained",
+    "sha256": "dc8a7c6c7b4e720c4552e34f95e28bf517917e76f82b05aaa091567f8bdf53b4"
+  },
+  {
+    "path": "refTools/evaluation/cider/cider.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "b3242f3ec179fddaa19e12d67b3cff3efcc47eba08119438cbc6a159ae4f34cc"
+  },
+  {
+    "path": "refTools/evaluation/cider/cider_scorer.py",
+    "classification": "existing code/config; retained",
+    "sha256": "13e222f84e82d74b606d6afdb97d225bebddc6d1c7ee063f196d6d1ed931c6b2"
+  },
+  {
+    "path": "refTools/evaluation/cider/cider_scorer.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "95604e1b7c1e89d64ecded6cdf92601e72b4ac996bf36fd9234e2e18d8246f00"
+  },
+  {
+    "path": "refTools/evaluation/meteor/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "d02e91fe125b82e6e5f0642b897f7439094506d06f32771b40d00170deb8eae1"
+  },
+  {
+    "path": "refTools/evaluation/meteor/__init__.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "5eaf666ee9042982dd2906c3582e9e91f241c94c8e1b45563dd5b9b42597b19c"
+  },
+  {
+    "path": "refTools/evaluation/meteor/__pycache__/__init__.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "f35c0ffb10d828c5f1c9457c601fddcce74a6e4eccaa854a7f3065060198603e"
+  },
+  {
+    "path": "refTools/evaluation/meteor/__pycache__/__init__.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "80367281f5a684384029d9f08d161dfd0cdac143d821c50642550311acf6a38d"
+  },
+  {
+    "path": "refTools/evaluation/meteor/__pycache__/meteor.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "70e632a37b5786f100827363bee423646656193c1e7af642ad0c254efc2e65dc"
+  },
+  {
+    "path": "refTools/evaluation/meteor/__pycache__/meteor.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "a6f816be67d7a6ac91a7fcffca6dedbe1162ca6014a36d7acba45f49f8029392"
+  },
+  {
+    "path": "refTools/evaluation/meteor/meteor-1.5.jar",
+    "classification": "existing code/config; retained",
+    "sha256": "1e57b4c72c0830ebe68558f1c799a624e96cbc1b6045c9f6330e26dcff6eafc2"
+  },
+  {
+    "path": "refTools/evaluation/meteor/meteor.py",
+    "classification": "existing code/config; retained",
+    "sha256": "b6da18e80210331544c52008aa92e49d85e15a5d377794a46b8cc922597925a2"
+  },
+  {
+    "path": "refTools/evaluation/meteor/meteor.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "48f7bcb82e605d88ecec8c23a2799885428c76605e0281b2c214e75ab7ff6bd5"
+  },
+  {
+    "path": "refTools/evaluation/readme.txt",
+    "classification": "existing code/config; retained",
+    "sha256": "e40e746889ead7080ac8b7e713e530076fd37b6721ea7ccba8083d5c28c34b78"
+  },
+  {
+    "path": "refTools/evaluation/refEvaluation.py",
+    "classification": "existing code/config; retained",
+    "sha256": "6f76eb0a4ab38908bd23b180eaea07e5477a0649f2eac12cc749f0687420f8dc"
+  },
+  {
+    "path": "refTools/evaluation/refEvaluation.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "f44968e38f2c537bbcb73af34a94cab12db06dcd8394174a5a50d9731babf73b"
+  },
+  {
+    "path": "refTools/evaluation/rouge/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "2d1098934cdf7b3e648c88708942987828d6eb1c4a0c64051570bd222566d4ed"
+  },
+  {
+    "path": "refTools/evaluation/rouge/__init__.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "3e8431a4562a6cfbc8719c99a64f2ffe68b00e193ca9ed1cfed984c2541fc2bb"
+  },
+  {
+    "path": "refTools/evaluation/rouge/__pycache__/__init__.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "fee3c6b60291365140afc32cea11479c8e3c3a5a452ea36da8e2b0d9140e8644"
+  },
+  {
+    "path": "refTools/evaluation/rouge/__pycache__/__init__.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "23e7dbc9dc60b37f7cb5acd5fb2824302eadf6d7673629063d2b44e80a866607"
+  },
+  {
+    "path": "refTools/evaluation/rouge/__pycache__/rouge.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "987748524f7797deedd6b434044c7e7ccea8f7492aee8763eba3b1980abf74ed"
+  },
+  {
+    "path": "refTools/evaluation/rouge/__pycache__/rouge.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "146892517ed5e49249ff6835519639418169b5c3c101b53599e2d0238ac22217"
+  },
+  {
+    "path": "refTools/evaluation/rouge/rouge.py",
+    "classification": "existing code/config; retained",
+    "sha256": "59f2ba8e43be852fcf277ff418409df5fd22ef44c57a904a0829dacbe9b8ce18"
+  },
+  {
+    "path": "refTools/evaluation/rouge/rouge.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "23d6304c52d9da9789401c99f263feedb0ce0007ae281d5e08d885f3f8696fdf"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "055f2924b6d518dd5d51272ad3b361663b500808c69bca7d931337344eeabbc2"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/__init__.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "f4b0391c73c9ccc078351871b784a987284cbfa5ef0444bee3045ebc9cb81b9c"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/__pycache__/__init__.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "2ab9297c19b74fb3c279998f8b516d3d6ee6d80dcfaae5b93085a31d0d2a7f9b"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/__pycache__/__init__.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "f3875825d029ee2cf39d8e552592aab6a2a9e8750bdcec82e69bc1fc34e39692"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/__pycache__/ptbtokenizer.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "2d0f276eee64f7a86aaee8b836e0ac980fe9878a0a865c0f527a92733bcf3663"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/__pycache__/ptbtokenizer.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "4d6fb9db9f1707b388b8dcf9907d9e3f522ea82e285da2746e275a7bcf8e687a"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/ptbtokenizer.py",
+    "classification": "existing code/config; retained",
+    "sha256": "81e1e89580a3328a60593c5f1088da7a434389e632574748afc2cae3c4647061"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/ptbtokenizer.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "a3021712036a6bf71c816979a76d019ff12e7a314d711bdedca4639c3b039066"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/stanford-corenlp-3.4.1.jar",
+    "classification": "existing code/config; retained",
+    "sha256": "2fcb91bb7a111f93d71e264f4ee0e3afd19ba0dde6d21b38605088df9e940399"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/tmp37tp6xj8",
+    "classification": "existing code/config; retained",
+    "sha256": "77c1ae976bea653afe16c1693ec873f17990bfaf2ba36b7d777882e651fde704"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/tmp82iqkuu0",
+    "classification": "existing code/config; retained",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "refTools/evaluation/tokenizer/tmpn19wmqte",
+    "classification": "existing code/config; retained",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "refTools/refer_python3.py",
+    "classification": "existing code/config; retained",
+    "sha256": "31bb76ce4d73659dc58138b813b1e87248591d22629be5349b2c88e58f5d75e2"
+  },
+  {
+    "path": "requirements.txt",
+    "classification": "existing code/config; retained",
+    "sha256": "ec6aa406e22fc62c4a43172b6710b934b43357f2938ae6f461b383dcf02f944d"
+  },
+  {
+    "path": "requirements_albef_legacy.txt",
+    "classification": "existing code/config; retained",
+    "sha256": "ffcf50675f3ce98d30a20ab190fbf226f4c9dea357a26fe7da592469dfe993e0"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/classification/vindr_zero_shot_scores_checkpoint_29.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "0f44a4a427f59ef42eb4505aae30707b301689da3c3a252ec3b5994d3ad1d06d"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/classification/vindr_zero_shot_scores_checkpoint_29.npz",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "9200ffdaa9ecedfb14c58dfbc952b4354ef8abcf6c571e8d160f1d4ba268f67a"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Aortic_enlargement.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "6ab2f4d059c664727587bf4a0e6571b2e6d9da9730e6a9aa412a63ba40ee6b06"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Atelectasis.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "67adb569e4cf32d6f75612e4361049b65dfcd1cee3456cf562a7ca11ca4e8b5c"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_COPD.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "ae86bc009526d31ce9730ffee862fc060260e4215b225f29166bec737665b67b"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Calcification.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "d2d3ab4f811298f2471fd7f23f0ac818aa2b4c6e74c90adcc45ed4d9ad9b17d0"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Cardiomegaly.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "909c52e8187226cce843e7024655f4aa1a8b209988c6a3b9b1bee92ea60b270b"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Clavicle_fracture.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "82c66f4669b644018b9025e9dd4fb368ba7e7b72a4862d87c1c6f8cd0497f847"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Consolidation.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "83565582f66e2a417c63692c6a9fcf8d999c4a406d28e5c203ebbec5355c6298"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Edema.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "ae86bc009526d31ce9730ffee862fc060260e4215b225f29166bec737665b67b"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Emphysema.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "12296d9aed0188d0ddcc6b4f725b2bc0c069410da77405249b88be2286bd99cc"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Enlarged_PA.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "55216c23725ab26ca1d3d3ce63f923700d7ee2cf0c1bb4c7e92641b2d67a9410"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_ILD.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "77a5b2469b7e4f06dd48d862eb5b93d6708fb5a36cea31dae32845e603e189fe"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Infiltration.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "d6d0f89bd7dcaf751658e042f5fb3625662a7ae4154bb0d53bf9d4e27d611093"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Lung_Opacity.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "aef25fb34bbdc852caa6e77bfa69ba9fc98bb4bdf51eac3373bb51dbfe4f49e6"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Lung_cavity.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "edde66b11b7b0b89f98411a21aeb8793989afcccb54a37da6470c6b1cab519ba"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Lung_cyst.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "0169260073658ad434ca9c2681ffcf129c4318c2dc49ff6325861ce39fc4787e"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Lung_tumor.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "ae86bc009526d31ce9730ffee862fc060260e4215b225f29166bec737665b67b"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Mediastinal_shift.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "f10462b561d6ba75112b822c2a34ad290580c265a0e49b83e0d51746a3c8b930"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_No_finding.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "ae86bc009526d31ce9730ffee862fc060260e4215b225f29166bec737665b67b"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Nodule_Mass.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "5e0afaaeb1a485f93dca47d98a4fd680dde0c94cf9e4d5571acc6b1755695037"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Other_disease.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "ae86bc009526d31ce9730ffee862fc060260e4215b225f29166bec737665b67b"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Other_lesion.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "c136e78f89b596c67ed417b8cca39434cc1f724107bd27b9d2951813fea045fc"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Pleural_effusion.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "763fbf3c599781fae0b790892fb3b37757ef6fc902aaac6c8d106e275f5e43db"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Pleural_thickening.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "8ccbbde40633668fb596a2478b75419421da96feb3fdf0bf5fdfed0e4f61fccf"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Pneumonia.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "ae86bc009526d31ce9730ffee862fc060260e4215b225f29166bec737665b67b"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Pneumothorax.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "f84dc93db8a71aa2d7d2c5c21e30c72eabf479d9face12d8a29541540042abac"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Pulmonary_fibrosis.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "38aa105fab6ea8fef110f05d2cdb2e04bad9699465347b2e690f47cc0e506006"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Rib_fracture.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "cda855146899d1115b1b0d695e05337a665106ad00372710cd7fd61884b00f21"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_curve_Tuberculosis.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "ae86bc009526d31ce9730ffee862fc060260e4215b225f29166bec737665b67b"
+  },
+  {
+    "path": "results/zero_shot_vindr_results/froc_top_1/froc_summary.csv",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "dc96373b93ac2657aee091d6fe273f16a7075ddbc3aeca5c4fcd827967b2d551"
+  },
+  {
+    "path": "scheduler/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "ebe28574439380008037c670e4fdfe3f8ef742bfd63f87687e47fd1314e9c479"
+  },
+  {
+    "path": "scheduler/__pycache__/__init__.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "aeaeb911fd2c3c654ec788bed2e1980776faacb0c933bb4e4cc10dcdd2c14776"
+  },
+  {
+    "path": "scheduler/__pycache__/__init__.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "0dbb4577aa162caf0a893696611496e83463391465890d87659ae2edf9f14cd4"
+  },
+  {
+    "path": "scheduler/__pycache__/cosine_lr.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "128137355a48a3f1b3f5394626c1b76e80ed2f946e1a68439f486a63ec59a1bb"
+  },
+  {
+    "path": "scheduler/__pycache__/cosine_lr.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "fe8a2f922e0795ef30f5435414dc1af740fcfbd766bd54f6217a0da503dd2b87"
+  },
+  {
+    "path": "scheduler/__pycache__/plateau_lr.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "fc247755a513e4c7fb850b501527c52f4db3ce081e86e69b5790da2b1e683cbb"
+  },
+  {
+    "path": "scheduler/__pycache__/plateau_lr.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "3b2093bc27c9ff449c223e67bd0be6331c761283842865ee541c63837f4400b7"
+  },
+  {
+    "path": "scheduler/__pycache__/scheduler.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "b8944ac03acd886544f741d83328220bcb1e7e9fef8429034d4151eaf14253cb"
+  },
+  {
+    "path": "scheduler/__pycache__/scheduler.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "5ce74d214dfad001de45e2094c819fc292bb312e9daba416e012971dfa898187"
+  },
+  {
+    "path": "scheduler/__pycache__/scheduler_factory.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "84d45a68f7e83cd0e43856c146305de6e2cef57ab9c8e15864a2df05ea5db06e"
+  },
+  {
+    "path": "scheduler/__pycache__/scheduler_factory.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "f0b62358974ad3de6d669bf9fe2ce762fc8c1d5805b5f1194e3d2a1d2a84e2e7"
+  },
+  {
+    "path": "scheduler/__pycache__/step_lr.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "c6c62709ebfa167e0e95564f36bf7e24bb5c14e406908a5e8b3bc517f1afd2bc"
+  },
+  {
+    "path": "scheduler/__pycache__/step_lr.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "9e094445aae928338fd489bb161bc7594a39aaeed191970c1de73d718314dbf3"
+  },
+  {
+    "path": "scheduler/__pycache__/tanh_lr.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "5195d5de6125ef708a0aa7e588795da39bc7ab37ee8d68f58f1e2db669f2ff16"
+  },
+  {
+    "path": "scheduler/__pycache__/tanh_lr.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "1ed9febe58a4abc24a05c7d2df45662fabd68302882f8432ef5d792836df2322"
+  },
+  {
+    "path": "scheduler/cosine_lr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "4bd7693cc5b77419a8ce4cd60eb9d7b9686955596e4c38f85ca17507e60aeefa"
+  },
+  {
+    "path": "scheduler/plateau_lr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "f37d4b07c5c4da71824a65d279685237c6c3aff4b8ad2f66011d5364d97eb6d0"
+  },
+  {
+    "path": "scheduler/scheduler.py",
+    "classification": "existing code/config; retained",
+    "sha256": "b7517bb0f79a3334e2a3ac5ecb14bdcf69cb28c62dd3c734c4e3d212d0955228"
+  },
+  {
+    "path": "scheduler/scheduler_factory.py",
+    "classification": "existing code/config; retained",
+    "sha256": "ccb1d1ae562d45621d3c4d05df81969c9c32fc7355d54a2d8cd97d1c103470d2"
+  },
+  {
+    "path": "scheduler/step_lr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "d8bf2e03f9aae7fdb98cbd16012367690dc8917f6ae5c66013bf3d3c1357af28"
+  },
+  {
+    "path": "scheduler/tanh_lr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "24aa0c5bdfd0518df0a259348fc9612d2ed3743a3065f22218fb68c528336cd0"
+  },
+  {
+    "path": "scripts/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "scripts/albef_crossattn_gradcam.py",
+    "classification": "existing code/config; retained",
+    "sha256": "71098036e20205b35d0f3c777e1a5b186d4639bee7646b192df3c108eee807ea"
+  },
+  {
+    "path": "scripts/albef_gradcam.py",
+    "classification": "existing code/config; retained",
+    "sha256": "6478c346989f205e52e514af68875267a27c4d9a3a6d1c3d49541fcc6693685d"
+  },
+  {
+    "path": "scripts/attention_gradcam.py",
+    "classification": "existing code/config; retained",
+    "sha256": "5ac5d1617dfb71a2b633dc6cd0068937d4bfdfd01d0c36bb307351cf9b662f2c"
+  },
+  {
+    "path": "scripts/build_chexmask_sqlite_index.py",
+    "classification": "existing code/config; retained",
+    "sha256": "b10701b326fcfb2164a48ca4a6fb5a81436f589c117138defb9cb8d82efc5f3b"
+  },
+  {
+    "path": "scripts/build_vindr_checkpoint_val_split.py",
+    "classification": "existing code/config; retained",
+    "sha256": "83f91efb5df438b6d9be7d58836ed36b0cc420daa916e6f2f1ab9e3d7feccf4d"
+  },
+  {
+    "path": "scripts/build_vindr_heart_prior_xrv.py",
+    "classification": "existing code/config; retained",
+    "sha256": "ec18605b5d215a6e43345734442eee4ad32f4e9de1e6bd406951e94476d4f38c"
+  },
+  {
+    "path": "scripts/build_vindr_multilabel_val_subset.py",
+    "classification": "existing code/config; retained",
+    "sha256": "2050d04a54b686287987037eb1502abc867f9df692b2feff5c9e83f9cad11017"
+  },
+  {
+    "path": "scripts/build_vindr_test_mask_manifest.py",
+    "classification": "existing code/config; retained",
+    "sha256": "82174df8e31e936d628dfb7885417f9c1757fc5d16b6da6945355e03f360643e"
+  },
+  {
+    "path": "scripts/check_cxr_orientation.py",
+    "classification": "existing code/config; retained",
+    "sha256": "7184a87ac1afdeaf0205769b3e41ea4855c6962bea5f965df9fb3e2d4f425891"
+  },
+  {
+    "path": "scripts/compute_froc_from_gradcam_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "d6e30352d5610e843a200ddbd4218be07779c2a2e49891a1355c358777a0a4b4"
+  },
+  {
+    "path": "scripts/compute_froc_from_gradcam_heatmaps_revised.py",
+    "classification": "existing code/config; retained",
+    "sha256": "761dd77916eceebc3a535ea03133219b64ea86411215f84e26cb892867f0c0a6"
+  },
+  {
+    "path": "scripts/ensemble_crossattn_gradcam_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "890b7269be5a8c597e0dbe5120cb93f1038285fa68b2a326e90128fc140cebd5"
+  },
+  {
+    "path": "scripts/ensemble_zero_shot_scores.py",
+    "classification": "existing code/config; retained",
+    "sha256": "5982d3fbb1d64d640792dab4ef22f0a10fe4086e30e7d661849101b14eb455f5"
+  },
+  {
+    "path": "scripts/evaluate_froc_vindr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "c228a618d17ba98fc07112dc8c5ba079368a9d69a7769ef0d7cf2bd111b5ef13"
+  },
+  {
+    "path": "scripts/evaluate_froc_vindr_gated.py",
+    "classification": "existing code/config; retained",
+    "sha256": "b29647cf476246b1783c5c8e2abc86070cf3ac8423b47f463b22b9376ded367a"
+  },
+  {
+    "path": "scripts/evaluate_heatmaps_vindr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "1a8616443d75632621729e85715e89ae932b301a01f28619e104701f428425b6"
+  },
+  {
+    "path": "scripts/evaluate_zero_shot_f1_from_validation.py",
+    "classification": "existing code/config; retained",
+    "sha256": "c0a3b8e520a9415592f942731a77a74dc335c4160cac4168bbca7d83e27dfe8f"
+  },
+  {
+    "path": "scripts/extract_albef_cross_attn_gradcam.py",
+    "classification": "existing code/config; retained",
+    "sha256": "fed81fc5c64fb9cc103290385cee9b2458d241854fe60ad111ed6d1c049c4a6c"
+  },
+  {
+    "path": "scripts/extract_albef_gradcam_vindr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "fc6aa44fd7ea6e34ec5ad602c9c336ce4dae20ff2a0981ec36299d01c17ba458"
+  },
+  {
+    "path": "scripts/extract_albef_heatmaps_gradcam_vindr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "d19bd4672c799ceb5cd677f74202f1d8e6e0f9ffef78610273827f47fe12d430"
+  },
+  {
+    "path": "scripts/extract_albef_heatmaps_vindr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "be9df412b47610f07f4a0b847c7520fa6324f6eda196b965b798ecb27c5f22a3"
+  },
+  {
+    "path": "scripts/extract_crossattn_gradcam_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "7e2b3830beae0f6cfb0de2ae75f24b850fd4e4febaa333b16c712a9afda78719"
+  },
+  {
+    "path": "scripts/extract_patch_head_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "ec6e13f863a4e96fcf3c4ecea4c79e12bbdcefb0573e151827aecc9a48db29b9"
+  },
+  {
+    "path": "scripts/extract_patch_head_heatmaps_batched_distributed.py",
+    "classification": "existing code/config; retained",
+    "sha256": "2e51c80f29cb9a586ad4cef95356a588ed7fdeb6562d8d449773898750a2631f"
+  },
+  {
+    "path": "scripts/filter_chexmask_valid_manifest.py",
+    "classification": "existing code/config; retained",
+    "sha256": "14a48e931631d01cb69532f91684d9538cd3dd1fa88f8ba9381770a0b27c6526"
+  },
+  {
+    "path": "scripts/finalize_chexmask_mask_manifests.py",
+    "classification": "existing code/config; retained",
+    "sha256": "2a59e8ad04a58ccb6e2965d154a359a54cdf077baf53bfcfc5430172f532e95c"
+  },
+  {
+    "path": "scripts/finalize_chexmask_precomputed_manifests.py",
+    "classification": "existing code/config; retained",
+    "sha256": "8a3dbdf497faf0a6dc7d29236d187db22bd07d26c775d3c5a360abb54c8b7b7b"
+  },
+  {
+    "path": "scripts/inspect_chexmask_excluded.py",
+    "classification": "existing code/config; retained",
+    "sha256": "921f98dba2417c5cb1cb195ad6b529ea75c986a60e3b6c232c443bc608266a5f"
+  },
+  {
+    "path": "scripts/precompute_chexmask_common_views.py",
+    "classification": "existing code/config; retained",
+    "sha256": "377eb5aacba1669566272b858b4671089b22621b49d84d41682aac683b868701"
+  },
+  {
+    "path": "scripts/precompute_chexmask_mask_cache.py",
+    "classification": "existing code/config; retained",
+    "sha256": "e6804da31b5895f51483f236e5f0e9c08387042f92e3d13b57be35993f453812"
+  },
+  {
+    "path": "scripts/preview_chexmask_views.py",
+    "classification": "existing code/config; retained",
+    "sha256": "7ddca0b3b357884d27bf69c015117238f2a1b63c402a24d2c453b496558be710"
+  },
+  {
+    "path": "scripts/src.py",
+    "classification": "existing code/config; retained",
+    "sha256": "81f88624270fa09ad3518540f89807dc2b1284dc1b5be225c3ab9ebdef24a75c"
+  },
+  {
+    "path": "scripts/validate_chexmask_db_for_manifest.py",
+    "classification": "existing code/config; retained",
+    "sha256": "046b11f6986d98da9b26a0ce3b8fbdd3f60ebc97fb961e47c1453d3128207b52"
+  },
+  {
+    "path": "scripts/vindr_classification_validation.py",
+    "classification": "existing code/config; retained",
+    "sha256": "ffa77eb10c431a84f4bfb777387121464f2a8db96e76a75e6741148874e44d99"
+  },
+  {
+    "path": "scripts/vindr_online_validation.py",
+    "classification": "existing code/config; retained",
+    "sha256": "3295a6e394a4a5e9c73b1ff968e1e09c042300568ffc69eae98459787f98b0e8"
+  },
+  {
+    "path": "scripts/zero_shot_eval_vindr.py",
+    "classification": "existing code/config; retained",
+    "sha256": "bd3bd76feab39e16e37a633573f3a3780d30679b6ac329307163a67111bc29a4"
+  },
+  {
+    "path": "scripts/zero_shot_eval_vindr_maskcache.py",
+    "classification": "existing code/config; retained",
+    "sha256": "c2ff486189e4a777b1ce8cd1a6ae73b73f34d8d1ecc5a1d6d041e592b2a28c94"
+  },
+  {
+    "path": "scripts_new/extract_albef_itc_gradcam_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "9c7199c404f2614835d265ae272816026bd5750b75e648f62305111454ad6d60"
+  },
+  {
+    "path": "scripts_new/extract_biovil_t_phrase_grounding.py",
+    "classification": "existing code/config; retained",
+    "sha256": "8fde8df4edbd39b9bbd385b84f6bd531ea1157ce9783e19f6c64a1c6afd2e22f"
+  },
+  {
+    "path": "scripts_new/extract_biovil_t_same_albef_cases.py",
+    "classification": "existing code/config; retained",
+    "sha256": "2847319fbfc97d298fd0b81de034992ff7d9f67d7c1858b37f117996c66fc1b0"
+  },
+  {
+    "path": "scripts_new/extract_fc_fusion_itc_margin_gradcam_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "4b9877eb8afe6d1ec8356080dd43a7bab171f7f18211d446dffec2f01ec2f80b"
+  },
+  {
+    "path": "scripts_new/extract_gated_fusion_itc_margin_gradcam_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "97418b7720241ef57389ea366971537092a695bdffa20caed72ef31b64d35a3b"
+  },
+  {
+    "path": "scripts_new/extract_itc_margin_gradcam_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "3a37c482698fc16a10e644083885a0da14ffe516a0a35c6a33784b1cab17ab43"
+  },
+  {
+    "path": "scripts_new/extract_mean_fusion_itc_margin_gradcam_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "2ba2306a1f2148d10cabefe2f5bb83d997b0b821f4a0a4da27d0971f44ec1ebf"
+  },
+  {
+    "path": "scripts_new/extract_residual_fusion_itc_margin_gradcam_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "8c584076d1ed51c4aa694891206ad4a84aad907be34c3872290fd1b67e8cd784"
+  },
+  {
+    "path": "scripts_new/extract_transformer_fusion_itc_margin_gradcam_heatmaps.py",
+    "classification": "existing code/config; retained",
+    "sha256": "baaabc673ab663a0098561273e621c84cfc1b0a3e6e9e5830caaea11cc890358"
+  },
+  {
+    "path": "scripts_new/learn_dual_checkpoint_ensemble_weights.py",
+    "classification": "existing code/config; retained",
+    "sha256": "1a257a469388e8cb9cf3e1ba308a179063685d58fc10d4a16140d75eefdcbd82"
+  },
+  {
+    "path": "scripts_new/src.py",
+    "classification": "existing code/config; retained",
+    "sha256": "81f88624270fa09ad3518540f89807dc2b1284dc1b5be225c3ab9ebdef24a75c"
+  },
+  {
+    "path": "scripts_new/vindr_multiview_classification_validation.py",
+    "classification": "existing code/config; retained",
+    "sha256": "54851bb2aaf45f7786e62d399df4eab9022960644233d0e2fcf15ad2ff42a055"
+  },
+  {
+    "path": "scripts_new/zero_shot_eval_vindr_multiview_pos_neg_bare_prompts.py",
+    "classification": "existing code/config; retained",
+    "sha256": "26a4852f5c67893b1c45417fb7447377f40bbd2a6cb534dbadc08e01de66cdfa"
+  },
+  {
+    "path": "scripts_new/zero_shot_eval_vindr_pos_neg_bare_prompts.py",
+    "classification": "existing code/config; retained",
+    "sha256": "d4bfb11b21f68a61789cdc0310fb8e78671069469e517843edb3fe36b6fbe6cd"
+  },
+  {
+    "path": "test_ddp_nccl.py",
+    "classification": "existing code/config; retained",
+    "sha256": "4390ccbe3b109044fa9768f889dbdcdf72f320930d3e54e4925da745c3260aef"
+  },
+  {
+    "path": "utils.py",
+    "classification": "existing code/config; retained",
+    "sha256": "748685df8c9f06c05cb268cd7e7cfebe81d23e7760d55046e00e9d62e8547d33"
+  },
+  {
+    "path": "vindr_zero_shot_results_a40/vindr_zero_shot_all_checkpoints.json",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "5ecc6f98c74c71196618dbfec53bc68affe3bd07687b2fee9008974eba4a7771"
+  },
+  {
+    "path": "vindr_zero_shot_results_a40/vindr_zero_shot_checkpoint_09.json",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "2c7093902f4c39d3786de67d0b3f30072475edd9aa6bee3fb542f9fb50d45bea"
+  },
+  {
+    "path": "vindr_zero_shot_results_a40/vindr_zero_shot_checkpoint_19.json",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "cc1c22bbff5f28e6fef68325da88d3d9940841bc0b62d6502b37a4fb75eb20c0"
+  },
+  {
+    "path": "vindr_zero_shot_results_a40/vindr_zero_shot_checkpoint_29.json",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "c2f556e7cc8a979d9bd31d26bd96759d8f672c9435301622258ddb5830d53d9f"
+  },
+  {
+    "path": "vindr_zero_shot_results_a40/vindr_zero_shot_checkpoint_best.json",
+    "classification": "historical result; preserve until provenance reviewed",
+    "sha256": "da705b19fc87dbf79df37310b370ebd9a578fefd93926fadfaddc46687c8ed9b"
+  },
+  {
+    "path": "visualization.ipynb",
+    "classification": "notebook; preserve pending evidence curation",
+    "sha256": "27e039d9554956b72e2f58a43b52f9dbf8b12956b810d6174b72760e10f25753"
+  },
+  {
+    "path": "vqaTools/__init__.py",
+    "classification": "existing code/config; retained",
+    "sha256": "69eafe66221708b181ab2c1aa260dae99f360da64160b8adbd0dd0cac11d3c78"
+  },
+  {
+    "path": "vqaTools/__pycache__/__init__.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "8a7f3f4602ecfc1619e64aac0ef6f6f0b34cdf3779dd9708fa00848358d102b0"
+  },
+  {
+    "path": "vqaTools/__pycache__/__init__.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "c05ba8cccfd8b388a1650aeef3bd8d30a90b283e01da0ae4ee74d34dee3ca84b"
+  },
+  {
+    "path": "vqaTools/__pycache__/vqa.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "e00c218b66229ee2ac517eadcb36fe10efab3857aae6ab724886b37d3e9ab667"
+  },
+  {
+    "path": "vqaTools/__pycache__/vqa.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "7e3291785b0c3359cf0bacbbc8c5ab42aeae7d47953b91842a8380063ba401f4"
+  },
+  {
+    "path": "vqaTools/__pycache__/vqaEval.cpython-36.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "0e7771c4a8c893d043dec33444d91b78187d408374a63edc8a84be39bd195194"
+  },
+  {
+    "path": "vqaTools/__pycache__/vqaEval.cpython-38.pyc",
+    "classification": "generated Python artifact; removal pending explicit inventory approval",
+    "sha256": "ae5555f69388d03d1f624e5ca63214f0ad71973e0041ea234d17d51dec7c1bdb"
+  },
+  {
+    "path": "vqaTools/vqa.py",
+    "classification": "existing code/config; retained",
+    "sha256": "da9920e04bfcdd3c12f704f17ba5f205ce7f7fe30903cecf3b8a43b3421907d6"
+  },
+  {
+    "path": "vqaTools/vqaEval.py",
+    "classification": "existing code/config; retained",
+    "sha256": "13e37b8c40cfe26d8444301350948f6be5de1baa5004c2172c8bde15a738db20"
+  }
+]

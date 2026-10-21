@@ -1,0 +1,15 @@
+# New generated artifacts; existing tracked evidence is not removed by this file.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.superpowers/
+.env
+.env.*
+!.env.example
+*.pth
+*.pt
+*.out
+*.err
+logs/
+validation_outputs/
+configs/environments/*.local.yaml

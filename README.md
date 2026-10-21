@@ -1,110 +1,47 @@
-## Align before Fuse: Vision and Language Representation Learning with Momentum Distillation, NeurIPS 2021 Spotlight (Salesforce Research).
+# Anatomy-aware chest X-ray vision-language experiments
 
-## Announcement: ALBEF is now officially integrated into [LAVIS](https://github.com/salesforce/LAVIS) - a one-stop library for language-and-vision research and applications!
+Thesis code for **Improving Weak Localization in Chest X-Ray Vision-Language Models Using Anatomy-Aware and Semi-Supervised Refinement**. This repository asks whether anatomical views, guidance, patch refinement and multiview fusion improve weak localization while preserving zero-shot classification.
 
-This is the official PyTorch implementation of the <a href="https://arxiv.org/abs/2107.07651">ALBEF paper</a> <a href="https://blog.salesforceairesearch.com/align-before-fuse/">[Blog]</a>. 
-This repository supports pre-training on custom datasets, as well as finetuning on VQA, SNLI-VE, NLVR2, Image-Text Retrieval on MSCOCO and Flickr30k,
-and visual grounding on RefCOCO+. Pre-trained and finetuned checkpoints are released.
+This cleanup makes the implementation reviewable for the thesis supervisor. The title is historical: no new semi-supervised method or final quantitative localization ranking is claimed here.
 
-<img src="img.png" width="600">
+## Start here
 
+- [Supervisor reading guide](docs/supervisor_review_guide.md)
+- [Experiment catalogue](docs/experiment_catalogue.md): hypotheses, code, configurations and launch records
+- [Model architecture](docs/model_architecture.md): differences among the six fusion variants
+- [Cross-attention validation](docs/cross_attention_validation.md): precise server commands for the completed training run
+- [Reproduction](docs/reproduction.md), [checkpoints](docs/checkpoints.md) and [limitations](docs/limitations.md)
+- [Source provenance](docs/source_provenance.md) and [cleanup progress](docs/superpowers/cleanup-progress.md)
 
-### Requirements:
-* pytorch 1.8.0
-* transformers 4.8.1
-* timm 0.4.9
+## Six experimental stages
 
-### Download:
+1. Establish ALBEF, BioViL-T and CheXzero classification/localization baselines.
+2. Investigate direct anatomy guidance (A0–A4).
+3. Investigate learned spatial refinement (A5/A6.1).
+4. Compare original, lung-only and heart-only views.
+5. Compare prediction ensembles, heatmap ensembles and joint view fusion.
+6. Interpret quantitative classification and matched qualitative localization, including failures.
 
-* Pre-trained checkpoint [[14M](https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/ALBEF.pth)] / [[4M](https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/ALBEF_4M.pth)]
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/data.tar.gz"> Dataset json files for downstream tasks</a>
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/json_pretrain.zip"> Dataset json files for pre-training</a> (the image paths in each json file need to be changed to your own directory)
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/mscoco.pth"> Finetuned checkpoint for retrieval on MSCOCO </a>
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/flickr30k.pth"> Finetuned checkpoint for retrieval on Flickr30k </a>
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/vqa.pth"> Finetuned checkpoint for VQA </a>
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/refcoco.pth"> Finetuned checkpoint for visual grounding on RefCOCO+ </a>
+Cross-attention training is **complete, evaluation pending**, as confirmed by the author on 2026-10-20. Checkpoint files and results remain on the server. The original model and trainer implementations remain intact while baseline validation is pending.
 
-### Visualization:
-We provide code in visualize.ipynb to visualize the important areas in an image for each word in a text. 
-Here is an example visualization using the visual grounding checkpoint.
+## Repository map
 
-Try the Replicate demo here [![Replicate](https://replicate.com/salesforce/albef/badge)](https://replicate.com/salesforce/albef).
+| Location | Responsibility |
+|---|---|
+| models/, dataset/, root Pretrain*.py | Existing ALBEF research implementations and training entry points |
+| configs/, configs_new/ | Historical methodology/configuration evidence; verify resolved run config |
+| scripts/, scripts_new/ | Evaluation and heatmap methods |
+| cluster/historical/ | Pinned cluster launch records from thesis-codebase; site-specific, not portable |
+| cluster/data_preparation/ | Imported Python preparation utilities |
+| cluster/slurm/ | New explicit-input validation launcher |
+| baselines/chexzero/ | Pinned CheXzero code, vocabulary, LICENSE and NOTICE |
+| notebooks/, notebooks/data_preparation/ | Existing analysis and imported preparation notebooks |
+| docs/, tests/ | Review narrative, provenance and focused CPU checks |
 
-<img src="examples/visualization.png" width="700">
+## Environment and evidence
 
-### Pre-training on custom datasets:
-1. Prepare training json files where each json file contains a list. Each item in the list is a dictonary with two key-value pairs: {'image': path_of_image, 'caption': text_of_image}. 
-2. In configs/Pretrain.yaml, set the paths for the json files.
-3. Pre-train the model using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env Pretrain.py --config ./configs/Pretrain.yaml --output_dir output/Pretrain </pre> 
+The documented server training stack is Python 3.8.20, PyTorch 1.8.1+cu111 and CUDA 11.1. Do not replace it with the notebook dependency freeze. CPU tests run locally do not establish GPU, checkpoint or distributed-training equivalence. See [validation status](docs/cleanup_validation.md).
 
-### Image-Text Retrieval:
+## Upstream attribution
 
-1. Download MSCOCO or Flickr30k datasets from the original websites.
-2. Download and extract the provided dataset json files.
-3. In configs/Retrieval_coco.yaml or configs/Retrieval_flickr.yaml, set the paths for the json files and the image path.
-4. Finetune the pre-trained checkpoint using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env Retrieval.py \
---config ./configs/Retrieval_flickr.yaml \
---output_dir output/Retrieval_flickr \
---checkpoint [Pretrained checkpoint]</pre> 
-
-### VQA:
-1. Download VQA v2 dataset and Visual Genome dataset from the original websites.
-2. Download and extract the provided dataset json files.
-3. In configs/VQA.yaml, set the paths for the json files and the image paths.
-4. Finetune the pre-trained checkpoint using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env VQA.py \
---config ./configs/VQA.yaml \
---output_dir output/vqa \
---checkpoint [Pretrained checkpoint]</pre> 
-5. Evaluate the result using the official evaluation server.
-
-### Visual Entailment:
-1. Download SNLI-VE dataset from the original website.
-2. Download and extract the provided dataset json files.
-3. In configs/VE.yaml, set the paths for the json files and the image path.
-4. Finetune the pre-trained checkpoint using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env VE.py \
---config ./configs/VE.yaml \
---output_dir output/VE \
---checkpoint [Pretrained checkpoint]</pre> 
-
-### Visual Grounding on RefCOCO+:
-1. Download MSCOCO dataset from the original website.
-2. Download and extract the provided dataset json files.
-3. In configs/Grounding.yaml, set the paths for the json files and the image path.
-4. Finetune the pre-trained checkpoint using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env Grounding.py \
---config ./configs/Grounding.yaml \
---output_dir output/RefCOCO \
---gradcam_mode itm \ 
---block_num 8 \
---checkpoint [Pretrained checkpoint]</pre> 
-
-### NLVR2:
-NLVR2 requires an additional pre-training step with text-assignment (TA) to adapt the model for image-pair inputs. In order to perform TA, first set the paths for the json training files in configs/NLVR_pretrain.yaml, then run:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env Pretrain_nlvr.py \
---config ./configs/NLVR_pretrain.yaml \
---output_dir output/NLVR_pretrain \
---checkpoint [Pretrained checkpoint]</pre> 
-
-We provide the <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/pretrain_model_nlvr.pth"> checkpoint </a> after TA pre-training, which can be fine-tuned with the following steps.
-1. Download NLVR2 dataset from the original website.
-2. Download and extract the provided dataset json files.
-3. In configs/NLVR.yaml, set the paths for the json files and the image path.
-4. Finetune the pre-trained checkpoint using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env NLVR.py \
---config ./configs/NLVR.yaml \
---output_dir output/NLVR \
---checkpoint [TA pretrained checkpoint]</pre> 
-
-### Citation
-If you find this code to be useful for your research, please consider citing.
-<pre>
-@inproceedings{ALBEF,
-      title={Align before Fuse: Vision and Language Representation Learning with Momentum Distillation}, 
-      author={Junnan Li and Ramprasaath R. Selvaraju and Akhilesh Deepak Gotmare and Shafiq Joty and Caiming Xiong and Steven Hoi},
-      year={2021},
-      booktitle={NeurIPS},
-}</pre>
+Built on [Salesforce ALBEF](https://github.com/salesforce/ALBEF), *Align before Fuse: Vision and Language Representation Learning with Momentum Distillation*. Preserve the root LICENSE. The [original ALBEF README](docs/upstream-albef-readme.md) is retained. CheXzero's separate license and attribution are retained under baselines/chexzero.

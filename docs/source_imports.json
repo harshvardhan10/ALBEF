@@ -1,0 +1,991 @@
+[
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": ".gitignore",
+    "destination": "cluster/source_metadata/.gitignore",
+    "sha256": "bf350928cb2939f1a5d7dec7db43553d7183e3d1a9d86804f298733585a26b87",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "logs/albef_a40_transformations_3173841.out",
+    "destination": null,
+    "sha256": "23a2fbb3873fb73f19f114b7035e7eb2f8d803fdb4b49e91cb29937dff1bd3a4",
+    "status": "Generated server log; excluded"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "notebooks/eda_mimic_cxr.ipynb",
+    "destination": "notebooks/data_preparation/eda_mimic_cxr.ipynb",
+    "sha256": "75b6073122f3a80d8134f137fc985392e1142eb43808fa62bb8df41a3a93c9fe",
+    "status": "notebook source/cells retained; generated outputs, execution counts and widget state removed",
+    "destination_sha256": "68d81d5f20d42db351c19b8d8308c36e25a6cd25158e2d85e8b2920b8d049527"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "notebooks/eda_vindr_cxr.ipynb",
+    "destination": "notebooks/data_preparation/eda_vindr_cxr.ipynb",
+    "sha256": "554821f2a909aa6a3b4c4b0758ec4a6dc360fd5d5af8082f0d8a44bc48fe876e",
+    "status": "notebook source/cells retained; generated outputs, execution counts and widget state removed",
+    "destination_sha256": "548dee37ab11c8e08ca2ef0d14aa5e5a378ad5009b1dff60214849c9116e365a"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "notebooks/image_text_mimic_pairs_albef.ipynb",
+    "destination": "notebooks/data_preparation/image_text_mimic_pairs_albef.ipynb",
+    "sha256": "0a1e697e6bb8d27f48fc28d3cbefa301839d6082ba7c8981841de80f287ede22",
+    "status": "notebook source/cells retained; generated outputs, execution counts and widget state removed",
+    "destination_sha256": "4453730dace37dd8ce5b21a5fb79c60d37e4651a8b1efe6a0953a36ee93a4999"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "requirements.txt",
+    "destination": "cluster/source_metadata/requirements.txt",
+    "sha256": "10a6e5c5de4c0d63254771633a26442e225218d9526c58a8799496b0447a7e3d",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/build_chexmask_indexes.slurm",
+    "destination": "cluster/historical/scripts/build_chexmask_indexes.slurm",
+    "sha256": "56317872f3a96fa2bc1e021466e478b322042dbd2234a1e6cc7008be1053aef9",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/build_vindr_heart_prior.slurm",
+    "destination": "cluster/historical/scripts/build_vindr_heart_prior.slurm",
+    "sha256": "502df4deb81ee1dbaaa17682aeeebd32419a0b0b8a9b4d407f7d7cba121dccb3",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/chexzero_eval_zero_shot_vindr_a40.slurm",
+    "destination": "cluster/historical/scripts/chexzero_eval_zero_shot_vindr_a40.slurm",
+    "sha256": "8f408364d14de1220eeaeb123f403d7e25239f7e0a17a7a73ab09391d7c40bc2",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/compute_froc_from_gradcam_heatmaps.slurm",
+    "destination": "cluster/historical/scripts/compute_froc_from_gradcam_heatmaps.slurm",
+    "sha256": "e998445ed597c77e28818d8c1c5d58f3e71afb8b91391e61da6af0a824ffaa01",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/compute_froc_from_gradcam_heatmaps_validation.slurm",
+    "destination": "cluster/historical/scripts/compute_froc_from_gradcam_heatmaps_validation.slurm",
+    "sha256": "7cdc8e8d42e793fc3c862b50196137c52219f508153449751397bfd5a8fc39a1",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/create_vindr_checkpoint_validation.slurm",
+    "destination": "cluster/historical/scripts/create_vindr_checkpoint_validation.slurm",
+    "sha256": "7c40b935ed2f3a6cac6acde90a870735d9729c95c9deaf99e8b050ce355cb0dc",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/download_chexmask_common.sh",
+    "destination": "cluster/historical/scripts/download_chexmask_common.sh",
+    "sha256": "314a66f25b3fa14405bd3266889c612ad9ea9f5d4c45547962410d547b70eba4",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/download_chexmask_huggingface_proxy.slurm",
+    "destination": "cluster/historical/scripts/download_chexmask_huggingface_proxy.slurm",
+    "sha256": "856ce882bb07b51da641059aea9d1fc91ab095d28a27efe232235a273460e4c0",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/download_chexmask_mimic.slurm",
+    "destination": "cluster/historical/scripts/download_chexmask_mimic.slurm",
+    "sha256": "b1d44b4ace0ee783908b111a8f02806dfb06ec161ac9054e8ff90dfe4fb17182",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/download_chexmask_vindr.slurm",
+    "destination": "cluster/historical/scripts/download_chexmask_vindr.slurm",
+    "sha256": "529e44ee79424a973345fd8998e26150ab99ecfb1161042f97b614cda4563cf2",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/download_mimic_reports.slurm",
+    "destination": "cluster/historical/scripts/download_mimic_reports.slurm",
+    "sha256": "65c423186fd22df58a17b13934d382d68a36ab12632609ed2fed32d5018e1838",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/download_mimic_reports_cluster.sh",
+    "destination": "cluster/historical/scripts/download_mimic_reports_cluster.sh",
+    "sha256": "cc8dd601ca11a4b9d1c1c995b5a1705c0a6490f4826ad9bb9cad3224f1e8ab98",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/download_vindr.slurm",
+    "destination": "cluster/historical/scripts/download_vindr.slurm",
+    "sha256": "c3361618dfa7100b4cebff09513b71e3e56ee14c54c9369f264558c9e56751eb",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/ensemble_zero_shot_scores.slurm",
+    "destination": "cluster/historical/scripts/ensemble_zero_shot_scores.slurm",
+    "sha256": "288b6704465306807218bcbfce908dedd6b53551678493a4dd81d957c77a46c0",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/eval_zero_shot_vindr_a40.slurm",
+    "destination": "cluster/historical/scripts/eval_zero_shot_vindr_a40.slurm",
+    "sha256": "4321f01f62db9208fd7ccd0f930c6c23167dc7c0aaf02ad83606b85865f5e7f9",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/evaluate_froc_vindr.slurm",
+    "destination": "cluster/historical/scripts/evaluate_froc_vindr.slurm",
+    "sha256": "fb6dfbcd0923911fb59b4ef65e3060c95eb6236bb3d251a90ef4defba3e93202",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/evaluate_froc_vindr_gated.slurm",
+    "destination": "cluster/historical/scripts/evaluate_froc_vindr_gated.slurm",
+    "sha256": "b14931ad0a3073e8546c4e7e475b0594f0cd53abe9cf6c874735490bd145e8ad",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/extract_A6_identity_patch_head_heatmaps.slurm",
+    "destination": "cluster/historical/scripts/extract_A6_identity_patch_head_heatmaps.slurm",
+    "sha256": "b3aac4a46992d5f6e4a19fab94b062f80181869d5591504977d04701c368273b",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/extract_albef_heatmaps.slurm",
+    "destination": "cluster/historical/scripts/extract_albef_heatmaps.slurm",
+    "sha256": "dbe8d06b36adddc70d6f5fa20f8013937d06b2fb304f385d2cf8791c4eecc6a1",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/extract_crossattn_gradcam_heatmaps.slurm",
+    "destination": "cluster/historical/scripts/extract_crossattn_gradcam_heatmaps.slurm",
+    "sha256": "75ac4d14d094fafdfec5de08bbd2148365a2589daf80c0a9e584754049945579",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/extract_crossattn_gradcam_heatmaps_multiview.slurm",
+    "destination": "cluster/historical/scripts/extract_crossattn_gradcam_heatmaps_multiview.slurm",
+    "sha256": "b911c6df1fd2d9795389c924e361d6364e3678ae37ce8de696c19fdfe6229097",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/extract_patch_head_heatmaps.slurm",
+    "destination": "cluster/historical/scripts/extract_patch_head_heatmaps.slurm",
+    "sha256": "eb9e983ba045619a7a878989d3c8e207e5deca2213b386076434988ad2a0813c",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/filter_chexmask_valid_manifest.slurm",
+    "destination": "cluster/historical/scripts/filter_chexmask_valid_manifest.slurm",
+    "sha256": "e1ede0fe89f62f4dcb949bf43533adc29a0a400ab494deaeaac22275f07c8a45",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/finalize_chexmask_mask_cache.slurm",
+    "destination": "cluster/historical/scripts/finalize_chexmask_mask_cache.slurm",
+    "sha256": "3516173edbd5bb631ee8c76a1b0d0ca10c32e0fddf1a18ea268ecce37ee90406",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/finalize_chexmask_precomputed.slurm",
+    "destination": "cluster/historical/scripts/finalize_chexmask_precomputed.slurm",
+    "sha256": "ed9d345c70e237777ce1f58c6943f89257fe178e37a4f0aafeb40d7b349985e4",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/generate_vindr_validation_masks.slurm",
+    "destination": "cluster/historical/scripts/generate_vindr_validation_masks.slurm",
+    "sha256": "edfec300be547f1c973d8d9d662fe83e5976595bd3ad9e08a2038eedcf25581d",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/inspect_chexmask_excluded.slurm",
+    "destination": "cluster/historical/scripts/inspect_chexmask_excluded.slurm",
+    "sha256": "be827561faab9caa55091e449a08e4892abfe9035fb1b6b7439e8d690c16d34a",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/medklip_eval_zero_shot_vindr_a40.slurm",
+    "destination": "cluster/historical/scripts/medklip_eval_zero_shot_vindr_a40.slurm",
+    "sha256": "d190e2f9d4ab09c29350ef45ecfc770809b8d521df5e902da1ed4b7c3566973a",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/precompute_chexmask_common_views.slurm",
+    "destination": "cluster/historical/scripts/precompute_chexmask_common_views.slurm",
+    "sha256": "4242b4c6f7f31980c5a1910c14a0a530ef89df5e8b346e27d5e2e5eb559be52d",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/precompute_chexmask_mask_cache.slurm",
+    "destination": "cluster/historical/scripts/precompute_chexmask_mask_cache.slurm",
+    "sha256": "e8fdd34a3a2563516183fa32ffabba47bedb573a89019dbb3faa3d48e4db861a",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/precompute_vindr_test_chexmask_masks.slurm",
+    "destination": "cluster/historical/scripts/precompute_vindr_test_chexmask_masks.slurm",
+    "sha256": "7b871ab06cf6de670dabdf36e0ff7ee08d85a5de6e53fca56f480a0ccd8eedc8",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/prepare_mimic_albef.py",
+    "destination": "cluster/data_preparation/prepare_mimic_albef.py",
+    "sha256": "50e5f8d01471e25dc49e4d8ccd1762375aedc5547bf0850b9e8739a9940a36cf",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/prepare_mimic_albef.slurm",
+    "destination": "cluster/historical/scripts/prepare_mimic_albef.slurm",
+    "sha256": "a74126fa80f05ada183d7b0e1fb4b4f0d7279027ec04103763e5764a5fdf66cd",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/prepare_vindr_test_gt_boxes.py",
+    "destination": "cluster/data_preparation/prepare_vindr_test_gt_boxes.py",
+    "sha256": "88f9b3b664ec5fb236e927ee551f0165f12c39cf5a31e7cf63ecb74deaa66ddd",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/pretrain_A5_patch_head.slurm",
+    "destination": "cluster/historical/scripts/pretrain_A5_patch_head.slurm",
+    "sha256": "62962050fc5226d951323c73b825a3d0cb90f8d728283834ab93a83137bba1e4",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/pretrain_A6_1_frozen_A0_patch_head.slurm",
+    "destination": "cluster/historical/scripts/pretrain_A6_1_frozen_A0_patch_head.slurm",
+    "sha256": "97a2eff8d0beed0a7b0930f4a858f07a006791bfdb18cc4e65f2fbff70192de3",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/pretrain_a0_chexmask_common_views.slurm",
+    "destination": "cluster/historical/scripts/pretrain_a0_chexmask_common_views.slurm",
+    "sha256": "7577393c5ce8ee607e98b8c0818b768ce172f42b6fe3d0361b509155462f3c59",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/pretrain_a0_chexmask_views.slurm",
+    "destination": "cluster/historical/scripts/pretrain_a0_chexmask_views.slurm",
+    "sha256": "d3cb8929d6eef57592a487d63d4406a7a8faeae7f803c0397af6202cf11d81cd",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/pretrain_albef_a100.slurm",
+    "destination": "cluster/historical/scripts/pretrain_albef_a100.slurm",
+    "sha256": "38893d394854866290d2813635e38cb1538956deeacf1d71280e8f80605d7130",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/pretrain_albef_a100_debug.slurm",
+    "destination": "cluster/historical/scripts/pretrain_albef_a100_debug.slurm",
+    "sha256": "ff1c5678571e79ff585aec559cb64af9076cf292e03997c6bbc98e7e68f149e0",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/pretrain_albef_a40.slurm",
+    "destination": "cluster/historical/scripts/pretrain_albef_a40.slurm",
+    "sha256": "b3dd4f3f351d8f029ad701a0510a63833c7132d693c9fcbd5b1ed9b7da2b65ea",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/pretrain_albef_rtx3080_2gpu.slurm",
+    "destination": "cluster/historical/scripts/pretrain_albef_rtx3080_2gpu.slurm",
+    "sha256": "a10f0bcc23bad0a12fc2f9bf1eeb753de7822a79222072f2ddefab28fa9a8b2f",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/pretrain_albef_rtx3080_8gpu.slurm",
+    "destination": "cluster/historical/scripts/pretrain_albef_rtx3080_8gpu.slurm",
+    "sha256": "7a5f093af819f837310bfafc2b81f68333de1b20322670483d350da6cf216949",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/pretrain_albef_rtx3080_ngpu.slurm",
+    "destination": "cluster/historical/scripts/pretrain_albef_rtx3080_ngpu.slurm",
+    "sha256": "2692aee3e4f91d3e220162d3026b5c58f1382b95da88d625027033b60f0f1721",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/preview_chexmask_views.slurm",
+    "destination": "cluster/historical/scripts/preview_chexmask_views.slurm",
+    "sha256": "b947fc2eca6d287ba3aa2a55188e8c1c74b74758f2cadf3f9baae668543492f1",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_A0_anatomy_baseline.slurm",
+    "destination": "cluster/historical/scripts/run_A0_anatomy_baseline.slurm",
+    "sha256": "add3353042981036c258463ab4026ba1b46b41116cfe6218876b96f6586f9d7a",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_A1_anatomy_support.slurm",
+    "destination": "cluster/historical/scripts/run_A1_anatomy_support.slurm",
+    "sha256": "a422273221023dcab4f44cb150d835f132d265d9c4aa714f7866f0a043466d74",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_A2_anatomy_support.slurm",
+    "destination": "cluster/historical/scripts/run_A2_anatomy_support.slurm",
+    "sha256": "931ecb50c549e8b84709650635bcadc55563e3b225c98a9f6775f6a843d7e5b3",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_A3_anatomy_support.slurm",
+    "destination": "cluster/historical/scripts/run_A3_anatomy_support.slurm",
+    "sha256": "65cd92e626e06dbcb4017294d8bce7c0be0ab75483e1516db06dfbc40ca4f0e3",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_A4.slurm",
+    "destination": "cluster/historical/scripts/run_A4.slurm",
+    "sha256": "b857b660ace5131900c3c92e3b0d1d607894cbc3dc02c46daadbd5e958333451",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_a0_multiview_dual_auc.slurm",
+    "destination": "cluster/historical/scripts/run_a0_multiview_dual_auc.slurm",
+    "sha256": "13622976b84bf6131b30a0df046a780f42f655bd1d3abbab86bfd041806d57f1",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_a0_multiview_dual_auc_smoke.slurm",
+    "destination": "cluster/historical/scripts/run_a0_multiview_dual_auc_smoke.slurm",
+    "sha256": "96b3766d0c6b22ca7f8cfbcd28b038ba9f9dfa575911d37204603a5b759e6692",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_ensemble_crossattn_gradcam.slurm",
+    "destination": "cluster/historical/scripts/run_ensemble_crossattn_gradcam.slurm",
+    "sha256": "26ea6a9954d9d3d8e3facc0473b5033652debb31203186c0b9a710974cd233bf",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_froc_multiview.slurm",
+    "destination": "cluster/historical/scripts/run_froc_multiview.slurm",
+    "sha256": "f32735e90406745da8e188061244205d4814caa8c0c16e8824f23bbb43660f56",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_froc_multiview_revised.slurm",
+    "destination": "cluster/historical/scripts/run_froc_multiview_revised.slurm",
+    "sha256": "f28b398f0d0666007b63d23adbd164679abd990f6811847dc622d1c49b2a3b96",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_orientation_qc_all.slurm",
+    "destination": "cluster/historical/scripts/run_orientation_qc_all.slurm",
+    "sha256": "287dcc88adfcd2cceff8ad6ba415ae7e0c3e0ad8c6afd4965fea07e458066bec",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_vindr_three_views.slurm",
+    "destination": "cluster/historical/scripts/run_vindr_three_views.slurm",
+    "sha256": "d822dc5539d6c5b24c6f2d33549f5108efa7471f9becfaad5e7c803ad1197a06",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_vindr_three_views_best_cardiomegaly.slurm",
+    "destination": "cluster/historical/scripts/run_vindr_three_views_best_cardiomegaly.slurm",
+    "sha256": "0ef320eead1d4573675e08bd8aac33f23977112f8385398170305a45f134c037",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/run_vindr_three_views_best_cardiomegaly_ensemble.slurm",
+    "destination": "cluster/historical/scripts/run_vindr_three_views_best_cardiomegaly_ensemble.slurm",
+    "sha256": "f0dfe9570f927a2614dace8fe6e67d16f676556794a9c7c405a87334616f7384",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/setup_gl_lcm_bone_suppression.slurm",
+    "destination": "cluster/historical/scripts/setup_gl_lcm_bone_suppression.slurm",
+    "sha256": "438b36d3d84735b6c2b7fd5fb5b73205ce898d569d0f1e2604a77ab12454be10",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/submit_maskcache_and_train.sh",
+    "destination": "cluster/historical/scripts/submit_maskcache_and_train.sh",
+    "sha256": "c9ae581f7430c8c2361011d321900c85474c82ba00dce82e0ecda3a45a56c65e",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/submit_precompute_and_train.sh",
+    "destination": "cluster/historical/scripts/submit_precompute_and_train.sh",
+    "sha256": "fd31ac11624476dc2fac9086ec826e6c8206b6b2292fe3f54b361d38feb0dd4c",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/test_huggingface_connectivity.slurm",
+    "destination": "cluster/historical/scripts/test_huggingface_connectivity.slurm",
+    "sha256": "27bafe088f617822091783868431aa03810f4465b103292cefce0843fd1e6d0f",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/test_physionet_direct.slurm",
+    "destination": "cluster/historical/scripts/test_physionet_direct.slurm",
+    "sha256": "9c9c232c3efac54c23c8ff792610c71e19fa72f94089ba4a4cb485327759e507",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/train_a0_maskcache_common_views.slurm",
+    "destination": "cluster/historical/scripts/train_a0_maskcache_common_views.slurm",
+    "sha256": "56c9c6ca87dec68ca8dbac81044733f2f7a3e10ff89cf6f11946a39a208873a0",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/train_precomputed_common_views.slurm",
+    "destination": "cluster/historical/scripts/train_precomputed_common_views.slurm",
+    "sha256": "2acde972816c2e191774188edd3abdd250979aff7daddbf8ec8d203733318f3e",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/unzip_mimic.slurm",
+    "destination": "cluster/historical/scripts/unzip_mimic.slurm",
+    "sha256": "b6e29d502127ceb1aa6448766a64c86fa0d23245407dbae16d7e1431fbe1f461",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts/zero_shot_eval_anatomy.slurm",
+    "destination": "cluster/historical/scripts/zero_shot_eval_anatomy.slurm",
+    "sha256": "58b0e27863ccd0c1424bba114547dab69cd639681a02c08988d7ecef668b96ae",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/eval_vindr_multiview_f1_val_calibrated.slurm",
+    "destination": "cluster/historical/scripts_new/eval_vindr_multiview_f1_val_calibrated.slurm",
+    "sha256": "e9d78e6123d51153ed4982fa164e2350b45b3f7326c8c4be96d57113eb53eaaf",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/extract_albef_itc_gradcam_heatmaps.slurm",
+    "destination": "cluster/historical/scripts_new/extract_albef_itc_gradcam_heatmaps.slurm",
+    "sha256": "a06635ad63b82dd3662feaf1d3d43a8ff1b101f24620e54d8f075ad4c2fe2b4f",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/extract_biovil_t_phrase_grounding.slurm",
+    "destination": "cluster/historical/scripts_new/extract_biovil_t_phrase_grounding.slurm",
+    "sha256": "df3919345294344cdd1f160482d3d7f2c5977229ca0f81033993d2a31e07f6ce",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/extract_biovil_t_same_albef_cases.slurm",
+    "destination": "cluster/historical/scripts_new/extract_biovil_t_same_albef_cases.slurm",
+    "sha256": "31804b807f94dc6ef57290e3b6b32d9f0ecc954a20f56ee419ad0df87d506700",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/extract_chexzero_attention_gradcam.slurm",
+    "destination": "cluster/historical/scripts_new/extract_chexzero_attention_gradcam.slurm",
+    "sha256": "4d7ea4170ddee76a9bc35160b9aec850ee2eefac48ad39c077b88abc0fd35a66",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/extract_fc_fusion_itc_margin_gradcam_heatmaps.slurm",
+    "destination": "cluster/historical/scripts_new/extract_fc_fusion_itc_margin_gradcam_heatmaps.slurm",
+    "sha256": "e65012f910dfee2c17e966d8d3f38cc87579d37e748cb6adc078e86ea3e10dae",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/extract_gated_fusion_itc_margin_gradcam_heatmaps.slurm",
+    "destination": "cluster/historical/scripts_new/extract_gated_fusion_itc_margin_gradcam_heatmaps.slurm",
+    "sha256": "818b603ff4ed671c598a2bc816ac4f1609e0f9b0dbb4ac7cd2c5516b793ab73d",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/extract_itc_margin_gradcam_heatmaps.slurm",
+    "destination": "cluster/historical/scripts_new/extract_itc_margin_gradcam_heatmaps.slurm",
+    "sha256": "c6df92f203c63ff6682412d07d756bb0ca60a86fed0879628a3545c2dbd067fb",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/extract_mean_fusion_itc_margin_gradcam_heatmaps.slurm",
+    "destination": "cluster/historical/scripts_new/extract_mean_fusion_itc_margin_gradcam_heatmaps.slurm",
+    "sha256": "d84b0625b3221d154169c350028d31b09a5f1d6287a88911bf644f52019375b4",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/extract_residual_fusion_itc_margin_gradcam_heatmaps.slurm",
+    "destination": "cluster/historical/scripts_new/extract_residual_fusion_itc_margin_gradcam_heatmaps.slurm",
+    "sha256": "7768a13d1a330054afdec49fc5609dadde2aee60d14caf5ab9fec586fdc1afcb",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/extract_transformer_fusion_itc_margin_gradcam_heatmaps.slurm",
+    "destination": "cluster/historical/scripts_new/extract_transformer_fusion_itc_margin_gradcam_heatmaps.slurm",
+    "sha256": "90a5e93dd57c67d7be4b28cbaf78197663c709c14125974297bc1b8f100ece28",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/learn_weights_and_eval_zero_shot.slurm",
+    "destination": "cluster/historical/scripts_new/learn_weights_and_eval_zero_shot.slurm",
+    "sha256": "7f131e48b381d599e3b08bcf60f8ec242dc329d86ff39d6f93ad12d788361293",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_cross_attention_fusion.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_cross_attention_fusion.slurm",
+    "sha256": "d29861d2a25695268fbd24d323ca05e99230ae032d4cc3212bddc2ce1b01553c",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_fusion.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_fusion.slurm",
+    "sha256": "d43a308da8e71691068bcb0bb373f6fe2098b8cf28a4659e9f73ead91a799a3e",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_fusion_smoke.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_fusion_smoke.slurm",
+    "sha256": "9d7cde6a66460f8df01936c8b98e51e716ba7d592be20020b0b18cf99c97539d",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_gated_fusion.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_gated_fusion.slurm",
+    "sha256": "d96cb3962bd87d4dc93f9e75270da2b5fa8afdfdec6598cc234605cdbbe609d6",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_gated_fusion_smoke.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_gated_fusion_smoke.slurm",
+    "sha256": "644ecc9d129dc715c12797cb7b0810216a09463290a62e0095d117cb66aedac6",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_mean_fusion.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_mean_fusion.slurm",
+    "sha256": "13a81e4a1072b56565e020f9971191decbbca7bc4dabd7b77a1f9a2b0d1e2979",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_mean_fusion_smoke.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_mean_fusion_smoke.slurm",
+    "sha256": "851521f52b9507f61d2413db843dd1d18d983b6c5339274f68fecce161b754d1",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_residual_fusion.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_residual_fusion.slurm",
+    "sha256": "1340b024ac39a21ca236aeaed4373dd6acdcfa3a58bfcffc034d6b0e2dfa1ccd",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_residual_fusion_smoke.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_residual_fusion_smoke.slurm",
+    "sha256": "d2126a646ccdbfcc531cd35202384788ad7d7a11ac8a98f97d04963319fcddcb",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_transformer2_mean.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_transformer2_mean.slurm",
+    "sha256": "aca206d76541d7c42cf688a615349e72141da3525b1bfe6a6cc46f1a21e95f9b",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/pretrain_multiview_transformer2_mean_smoke.slurm",
+    "destination": "cluster/historical/scripts_new/pretrain_multiview_transformer2_mean_smoke.slurm",
+    "sha256": "a95fae89558ddfad52e7897a2e3e57a8a18f7ee5727c95072239ae12ec62707d",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/run_vindr_bare_prompt_3view_val_test.slurm",
+    "destination": "cluster/historical/scripts_new/run_vindr_bare_prompt_3view_val_test.slurm",
+    "sha256": "2a252e9247869f2c4a2f8f0d92b8ac18568669bb266ce024c903910f6f02f4df",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "thesis-codebase",
+    "revision": "4b189fa90d8aa18be1ce22d003e908988cfa79b6",
+    "source_path": "scripts_new/test_ddp_nccl.slurm",
+    "destination": "cluster/historical/scripts_new/test_ddp_nccl.slurm",
+    "sha256": "191655bcb1029bb2e0fcb53c197f90de9c98e9c0a31cadd321f08728f3fc3035",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": ".gitignore",
+    "destination": "baselines/chexzero/.gitignore",
+    "sha256": "af239141408cd80a497c3ed349f32a3d287d5354f896ea18ce6b17c32705c378",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "LICENSE",
+    "destination": "baselines/chexzero/LICENSE",
+    "sha256": "df79d7fddeb1395599f38d5f0f4448e9ff9f43aa87c046988f9aef40fdf47cc1",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "NOTICE.md",
+    "destination": "baselines/chexzero/NOTICE.md",
+    "sha256": "a875dbff136eba3e6c35ead19e2fb074b55e01488523be58b94da4e9570ab866",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "README.md",
+    "destination": "baselines/chexzero/README.md",
+    "sha256": "0387b8787e26b190ff6ffd38862ae78018be15d6e393c50a97d86d33bf1efc28",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "bpe_simple_vocab_16e6.txt.gz",
+    "destination": "baselines/chexzero/bpe_simple_vocab_16e6.txt.gz",
+    "sha256": "924691ac288e54409236115652ad4aa250f48203de50a9e4722a6ecd48d6804a",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "checkpoints/.gitignore",
+    "destination": "baselines/chexzero/checkpoints/.gitignore",
+    "sha256": "5bf936e8007c2400d90f24a4fbc0474c7bb28229edb66263d8afefe338f6e76f",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "clip.py",
+    "destination": "baselines/chexzero/clip.py",
+    "sha256": "cad7578b336821be30996c8ce75b573f2445edb72d1238bc2e121453ee93b76f",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "data/.gitignore",
+    "destination": "baselines/chexzero/data/.gitignore",
+    "sha256": "5bf936e8007c2400d90f24a4fbc0474c7bb28229edb66263d8afefe338f6e76f",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "data_process.py",
+    "destination": "baselines/chexzero/data_process.py",
+    "sha256": "8c5c72c6a504914930e5293a9eebbef664b8c23a16872e5cb0e9ce5e21cff574",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "eval.py",
+    "destination": "baselines/chexzero/eval.py",
+    "sha256": "6dec2d97f531b3a69fc11a1eb2fe8c5295e237b4427600f5b92680eef87dc9da",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "extract_chexzero_multi_checkpoint_attention_gradcam.py",
+    "destination": "baselines/chexzero/extract_chexzero_multi_checkpoint_attention_gradcam.py",
+    "sha256": "4c0edc3e33242c842c6d8ae67a37cdff640e95c1584e11eed053aab6689302f6",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "metrics.py",
+    "destination": "baselines/chexzero/metrics.py",
+    "sha256": "f1481f77afa916b4a483261420e47d72697d845676b304bbdabc9f11ed9ab3a3",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "model.py",
+    "destination": "baselines/chexzero/model.py",
+    "sha256": "e71725f5690d9f0724d3dfc5dc80e7c10f9e39662ec06c8875de9f154b128c1f",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "notebooks/reporting_results_to_excel.ipynb",
+    "destination": "baselines/chexzero/notebooks/reporting_results_to_excel.ipynb",
+    "sha256": "ca0c49d36438f3e35a0f75bb9f03c0ddead20af086169994f22e9d6e233a040b",
+    "status": "notebook source/cells retained; generated outputs, execution counts and widget state removed",
+    "destination_sha256": "13d0129064f90cec012a065095020a3351e89a41bae051c9be490a9901f8203c"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "notebooks/zero_shot.ipynb",
+    "destination": "baselines/chexzero/notebooks/zero_shot.ipynb",
+    "sha256": "fdc1a5a7819d0f9f8271e351d10264d5dd6fa5812f0f50ad8c4930bcf8f93ac4",
+    "status": "notebook source/cells retained; generated outputs, execution counts and widget state removed",
+    "destination_sha256": "fd34ce5ea8324051a5b797703c6ad94689ddddcfbc77cbcd0995503f4712c3c1"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "predictions/.gitignore",
+    "destination": "baselines/chexzero/predictions/.gitignore",
+    "sha256": "5bf936e8007c2400d90f24a4fbc0474c7bb28229edb66263d8afefe338f6e76f",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "preprocess_padchest.py",
+    "destination": "baselines/chexzero/preprocess_padchest.py",
+    "sha256": "f103493989e6bc97fbb928626587c09b0a70f772b925f14fa49a603f900a95b7",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "requirements.txt",
+    "destination": "baselines/chexzero/requirements.txt",
+    "sha256": "2a74b69320d0b8f70c2cff86220e8213c57d7ff764df6a17e165af2b0e75ddab",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "run_preprocess.py",
+    "destination": "baselines/chexzero/run_preprocess.py",
+    "sha256": "06a1dc30a85a40c24ad9577bcdd067afa20dee6ea48fd204a565df54d13628e6",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "run_train.py",
+    "destination": "baselines/chexzero/run_train.py",
+    "sha256": "1342c35a0ba3d13334bb46609288636307a10e6198439d97e533c69ea9de05a9",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "simple_tokenizer.py",
+    "destination": "baselines/chexzero/simple_tokenizer.py",
+    "sha256": "c6c554c66cf1d2d5837a89c23a3ce6ce6076dce3469386d0ece6eb775856787f",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "train.py",
+    "destination": "baselines/chexzero/train.py",
+    "sha256": "6913bd8fb580467996fb709494a3ef919fa5e628c937454a04389db96b95098b",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "zero_shot.py",
+    "destination": "baselines/chexzero/zero_shot.py",
+    "sha256": "010725cda6bba7996946ce0aa826fcd8223bff293f8596ca5cb234fafe2ae548",
+    "status": "byte-identical import"
+  },
+  {
+    "repository": "CheXzero",
+    "revision": "5f3997d8456fc2fe75742018557d79793cc546aa",
+    "source_path": "zero_shot_vindr.py",
+    "destination": "baselines/chexzero/zero_shot_vindr.py",
+    "sha256": "8576f2cd648747284813b07fca800bbd2ab769f29884b7fb371e7fa9eff4fb4d",
+    "status": "byte-identical import"
+  }
+]
