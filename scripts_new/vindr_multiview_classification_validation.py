@@ -28,6 +28,9 @@ from torchvision import transforms
 from .src import get_label_text_embeddings
 
 
+from evaluation.checkpoint_roles import VinDrClassificationMetrics, DualAUCSelectionState
+from evaluation.artifacts import atomic_torch_save, atomic_save_scores_npz
+
 ALBEF_MEAN = (0.48145466, 0.4578275, 0.40821073)
 ALBEF_STD = (0.26862954, 0.26130258, 0.27577711)
 VIEW_TYPE = "multiview_fusion"
@@ -38,7 +41,7 @@ def build_validation_transform(image_res: int):
         [
             transforms.Resize(
                 (int(image_res), int(image_res)),
-                interpolation=Image.Resampling.BICUBIC,
+                interpolation=getattr(Image, "Resampling", Image).BICUBIC,
             ),
             transforms.ToTensor(),
             transforms.Normalize(ALBEF_MEAN, ALBEF_STD),
@@ -243,211 +246,12 @@ class VinDrMultiViewClassificationDataset(Dataset):
         )
 
 
-@dataclass
-class VinDrClassificationMetrics:
-    epoch: int
-    view_type: str
-    num_images: int
-    cardiomegaly_auc: float
-    macro_auc_all_evaluable: float
-    macro_auc_stable: float
-    macro_auc: float
-    micro_auc: Optional[float]
-    num_all_evaluable_auc_labels: int
-    num_stable_auc_labels: int
-    num_valid_auc_labels: int
-    macro_auc_all_evaluable_labels: List[str]
-    macro_auc_stable_labels: List[str]
-    per_label_auc: Dict[str, Optional[float]]
-    skipped_auc_labels: Dict[str, str]
-    cardiomegaly_best_f1: float
-    cardiomegaly_best_threshold: float
-    cardiomegaly_score_min: float
-    cardiomegaly_score_max: float
-    cardiomegaly_score_mean: float
-    cardiomegaly_score_std: float
-
-    def to_dict(self) -> dict:
-        return asdict(self)
 
 
-@dataclass
-class DualAUCSelectionState:
-    best_cardiomegaly_auc: float = float("-inf")
-    best_cardiomegaly_epoch: int = -1
-    best_macro_auc: float = float("-inf")
-    best_macro_epoch: int = -1
-    validations_without_improvement: int = 0
-
-    @classmethod
-    def from_dict(
-        cls,
-        value: Optional[dict],
-    ) -> "DualAUCSelectionState":
-        if not value:
-            return cls()
-        return cls(
-            best_cardiomegaly_auc=float(
-                value.get(
-                    "best_cardiomegaly_auc",
-                    float("-inf"),
-                )
-            ),
-            best_cardiomegaly_epoch=int(
-                value.get(
-                    "best_cardiomegaly_epoch",
-                    -1,
-                )
-            ),
-            best_macro_auc=float(
-                value.get(
-                    "best_macro_auc",
-                    float("-inf"),
-                )
-            ),
-            best_macro_epoch=int(
-                value.get(
-                    "best_macro_epoch",
-                    -1,
-                )
-            ),
-            validations_without_improvement=int(
-                value.get(
-                    "validations_without_improvement",
-                    0,
-                )
-            ),
-        )
-
-    def to_dict(self) -> dict:
-        return asdict(self)
-
-    def consider(
-        self,
-        metrics: VinDrClassificationMetrics,
-        *,
-        cardiomegaly_min_delta: float,
-        macro_min_delta: float,
-    ) -> Tuple[bool, bool]:
-        improved_cardio = bool(
-            np.isfinite(metrics.cardiomegaly_auc)
-            and (
-                metrics.cardiomegaly_auc
-                > self.best_cardiomegaly_auc
-                + float(cardiomegaly_min_delta)
-            )
-        )
-        improved_macro = bool(
-            np.isfinite(metrics.macro_auc_stable)
-            and (
-                metrics.macro_auc_stable
-                > self.best_macro_auc
-                + float(macro_min_delta)
-            )
-        )
-
-        if improved_cardio:
-            self.best_cardiomegaly_auc = float(
-                metrics.cardiomegaly_auc
-            )
-            self.best_cardiomegaly_epoch = int(
-                metrics.epoch
-            )
-
-        if improved_macro:
-            self.best_macro_auc = float(
-                metrics.macro_auc_stable
-            )
-            self.best_macro_epoch = int(
-                metrics.epoch
-            )
-
-        if improved_cardio or improved_macro:
-            self.validations_without_improvement = 0
-        else:
-            self.validations_without_improvement += 1
-
-        return improved_cardio, improved_macro
 
 
-def atomic_torch_save(
-    payload: dict,
-    output_path: str | Path,
-) -> None:
-    output_path = Path(output_path)
-    output_path.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-    temporary_path = output_path.with_name(
-        output_path.name + ".tmp"
-    )
-    torch.save(payload, temporary_path)
-    os.replace(temporary_path, output_path)
 
 
-def atomic_save_scores_npz(
-    output_path: str | Path,
-    *,
-    outputs: dict,
-    metrics: VinDrClassificationMetrics,
-) -> None:
-    output_path = Path(output_path)
-    output_path.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-    temporary_path = output_path.with_name(
-        output_path.name + ".tmp"
-    )
-
-    with open(temporary_path, "wb") as handle:
-        np.savez_compressed(
-            handle,
-            image_ids=np.asarray(
-                outputs["image_ids"],
-                dtype=object,
-            ),
-            label_names=np.asarray(
-                outputs["label_names"],
-                dtype=object,
-            ),
-            y_true=np.asarray(
-                outputs["y_true"],
-                dtype=np.int8,
-            ),
-            scores=np.asarray(
-                outputs["scores"],
-                dtype=np.float32,
-            ),
-            epoch=np.asarray(
-                metrics.epoch,
-                dtype=np.int64,
-            ),
-            view_type=np.asarray(metrics.view_type),
-            cardiomegaly_auc=np.asarray(
-                metrics.cardiomegaly_auc,
-                dtype=np.float32,
-            ),
-            macro_auc_all_evaluable=np.asarray(
-                metrics.macro_auc_all_evaluable,
-                dtype=np.float32,
-            ),
-            macro_auc_stable=np.asarray(
-                metrics.macro_auc_stable,
-                dtype=np.float32,
-            ),
-            macro_auc=np.asarray(
-                metrics.macro_auc,
-                dtype=np.float32,
-            ),
-            cardiomegaly_best_threshold=np.asarray(
-                metrics.cardiomegaly_best_threshold,
-                dtype=np.float32,
-            ),
-        )
-
-    os.replace(temporary_path, output_path)
 
 
 class VinDrMultiViewClassificationValidationRunner:

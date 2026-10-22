@@ -15,15 +15,9 @@
 
 Local Python 3.12 / torch 2.3.1+cu121 / torchvision 0.18.1 is different from server Python 3.8.20 / torch 1.8.1+cu111 / CUDA 11.1. The CPU suite reports Can't initialize NVML. Some synthetic maps are intentionally zero and produce explicit warnings. timm and transformers are absent locally; no dependencies were installed. No pre-existing automated research test suite was found; test_ddp_nccl.py is a cluster diagnostic, not run here.
 
-## Still pending
+## Historical milestones
 
-- Actual ALBEF model construction/imports in the legacy environment, offline BERT cache, both real checkpoint loads, real VinDr preprocessing/maps, repeatability and baseline/refactored comparison.
-- Exact training commit and saved resolved-config provenance; checkpoint paths/status are confirmed by author only.
-- Model/trainer consolidation, broad historical launcher portability and focused training/DDP checks. These are not marked complete.
-- Generated-file and data-manifest untracking was subsequently approved and completed with local copies preserved; see the model-candidate update below. Remaining hygiene is pending.
-- Final whole-cleanup validation and supervisor review acceptance. Main and source repositories remain unchanged; no push/merge/publish occurred.
-
-Next: follow [cross_attention_validation.md](cross_attention_validation.md). A checkpoint smoke run validates technical loading/extraction only; it does not establish good localization or full training equivalence.
+The baseline and model-candidate sections below record checks at those stages. The final status at the end supersedes their pending-work notes. Main and companion source repositories remain untouched; authorized delivery is restricted to the cleanup branch.
 
 ## Model consolidation candidate (2026-10-22)
 
@@ -34,3 +28,17 @@ The six model modules now delegate to one shared ALBEF model with separate FC/me
 `OMP_NUM_THREADS=1 python -m unittest discover -s tests -q`: 24 tests pass. Five new test methods cover all six variants, testing strict state loading, exact initialization/queue values and parameter ordering, features, ITC/ITM/MLM losses, gradients and momentum freezing against frozen originals under tiny injected encoders. These tests do not prove real ViT/BERT/GPU/DDP behavior. The new test calls use torch.testing.assert_allclose for torch 1.8 compatibility; current local torch emits deprecation warnings. The Transformer also emits a current-torch nested-tensor optimization warning, not a numerical failure.
 
 A single bounded independent review found no blocker for staging the server comparison. Remaining acceptance gaps include real encoder checkpoint loading, pretrained DeiT initialization, CUDA/AMP, nonzero dropout and distributed gather. Follow [cross_attention_refactor_check.md](cross_attention_refactor_check.md) before accepting the candidate or consolidating training loops. Existing root training scripts, historical configs and real data/results remain unchanged. The user explicitly approved untracking the 70 generated files and the real manifest. All 71 local files still exist and match their baseline hashes; they are now ignored. Older server checkouts must use the guide’s backup step before pulling the tracked removals.
+
+## Final implementation and verification — 2026-10-22
+
+**User-confirmed server acceptance:** both checkpoint-role baseline/refactored comparisons PASS after following all five refactor-guide steps; matched overlays reviewed and reported good. The earlier baseline/repeat comparisons also passed with no all-zero CAM warnings. The saved actual run config was compared by the author and differs from the historical repository config only in comments. Training commit remains `unconfirmed`. Server logs/manifests/comparison JSONs were not independently inspected here. This is technical compatibility acceptance, not a new localization-quality ranking.
+
+**Implemented:** shared multiview training/dataset/checkpoint helpers and legacy CLI wrappers; separate anatomy/patch helper extraction; portable methodological/environment/smoke configs; portable explicit-input cluster launchers; common evaluation artifacts/roles/prompts/utilities; score/ensemble provenance; localization identifiers; exploratory FROC relocation with compatibility paths; dependency separation; notebook/legacy inventories and supervisor guide. Historical configs, companion source snapshots, original scientific notebooks and source repositories are retained. New intended-full-data presets are not evidence that historical training used all data.
+
+**Local final checks:** 41 unittest tests pass (`OMP_NUM_THREADS=1 python -m unittest discover -s tests -q`). Coverage includes all six frozen-reference model variants, all six original multiview epoch functions with real optimizer steps, full-state resume, independent checkpoint-selection/deletion policies, configuration precedence, paired-record alignment, support/patch-loss distinctions, real A4 positional interpolation, legacy Pillow fallback, prompt/NPZ metadata and extraction/comparison/overlay behavior. Tiny encoder stand-ins avoid unavailable timm/transformers. One bounded training review found a missing lazy interpolation import in A4; a regression test reproduced NameError before the fix and passed afterward. No further concrete blocker was reported by that review.
+
+Python 3.8 grammar checks pass for changed/new Python source (not Python 3.8 runtime execution). All three canonical SLURM scripts pass bash -n. The unified plus six compatibility training commands pass --help without the optional research stack. Unchanged older commands still require their original optional dependencies; an overly broad local CLI check encountered missing cv2 in the untouched Pretrain_A0_multiview_dual_auc.py and was narrowed to the seven consolidated entrypoints. No dependency was installed to hide this limitation.
+
+Portable YAML parses and has no personal /home paths; intended-full-data presets have train_subset_size null. README/direct documentation links resolve. Anatomy/patch train/main function ASTs match the frozen original source. All 122 companion imports retain recorded destination hashes; four relocated FROC sources match recorded hashes. The relocated notebook dependency freeze matches original bytes. All notebooks parse; generated bytecode and the real manifest remain untracked. git diff --check passes.
+
+**Not run:** full legacy ViT/BERT training, DDP/AMP/dropout runtime, anatomy/patch training loops, FROC/baseline execution and full environment installation. The model inference comparison is user-confirmed on the server; it does not prove these workflows. [Optional bounded server checks](cluster_workflows.md) retain the successful environment, use private inputs/new outputs and do not ask for retraining the completed thesis experiment. No jobs or messages were submitted by the agent. Supervisor review and final scientific conclusions remain the author's responsibility.

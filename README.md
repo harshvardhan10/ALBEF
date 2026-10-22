@@ -12,6 +12,7 @@ This cleanup makes the implementation reviewable for the thesis supervisor. The 
 - [Cross-attention refactor check](docs/cross_attention_refactor_check.md): compare the consolidated model with your saved baseline
 - [Original baseline setup](docs/cross_attention_validation.md): precise server commands for the completed training run
 - [Reproduction](docs/reproduction.md), [checkpoints](docs/checkpoints.md) and [limitations](docs/limitations.md)
+- [Training/configuration commands](docs/cluster_workflows.md), [notebook index](docs/notebook_index.md) and [legacy inventory](docs/legacy_inventory.md)
 - [Source provenance](docs/source_provenance.md) and [cleanup progress](docs/superpowers/cleanup-progress.md)
 
 ## Six experimental stages
@@ -23,18 +24,19 @@ This cleanup makes the implementation reviewable for the thesis supervisor. The 
 5. Compare prediction ensembles, heatmap ensembles and joint view fusion.
 6. Interpret quantitative classification and matched qualitative localization, including failures.
 
-Cross-attention training is **complete, evaluation pending**, as confirmed by the author on 2026-10-20. Checkpoint files and results remain on the server. The baseline and repeat comparisons passed according to the author. The six fusion models now share common ALBEF code while retaining their historical import/checkpoint interfaces; the refactored model awaits the server before/after comparison. Training scripts remain unchanged.
+Cross-attention training is complete. On 2026-10-22 the author reported that both fixed-case baseline/refactored checkpoint comparisons passed and the matched overlays looked good. The historical training commit remains unconfirmed. This establishes the agreed model-refactor check, not a quantitative localization ranking. Shared training now has focused CPU coverage; full legacy GPU/DDP training has not been rerun.
 
 ## Repository map
 
 | Location | Responsibility |
 |---|---|
-| models/, dataset/, root Pretrain*.py | Existing ALBEF research implementations and training entry points |
-| configs/, configs_new/ | Historical methodology/configuration evidence; verify resolved run config |
-| scripts/, scripts_new/ | Evaluation and heatmap methods |
+| models/, dataset/, root Pretrain*.py | ALBEF models, aligned datasets and compatibility training entry points |
+| configs/, configs_new/ | Portable experiment/environment/smoke configs plus unchanged historical YAML |
+| training/, evaluation/, localization/ | Shared trainer/helpers, checkpoint/result metadata and method identifiers |
+| scripts/, scripts_new/ | Compatibility commands, evaluation and heatmap methods |
 | cluster/historical/ | Pinned cluster launch records from thesis-codebase; site-specific, not portable |
 | cluster/data_preparation/ | Imported Python preparation utilities |
-| cluster/slurm/ | New explicit-input validation launcher |
+| cluster/slurm/ | Portable training, Python-workflow and bounded validation launchers |
 | baselines/chexzero/ | Pinned CheXzero code, vocabulary, LICENSE and NOTICE |
 | notebooks/, notebooks/data_preparation/ | Existing analysis and imported preparation notebooks |
 | docs/, tests/ | Review narrative, provenance and focused CPU checks |

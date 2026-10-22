@@ -1,11 +1,11 @@
 # Reproduction
 
-1. Read the experiment catalogue and identify the exact model/trainer/config and checkpoint role.
-2. Use the documented successful server environment: Python 3.8.20, torch 1.8.1+cu111 and CUDA 11.1. Record the actual installed versions. requirements_albef_legacy.txt is a dependency reference, not a complete GPU environment lock; requirements.txt is a historical notebook freeze and includes incompatible modern packages for Python 3.8. Neither is silently rewritten as a newly verified environment.
-3. Supply local dataset/mask paths, checkpoint files and an offline cached BERT model/tokenizer. New extraction forces offline mode; no new accounts are needed.
-4. For completed cross-attention training, follow [cross_attention_validation.md](cross_attention_validation.md). This does not launch training again.
-5. For historical experiments, inspect the pinned original launch record in cluster/historical and original configs. Those scripts are site-specific and may reference other checkouts. Do not submit them unchanged. The source map documents their origin.
+1. Use the [experiment catalogue](experiment_catalogue.md) to select the model, checkpoint role and method. Historical run evidence is distinct from new intended-full-data presets.
+2. Activate the existing successful server environment: recorded Python 3.8.20, torch 1.8.1+cu111 and CUDA 11.1. Record installed versions. Root requirements.txt now references requirements_albef_legacy.txt; PyTorch/CUDA remain environment-specific. The original notebook freeze is preserved byte-for-byte at requirements/notebooks-historical.txt. None is a newly certified environment lock; no packages were installed or upgraded during cleanup.
+3. Supply private image/mask/manifest/checkpoint paths and cached BERT/DeiT assets. Keep patient data, credentials and outputs outside the checkout. Training retains original pretrained initialization behavior; ensure required pretrained assets are cached before any offline job.
+4. The author completed both-role baseline/refactored heatmap comparisons and reviewed overlays. [Original baseline instructions](cross_attention_validation.md) and [refactor comparison instructions](cross_attention_refactor_check.md) are retained for audit/repetition, not a request to repeat completed work.
+5. Use [cluster workflows](cluster_workflows.md) for resolved configs, portable launch commands and optional bounded training checks. Historical cluster scripts preserve provenance and must not be submitted unchanged.
 
-Run CheXzero from its own working directory (`cd baselines/chexzero`) and use its own requirements/environment. Its unqualified imports such as model and clip must resolve there; do not combine its dependencies blindly with ALBEF. Original README, LICENSE and NOTICE remain in that directory. No baseline runtime reproduction has been claimed.
+CheXzero uses its own environment and working directory: `cd baselines/chexzero`. Its unqualified model/clip imports must resolve there. Keep the retained README, LICENSE and NOTICE. BioViL-T also needs its own existing environment; baseline import is not runtime certification.
 
-Local focused checks: `python -m unittest discover -s tests -v`. They exercise extraction/comparison behavior without loading the legacy model stack or server weights. This is not a full pretraining or DDP check. No experiments, download jobs or emails are submitted by the agent.
+Local checks: `OMP_NUM_THREADS=1 python -m unittest discover -s tests -q`. Tests use real CPU tensors and frozen original source references with small encoder stand-ins. They cover model/training/helper behavior and artifacts, not a full ViT/BERT/GPU/DDP training run. No server jobs, downloads or emails were submitted by the agent.

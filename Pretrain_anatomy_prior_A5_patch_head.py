@@ -59,195 +59,38 @@ from anatomy_prior.patch_head import build_patch_head_from_config
 # Support weights and dummy anatomy masks
 # ============================================================
 
-def build_support_weights_from_captions(text, config, device):
-    """
-    Builds per-sample weights for anatomy support loss.
-
-    Disease-agnostic modes:
-        none
-        all_target_captions
-        uncertainty_weighted
-        positive_only
-
-    Backward-compatible alias:
-        all_cardiomegaly_captions -> all_target_captions
-    """
-    support_mode = config.get("support_mode", "all_target_captions")
-    support_mode = str(support_mode).lower().strip()
-
-    target_phrase = str(config.get("anatomy_target_phrase", "")).lower().strip()
-
-    if support_mode == "all_cardiomegaly_captions":
-        support_mode = "all_target_captions"
-
-    if support_mode != "none" and target_phrase == "":
-        raise ValueError(
-            "anatomy_target_phrase must be set when support_mode is not 'none'."
-        )
-
-    positive_weight = float(config.get("positive_caption_weight", 1.0))
-    uncertain_weight = float(config.get("uncertain_caption_weight", 0.5))
-
-    weights = []
-    for t in text:
-        t_lower = str(t).lower().strip()
-
-        exact_positive = t_lower == target_phrase
-        contains_target = target_phrase in t_lower
-        uncertain_target = contains_target and ("uncertain" in t_lower)
-
-        if support_mode == "none":
-            weight = 0.0
-        elif support_mode == "all_target_captions":
-            weight = 1.0 if contains_target else 0.0
-        elif support_mode == "uncertainty_weighted":
-            if exact_positive:
-                weight = positive_weight
-            elif uncertain_target:
-                weight = uncertain_weight
-            else:
-                weight = 0.0
-        elif support_mode == "positive_only":
-            weight = 1.0 if exact_positive else 0.0
-        else:
-            raise ValueError(
-                f"Unknown support_mode: {support_mode}. Expected one of: "
-                "none, all_target_captions, uncertainty_weighted, positive_only, "
-                "all_cardiomegaly_captions."
-            )
-
-        weights.append(weight)
-
-    return torch.tensor(weights, dtype=torch.float, device=device)
+from training.anatomy_guidance import build_support_weights_from_captions
 
 
-def build_dummy_anatomy_prior_mask(target_phrase, batch_size, height, width, device):
-    """
-    Fixed anatomy prior proxies.
-
-    Cardiomegaly:
-        central cardiac silhouette proxy.
-    Pleural Effusion:
-        bilateral lower lung-base proxy.
-    """
-    target_phrase = str(target_phrase).lower().strip()
-
-    prior_mask = torch.zeros(
-        (batch_size, 1, height, width),
-        dtype=torch.float32,
-        device=device,
-    )
-
-    if target_phrase == "cardiomegaly":
-        h1, h2 = int(0.35 * height), int(0.75 * height)
-        w1, w2 = int(0.25 * width), int(0.75 * width)
-        prior_mask[:, :, h1:h2, w1:w2] = 1.0
-
-    elif target_phrase == "pleural effusion":
-        h1, h2 = int(0.55 * height), int(0.93 * height)
-        w1_r, w2_r = int(0.07 * width), int(0.45 * width)
-        w1_l, w2_l = int(0.55 * width), int(0.93 * width)
-        prior_mask[:, :, h1:h2, w1_r:w2_r] = 1.0
-        prior_mask[:, :, h1:h2, w1_l:w2_l] = 1.0
-
-    else:
-        raise ValueError(
-            f"No dummy anatomy prior mask defined for anatomy_target_phrase='{target_phrase}'. "
-            "Supported dummy masks: 'cardiomegaly', 'pleural effusion'."
-        )
-
-    return prior_mask
+from training.anatomy_guidance import build_dummy_anatomy_prior_mask_a5 as build_dummy_anatomy_prior_mask
 
 
 # ============================================================
 # A5 helpers
 # ============================================================
 
-def get_model_without_ddp(model):
-    return model.module if hasattr(model, "module") else model
+from training.patch_refinement import get_model_without_ddp
 
 
-def get_patch_head(model):
-    raw_model = get_model_without_ddp(model)
-    if not hasattr(raw_model, "patch_head"):
-        raise AttributeError("A5 requires raw_model.patch_head, but it is missing.")
-    return raw_model.patch_head
+from training.patch_refinement import get_patch_head
 
 
-def albef_state_dict_without_patch_head(model_without_ddp):
-    """
-    Keep checkpoint['model'] loadable by old zero-shot/evaluation code that
-    instantiates plain ALBEF. Patch head is saved separately.
-    """
-    return {
-        k: v for k, v in model_without_ddp.state_dict().items()
-        if not k.startswith("patch_head.")
-    }
+from training.patch_refinement import albef_state_dict_without_patch_head
 
 
-def module_grad_norm(module: nn.Module) -> float:
-    total_sq = 0.0
-    for p in module.parameters():
-        if p.grad is None:
-            continue
-        g = p.grad.detach().float()
-        total_sq += float(g.norm(2).item() ** 2)
-    return float(total_sq ** 0.5)
+from training.patch_refinement import module_grad_norm_a5 as module_grad_norm
 
 
-def sync_module_gradients(module: nn.Module) -> None:
-    """
-    Manually average gradients for a module that is intentionally kept outside DDP.
-
-    A5 uses patch_head outside ALBEF.forward(), so patch_head must not be registered
-    inside the DDP-wrapped ALBEF module. This function keeps patch_head synchronized
-    across ranks by all-reducing its gradients after loss.backward().
-    """
-    if not (dist.is_available() and dist.is_initialized()):
-        return
-
-    world_size = float(dist.get_world_size())
-    for p in module.parameters():
-        if not p.requires_grad:
-            continue
-        if p.grad is None:
-            p.grad = torch.zeros_like(p.data)
-        dist.all_reduce(p.grad, op=dist.ReduceOp.SUM)
-        p.grad.div_(world_size)
+from training.patch_refinement import sync_module_gradients_a5 as sync_module_gradients
 
 
-def module_param_norm(module: nn.Module) -> float:
-    total_sq = 0.0
-    for p in module.parameters():
-        with torch.no_grad():
-            total_sq += float(p.detach().float().norm(2).item() ** 2)
-    return float(total_sq ** 0.5)
+from training.patch_refinement import module_param_norm_a5 as module_param_norm
 
 
-def weighted_mean(values: torch.Tensor, weights: torch.Tensor) -> torch.Tensor:
-    w = weights.clamp_min(0.0)
-    return (values * w).sum() / w.sum().clamp_min(1.0)
+from training.patch_refinement import weighted_mean_a5 as weighted_mean
 
 
-def load_model_albef_state(model, state_dict, strict=False):
-    """
-    Load ALBEF weights into a model that may already contain patch_head.
-    strict=False is intentional because old A0-A3 checkpoints do not have
-    patch_head.* keys, and A5 checkpoint['model'] deliberately excludes them.
-    """
-    msg = model.load_state_dict(state_dict, strict=strict)
-    if hasattr(msg, "missing_keys") or hasattr(msg, "unexpected_keys"):
-        missing = list(getattr(msg, "missing_keys", []))
-        unexpected = list(getattr(msg, "unexpected_keys", []))
-        allowed_missing = [k for k in missing if k.startswith("patch_head.")]
-        other_missing = [k for k in missing if not k.startswith("patch_head.")]
-        if other_missing:
-            print(f"[Checkpoint] Non-patch missing keys: {other_missing[:20]} ...")
-        if unexpected:
-            print(f"[Checkpoint] Unexpected keys: {unexpected[:20]} ...")
-        if allowed_missing:
-            print(f"[Checkpoint] Missing patch_head keys are expected: {allowed_missing[:4]} ...")
-    return msg
+from training.patch_refinement import load_model_albef_state_a5 as load_model_albef_state
 
 
 # ============================================================

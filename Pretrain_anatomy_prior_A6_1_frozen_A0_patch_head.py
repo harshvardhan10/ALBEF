@@ -65,146 +65,34 @@ from anatomy_prior.patch_head import build_patch_head_from_config
 # Helpers
 # ============================================================
 
-def get_model_without_ddp(model):
-    return model.module if hasattr(model, "module") else model
+from training.patch_refinement import get_model_without_ddp
 
 
-def build_support_weights_from_captions(text, config, device):
-    """
-    Builds per-sample weights for anatomy support loss.
-
-    For A6.1 use:
-      support_mode: positive_only
-      anatomy_target_phrase: cardiomegaly
-    """
-    support_mode = str(config.get("support_mode", "positive_only")).lower().strip()
-    target_phrase = str(config.get("anatomy_target_phrase", "")).lower().strip()
-
-    if support_mode == "all_cardiomegaly_captions":
-        support_mode = "all_target_captions"
-
-    if support_mode != "none" and target_phrase == "":
-        raise ValueError("anatomy_target_phrase must be set when support_mode is not 'none'.")
-
-    positive_weight = float(config.get("positive_caption_weight", 1.0))
-    uncertain_weight = float(config.get("uncertain_caption_weight", 0.5))
-
-    weights = []
-    for t in text:
-        t_lower = str(t).lower().strip()
-        exact_positive = t_lower == target_phrase
-        contains_target = target_phrase in t_lower
-        uncertain_target = contains_target and ("uncertain" in t_lower)
-
-        if support_mode == "none":
-            weight = 0.0
-        elif support_mode == "all_target_captions":
-            weight = 1.0 if contains_target else 0.0
-        elif support_mode == "uncertainty_weighted":
-            if exact_positive:
-                weight = positive_weight
-            elif uncertain_target:
-                weight = uncertain_weight
-            else:
-                weight = 0.0
-        elif support_mode == "positive_only":
-            weight = 1.0 if exact_positive else 0.0
-        else:
-            raise ValueError(
-                f"Unknown support_mode={support_mode}. Expected: none, all_target_captions, "
-                "uncertainty_weighted, positive_only."
-            )
-        weights.append(weight)
-
-    return torch.tensor(weights, dtype=torch.float32, device=device)
+from training.anatomy_guidance import build_support_weights_a6 as build_support_weights_from_captions
 
 
-def build_dummy_anatomy_prior_mask(target_phrase, batch_size, height, width, device):
-    """
-    Same fixed anatomy prior as previous experiments.
-    Cardiomegaly: central cardiac silhouette proxy.
-    """
-    target_phrase = str(target_phrase).lower().strip()
-    prior_mask = torch.zeros((batch_size, 1, height, width), dtype=torch.float32, device=device)
-
-    if target_phrase == "cardiomegaly":
-        h1, h2 = int(0.35 * height), int(0.75 * height)
-        w1, w2 = int(0.25 * width), int(0.75 * width)
-        prior_mask[:, :, h1:h2, w1:w2] = 1.0
-    elif target_phrase == "pleural effusion":
-        h1, h2 = int(0.55 * height), int(0.93 * height)
-        w1_r, w2_r = int(0.07 * width), int(0.45 * width)
-        w1_l, w2_l = int(0.55 * width), int(0.93 * width)
-        prior_mask[:, :, h1:h2, w1_r:w2_r] = 1.0
-        prior_mask[:, :, h1:h2, w1_l:w2_l] = 1.0
-    else:
-        raise ValueError(
-            f"No dummy anatomy prior mask defined for anatomy_target_phrase='{target_phrase}'. "
-            "Supported: cardiomegaly, pleural effusion."
-        )
-
-    return prior_mask
+from training.anatomy_guidance import build_dummy_anatomy_prior_mask_a6 as build_dummy_anatomy_prior_mask
 
 
-def weighted_mean(values, weights, eps=1e-8):
-    weights = weights.float().clamp_min(0.0)
-    return (values * weights).sum() / weights.sum().clamp_min(eps)
+from training.patch_refinement import weighted_mean_a6 as weighted_mean
 
 
-def module_grad_norm(module):
-    total = 0.0
-    found = False
-    for p in module.parameters():
-        if p.grad is not None:
-            found = True
-            total += float(p.grad.detach().float().norm(2).cpu()) ** 2
-    return total ** 0.5 if found else 0.0
+from training.patch_refinement import module_grad_norm_a6 as module_grad_norm
 
 
-def module_param_norm(module):
-    total = 0.0
-    for p in module.parameters():
-        total += float(p.detach().float().norm(2).cpu()) ** 2
-    return total ** 0.5
+from training.patch_refinement import module_param_norm_a6 as module_param_norm
 
 
-def sync_module_gradients(module):
-    """
-    Average standalone patch_head gradients across ranks.
-
-    Also handles ranks that had no active support samples by filling None grads
-    with zeros before all_reduce. This keeps all ranks synchronized.
-    """
-    if not (dist.is_available() and dist.is_initialized()):
-        return
-
-    world_size = dist.get_world_size()
-    for p in module.parameters():
-        if not p.requires_grad:
-            continue
-        if p.grad is None:
-            p.grad = torch.zeros_like(p)
-        dist.all_reduce(p.grad, op=dist.ReduceOp.SUM)
-        p.grad.div_(world_size)
+from training.patch_refinement import sync_module_gradients_a6 as sync_module_gradients
 
 
-def distributed_sum_scalar(x: torch.Tensor) -> torch.Tensor:
-    if dist.is_available() and dist.is_initialized():
-        y = x.detach().clone()
-        dist.all_reduce(y, op=dist.ReduceOp.SUM)
-        return y
-    return x.detach().clone()
+from training.patch_refinement import distributed_sum_scalar
 
 
-def load_model_albef_state(model, state_dict, strict=False):
-    msg = model.load_state_dict(state_dict, strict=strict)
-    print(f"[Checkpoint:A6.1] load_state_dict strict={strict}: {msg}")
+from training.patch_refinement import load_model_albef_state_a6 as load_model_albef_state
 
 
-def extract_model_state_from_checkpoint(checkpoint):
-    if isinstance(checkpoint, dict) and "model" in checkpoint:
-        return checkpoint["model"]
-    return checkpoint
+from training.patch_refinement import extract_model_state_from_checkpoint
 
 
 def load_a0_weights(model, ckpt_path):
@@ -230,36 +118,7 @@ def load_a0_weights(model, ckpt_path):
 # Identity regularization
 # ============================================================
 
-def patch_identity_loss(patch_pred, attn_patch_detached, active_weights, mode="mse", eps=1e-8):
-    """
-    Keeps the learned patch-head output close to the input attention map.
-
-    Why: support_outside_loss alone can be satisfied by producing a generic
-    central cardiac prior. Identity regularization discourages collapse by
-    preserving image-specific structure from the original attention map.
-
-    Args:
-      patch_pred: [B,N], normalized prediction from patch_head
-      attn_patch_detached: [B,N], normalized detached raw attention
-      active_weights: [B], usually support_weights
-      mode: mse or kl_pred_to_attn
-    """
-    mode = str(mode).lower().strip()
-    w = active_weights.float().clamp_min(0.0)
-
-    if mode == "none":
-        return torch.zeros((), dtype=patch_pred.dtype, device=patch_pred.device)
-
-    if mode == "mse":
-        per_sample = ((patch_pred - attn_patch_detached) ** 2).mean(dim=-1)
-    elif mode in {"kl", "kl_pred_to_attn"}:
-        p = patch_pred.clamp_min(eps)
-        q = attn_patch_detached.clamp_min(eps)
-        per_sample = (p * (p.log() - q.log())).sum(dim=-1)
-    else:
-        raise ValueError("identity_reg_mode must be one of: mse, kl_pred_to_attn, none")
-
-    return weighted_mean(per_sample, w)
+from training.patch_refinement import patch_identity_loss
 
 
 # ============================================================

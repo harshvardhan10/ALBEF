@@ -19,12 +19,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 from sklearn.metrics import f1_score, precision_recall_curve, roc_auc_score
+
+
+# Keep standalone script invocation usable without a preconfigured PYTHONPATH.
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+if str(REPOSITORY_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPOSITORY_ROOT))
+from evaluation.experiment_metadata import repository_state, sha256_file
 
 
 REQUIRED_KEYS = {"image_ids", "label_names", "scores", "y_true"}
@@ -295,6 +303,9 @@ def family_run(
                         per_label_f1_thresholds=thresholds.astype(np.float64))
 
     result: Dict[str, Any] = {
+        "provenance": repository_state(),
+        "label_order": list(labels),
+        "validation_score_sha256": {str(path): sha256_file(path) for path in val_paths},
         "checkpoint_family": name,
         "objective": objective_name,
         "objective_labels": list(objective_labels),
@@ -348,6 +359,7 @@ def family_run(
             stable_labels=stable_labels, target_label=target_label, thresholds=thresholds,
         )
         result.update({
+            "test_score_sha256": {str(path): sha256_file(path) for path in test_paths},
             "test_score_files": [str(p) for p in test_paths],
             "test_classification_metrics": test_metrics,
             "test_per_label_auc": test_aucs,

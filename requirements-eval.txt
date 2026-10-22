@@ -1,0 +1,3 @@
+# ALBEF classification/localization dependencies (recorded legacy stack).
+-r requirements.txt
+# BioViL-T and CheXzero require their own existing environments; see docs/reproduction.md.

@@ -44,6 +44,8 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from localization.methods import (CROSS_ATTENTION_METHOD, CROSS_ATTENTION_FUSION, CROSS_ATTENTION_VERSION, COMPOSITE_CAM_DEFINITION, ITC_MARGIN_TARGET)
+
 
 def sha256_file(path):
     digest = hashlib.sha256()
@@ -454,16 +456,16 @@ def extract(args: argparse.Namespace) -> None:
                     "heart_mask_path": str(heart_mask_path),
                     "checkpoint": str(checkpoint_path),
                     "config": str(config_path),
-                    "method": "albef_multiview_cross_attention_itc_margin_self_attention_gradcam",
-                    "implementation_version": "1.0-cross-attention-baseline",
+                    "method": CROSS_ATTENTION_METHOD,
+                    "implementation_version": CROSS_ATTENTION_VERSION,
                     "vit_layer_index": layer_index,
                     "num_vit_layers": len(blocks_o),
                     "image_res": image_res,
                     "temperature": temperature,
-                    "target": "(positive_similarity-negative_similarity)/temperature",
+                    "target": ITC_MARGIN_TARGET,
                     "uses_itm": False,
-                    "fusion_type": "two_layer_original_anchored_cross_attention_lung_heart",
-                    "composite_cam_definition": "sum raw positive branch CAMs, normalize once",
+                    "fusion_type": CROSS_ATTENTION_FUSION,
+                    "composite_cam_definition": COMPOSITE_CAM_DEFINITION,
                 }
             }
             record = {"image_id": image_id, "heatmap_path": str(output_path), "status": "saved"}
@@ -526,10 +528,10 @@ def extract(args: argparse.Namespace) -> None:
     pd.DataFrame(records).to_csv(index_path, index=False)
     manifest = {
         **provenance,
-        "method": "albef_multiview_cross_attention_itc_margin_self_attention_gradcam",
-        "implementation_version": "1.0-cross-attention-baseline",
+        "method": CROSS_ATTENTION_METHOD,
+        "implementation_version": CROSS_ATTENTION_VERSION,
         "uses_itm": False,
-        "fusion_type": "two_layer_original_anchored_cross_attention_lung_heart",
+        "fusion_type": CROSS_ATTENTION_FUSION,
         "target_labels": args.target_labels,
         "prompts": prompt_data,
         "temperature": temperature,
@@ -539,7 +541,7 @@ def extract(args: argparse.Namespace) -> None:
         "num_images": len(df),
         "checkpoint": str(checkpoint_path),
         "index_file": str(index_path),
-        "composite_cam_definition": "sum raw positive branch CAMs, normalize once",
+        "composite_cam_definition": COMPOSITE_CAM_DEFINITION,
     }
     with (output_dir / "cross_attention_fusion_itc_margin_gradcam_manifest.json").open("w", encoding="utf-8") as handle:
         json.dump(manifest, handle, indent=2)

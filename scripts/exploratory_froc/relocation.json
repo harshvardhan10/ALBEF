@@ -1,0 +1,22 @@
+[
+  {
+    "old_path": "scripts/compute_froc_from_gradcam_heatmaps.py",
+    "canonical_path": "scripts/exploratory_froc/compute_froc_from_gradcam_heatmaps.py",
+    "sha256": "d6e30352d5610e843a200ddbd4218be07779c2a2e49891a1355c358777a0a4b4"
+  },
+  {
+    "old_path": "scripts/compute_froc_from_gradcam_heatmaps_revised.py",
+    "canonical_path": "scripts/exploratory_froc/compute_froc_from_gradcam_heatmaps_revised.py",
+    "sha256": "761dd77916eceebc3a535ea03133219b64ea86411215f84e26cb892867f0c0a6"
+  },
+  {
+    "old_path": "scripts/evaluate_froc_vindr.py",
+    "canonical_path": "scripts/exploratory_froc/evaluate_froc_vindr.py",
+    "sha256": "c228a618d17ba98fc07112dc8c5ba079368a9d69a7769ef0d7cf2bd111b5ef13"
+  },
+  {
+    "old_path": "scripts/evaluate_froc_vindr_gated.py",
+    "canonical_path": "scripts/exploratory_froc/evaluate_froc_vindr_gated.py",
+    "sha256": "b29647cf476246b1783c5c8e2abc86070cf3ac8423b47f463b22b9376ded367a"
+  }
+]
