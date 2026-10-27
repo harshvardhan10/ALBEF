@@ -246,7 +246,7 @@ def extract(args: argparse.Namespace) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Inspect checkpoint metadata before loading the backbone, including A5.
-    checkpoint_header = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    checkpoint_header = torch.load(checkpoint_path, map_location="cpu")
     if not isinstance(checkpoint_header, dict) or "model" not in checkpoint_header:
         raise ValueError(f"Expected checkpoint with ALBEF weights in ['model']: {checkpoint_path}")
     has_patch_head = "patch_head" in checkpoint_header
@@ -311,7 +311,7 @@ def extract(args: argparse.Namespace) -> None:
             image_id = str(row[id_col])
             output_path = output_dir / f"{image_id}.pt"
             if output_path.exists() and not args.overwrite:
-                saved = torch.load(output_path, map_location="cpu", weights_only=False)
+                saved = torch.load(output_path, map_location="cpu")
                 if not isinstance(saved, dict) or saved.get("__metadata__", {}).get("image_id") != image_id:
                     raise ValueError(f"Existing heatmap has missing/mismatched image ID: {output_path}")
                 if saved["__metadata__"].get("vit_layer_index") != layer_index:
