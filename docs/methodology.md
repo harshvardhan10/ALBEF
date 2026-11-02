@@ -6,10 +6,10 @@ This guide summarizes thesis Chapter 5 and maps its methods to the current sourc
 
 ALBEF uses a local ViT image encoder, a BERT-based text encoder and image-conditioned XBERT fusion. Its baseline objective is the sum of image–text contrastive alignment (ITC, implemented as ITA), image–text matching and masked language modeling. Momentum components and queues are part of the implementations.
 
-- [Single-view model](../models/model_pretrain.py)
-- [ViT](../models/vit.py)
-- [XBERT](../models/xbert.py)
-- [Tokenizer](../models/tokenization_bert.py)
+- [Single-view model](../src/cxr_vlm/models/model_pretrain.py)
+- [ViT](../src/cxr_vlm/models/vit.py)
+- [XBERT](../src/cxr_vlm/models/xbert.py)
+- [Tokenizer](../src/cxr_vlm/models/tokenization_bert.py)
 
 The main target findings are Cardiomegaly and Pleural Effusion. Anatomy-focused views are masked derivatives of the same radiograph, not separate acquisitions.
 
@@ -31,7 +31,7 @@ Exact-positive means equality after lowercasing/trimming in the implementation. 
 
 The thesis uses rectangular supports: Cardiomegaly at 35–75% height and 25–75% width; PE at 55–93% height with bilateral 7–45% and 55–93% width regions. They constrain anatomical plausibility, not lesion shape. A later segmentation-derived heart-prior experiment is distinct from thesis A3.
 
-Sources: [guidance trainer](../Pretrain_anatomy_prior.py), [A4 trainer](../Pretrain_anatomy_prior_A4.py), [support loss](../anatomy_prior/losses.py), [attention extraction](../anatomy_prior/attention_extract.py), [token selection](../anatomy_prior/token_utils.py).
+Sources: [guidance trainer](../experiments/anatomy_guidance/Pretrain_anatomy_prior.py), [A4 trainer](../experiments/anatomy_guidance/Pretrain_anatomy_prior_A4.py), [support loss](../src/cxr_vlm/anatomy/losses.py), [attention extraction](../src/cxr_vlm/anatomy/attention_extract.py), [token selection](../src/cxr_vlm/anatomy/token_utils.py).
 
 Guidance models are trained separately for each target pathology. A4 preserves distributions of global similarities; it does not guarantee identical disease predictions or localization maps. A5/A6 patch-head experiments are historical work outside this thesis scope.
 
@@ -45,7 +45,7 @@ CheXmask preparation paths and matched-cohort construction are described in [dat
 
 Late fusion combines outputs from three separately trained models. Per-view, per-label z-score statistics are fitted on validation predictions. Equal weights are `(1/3, 1/3, 1/3)`; the thesis reports tuned original/lung/heart weights `(0.50, 0.36, 0.14)`. These reported weights are not independently refitted in this documentation phase. Ensemble F1 thresholds are fitted separately on validation data and frozen for test.
 
-Sources: [normalized ensemble evaluator](../scripts/ensemble_zero_shot_scores.py), [validation-fitted weights](../scripts_new/learn_dual_checkpoint_ensemble_weights.py).
+Sources: [normalized ensemble evaluator](../experiments/late_fusion/ensemble_zero_shot_scores.py), [validation-fitted weights](../experiments/late_fusion/learn_dual_checkpoint_ensemble_weights.py).
 
 ## Joint token fusion
 
@@ -53,12 +53,12 @@ At 256×256 with ViT-B/16, each branch yields 257 tokens of width 768. Fusion op
 
 | Family | Operation | Model |
 |---|---|---|
-| FC | Concatenation, learned projection, LayerNorm | [FC](../models/model_pretrain_multiview_fusion.py) |
-| Mean | Arithmetic average, no fusion parameters | [Mean](../models/model_pretrain_multiview_mean_fusion.py) |
-| Gated | CLS-conditioned softmax study weights applied across tokens | [Gated](../models/model_pretrain_multiview_gated_fusion.py) |
-| Residual | Original anchor plus gated lung/heart residuals | [Residual](../models/model_pretrain_multiview_residual_fusion.py) |
-| Transformer | Two-layer cross-view self-attention then mean pooling | [Transformer](../models/model_pretrain_multiview_transformer_fusion.py) |
-| Cross-attention | Two layers updating original query from lung/heart memory | [Cross-attention](../models/model_pretrain_multiview_cross_attention_fusion.py) |
+| FC | Concatenation, learned projection, LayerNorm | [FC](../src/cxr_vlm/models/model_pretrain_multiview_fusion.py) |
+| Mean | Arithmetic average, no fusion parameters | [Mean](../src/cxr_vlm/models/model_pretrain_multiview_mean_fusion.py) |
+| Gated | CLS-conditioned softmax study weights applied across tokens | [Gated](../src/cxr_vlm/models/model_pretrain_multiview_gated_fusion.py) |
+| Residual | Original anchor plus gated lung/heart residuals | [Residual](../src/cxr_vlm/models/model_pretrain_multiview_residual_fusion.py) |
+| Transformer | Two-layer cross-view self-attention then mean pooling | [Transformer](../src/cxr_vlm/models/model_pretrain_multiview_transformer_fusion.py) |
+| Cross-attention | Two layers updating original query from lung/heart memory | [Cross-attention](../src/cxr_vlm/models/model_pretrain_multiview_cross_attention_fusion.py) |
 
 Do not collapse these into a generic implementation during an organizational change.
 

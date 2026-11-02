@@ -4,7 +4,7 @@ Research code for **Improving Weak Localization in Chest X-Ray Vision–Language
 
 This repository extends ALBEF to study whether anatomical guidance and original/lung/heart representations improve recognition and the spatial evidence used by chest X-ray vision–language models. The principal findings are **Cardiomegaly** and **Pleural Effusion**. A strong image-level classifier does not necessarily localize the finding accurately.
 
-The source layout is currently historical. This documentation phase adds navigation and provenance; model implementations, configurations, notebooks and results have not been moved or rewritten. Full thesis reproduction remains dependent on the run artifacts listed in [known discrepancies](docs/discrepancies.md).
+The structural migration places 130 original Python implementations and 45 configurations in the research hierarchy below, with their contents unchanged. Historical paths remain available through compatibility loaders and config symlinks. Notebooks, results, data and resource-coupled upstream tools remain in place. Full thesis reproduction remains dependent on the run artifacts listed in [known discrepancies](docs/discrepancies.md).
 
 ## Start here
 
@@ -17,7 +17,8 @@ The source layout is currently historical. This documentation phase adds navigat
 | [Data access](docs/data_access.md) | Dataset roles, manifests and restricted artifacts |
 | [Results and provenance](docs/results_provenance.md) | Thesis-reported findings and evidence needed to reproduce them |
 | [Known discrepancies](docs/discrepancies.md) | Thesis, current checkout and historical implementation differences |
-| [Restructuring plan](docs/repository_architecture.md) | Proposed layout and behavior-preserving migration |
+| [Repository architecture](docs/repository_architecture.md) | Applied layout, compatibility and remaining migration scope |
+| [Migration validation](docs/migration_validation.md) | Exact-byte preservation and numerical compatibility checks |
 | [Agent instructions](AGENTS.md) | Constraints for future automated changes |
 
 ## Experimental pipeline
@@ -44,18 +45,16 @@ Use authorized local data. **Do not publish patient images, report-bearing manif
 ## Current repository layout
 
 ```text
-Pretrain*.py          Historical training entry points
-models/              ALBEF, local ViT/XBERT and six fusion implementations
-anatomy_prior/       Guidance loss, attention extraction and historical patch head
-dataset/             Dataset loading, view construction and augmentation
-configs/             Baseline, guidance, view and inherited-task configurations
-configs_new/         Newer view/fusion configurations; some exact duplicates
-scripts/             Preprocessing, classification, extraction and older metrics
-scripts_new/         Bare-prompt evaluation, fusion attribution and BioViL-T tools
-notebooks/           Exploration, comparisons, figures and pointing-game analysis
-optim/, scheduler/   Optimizer and schedule implementations
-results/             Historical outputs; not automatically final thesis results
-docs/                Thesis guides, provenance and proposed migration
+src/cxr_vlm/          Reusable models, datasets, anatomy, evaluation, optimizers
+experiments/         Baseline, guidance, single-view, late/joint fusion and extraction
+configs/historical/  Original configurations preserved verbatim
+configs/models/      BERT architecture configuration
+tools/               Preprocessing, inspection, diagnostics and experiment launcher
+archive/             Preserved A5/A6, exploratory localization and upstream tasks
+notebooks/           Existing notebooks, retained at original paths for now
+results/             Historical outputs, retained without modification
+docs/                Thesis guides, provenance and applied migration manifest
+Pretrain*.py, etc.    Historical compatibility loaders, not duplicate implementations
 ```
 
 The generic-looking `Pretrain_A0_multiview_dual_auc.py` trains configurable **single-view** ALBEF. The generic-looking multi-view bare-prompt evaluator currently constructs the **cross-attention** model. See the experiment guide before choosing an entry point.
@@ -69,11 +68,11 @@ For a **CPU legacy smoke environment**, Python 3.9.25 with PyTorch 1.8.0+cpu and
 From the repository root, after activating a compatible environment:
 
 ```bash
-python -B Pretrain.py --help
-python -B scripts/evaluate_zero_shot_f1_from_validation.py --help
+python -B tools/run_experiment.py experiments/baseline/Pretrain.py --help
+python -B tools/run_experiment.py experiments/evaluation/evaluate_zero_shot_f1_from_validation.py --help
 ```
 
-The first command checks CLI imports, not training. Dataset/checkpoint execution templates and required prerequisites are documented separately. Do not launch a large run from an unverified historical YAML: augmentation, checkpoint-selection and prepared-data differences remain unresolved for some reported runs.
+These commands check CLI imports, not training. Use the registered launcher from the repository root; directly running a deeply nested canonical file does not restore historical sibling imports. Legacy commands are retained. Configuration symlinks require filesystem/Git symlink support (validated on Linux). Dataset/checkpoint execution templates and required prerequisites are documented separately. Do not launch a large run from an unverified historical YAML: augmentation, checkpoint-selection and prepared-data differences remain unresolved for some reported runs.
 
 ## Evaluation and reported findings
 

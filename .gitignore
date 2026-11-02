@@ -1,0 +1,26 @@
+# New local caches and environments; existing tracked artifacts are not removed.
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+.venvs/
+.pytest_cache/
+*.egg-info/
+
+# Local credentials and machine-specific configuration.
+.env
+.env.*
+!.env.example
+/configs/local/
+
+# New model assets and run outputs. Never overwrite historical tracked results.
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+/checkpoints/
+/logs/
+/output*/
+/results/runs/
+/data/local/
+/data/private/

@@ -17,16 +17,16 @@ The checked-in training JSON has 215,394 entries with `image` and `caption`; the
 
 ## Preparation code
 
-1. [Build CheXmask SQLite index](../scripts/build_chexmask_sqlite_index.py).
-2. [Validate/filter manifests](../scripts/filter_chexmask_valid_manifest.py).
-3. [Build mask cache](../scripts/precompute_chexmask_mask_cache.py) or preserve the distinct [precomputed-view path](../scripts/precompute_chexmask_common_views.py).
-4. [Finalize mask manifests](../scripts/finalize_chexmask_mask_manifests.py) or [precomputed manifests](../scripts/finalize_chexmask_precomputed_manifests.py).
-5. [Build fixed multi-label validation subset](../scripts/build_vindr_multilabel_val_subset.py).
-6. [Build strict test-mask manifest](../scripts/build_vindr_test_mask_manifest.py).
+1. [Build CheXmask SQLite index](../tools/preprocessing/build_chexmask_sqlite_index.py).
+2. [Validate/filter manifests](../tools/preprocessing/filter_chexmask_valid_manifest.py).
+3. [Build mask cache](../tools/preprocessing/precompute_chexmask_mask_cache.py) or preserve the distinct [precomputed-view path](../tools/preprocessing/precompute_chexmask_common_views.py).
+4. [Finalize mask manifests](../tools/preprocessing/finalize_chexmask_mask_manifests.py) or [precomputed manifests](../tools/preprocessing/finalize_chexmask_precomputed_manifests.py).
+5. [Build fixed multi-label validation subset](../tools/preprocessing/build_vindr_multilabel_val_subset.py).
+6. [Build strict test-mask manifest](../tools/preprocessing/build_vindr_test_mask_manifest.py).
 
 These are separate commands with dataset-specific inputs; recover the original invocation and source checksums before claiming identical prepared data. Preserve deterministic sharding, original-resolution masks, view identity, quality thresholds and image geometry. Never substitute another mask release silently.
 
-The [segmentation-derived heart-prior builder](../scripts/build_vindr_heart_prior_xrv.py) belongs to historical anatomical-prior work; its output is not the rectangular support specified for thesis A3.
+The [segmentation-derived heart-prior builder](../tools/preprocessing/build_vindr_heart_prior_xrv.py) belongs to historical anatomical-prior work; its output is not the rectangular support specified for thesis A3.
 
 ## Local paths and publication
 

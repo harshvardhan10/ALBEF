@@ -1,6 +1,21 @@
 # Reproduction guide
 
-Run commands from the repository root. The current checkout is a historical research snapshot, not yet a complete portable reproduction package. Missing final configs, assets and selection records are listed in [discrepancies](discrepancies.md). No GPU training or full thesis result has been reproduced by this documentation phase.
+Run commands from the repository root. The checkout now has a canonical research hierarchy plus legacy compatibility paths. It is not yet a complete portable reproduction package. Missing final configs, assets and selection records are listed in [discrepancies](discrepancies.md). No GPU training or full thesis result has been reproduced by the documentation or structural migration phases.
+
+## Canonical entry points and compatibility
+
+Run from the repository root, after activating the appropriate existing environment:
+
+```bash
+python -B tools/run_experiment.py experiments/baseline/Pretrain.py --help
+python -B tools/run_experiment.py experiments/anatomy_guidance/Pretrain_anatomy_prior.py --help
+python -B tools/run_experiment.py experiments/localization/itc/extract_itc_margin_gradcam_heatmaps.py --help
+python -B -m unittest discover -s tests/compatibility -v
+```
+
+The launcher accepts canonical or legacy paths listed as entry points in [the applied manifest](audit/applied_migration.csv), restores historical imports/arguments/`__file__` context and forwards remaining flags unchanged. It rejects unknown paths and invocation outside the repository working directory. Do not substitute direct deep-path execution of canonical files. Legacy commands below remain supported through compatibility loaders; config values/default paths remain unchanged via relative symlinks.
+
+Reusable in-checkout imports need both root and source paths, for example `PYTHONPATH="$PWD:$PWD/src"`. There is no new standalone package installation in this phase. Symlink support is required for old config paths (validated on Linux). Notebooks remain at their old paths and retain their original outputs.
 
 ## Choose the workflow environment
 
@@ -124,4 +139,4 @@ The four-radiograph qualitative figure series is distinct from full positive-box
 
 ## Validation status
 
-The documentation phase checks CLI/import interfaces, local links, registry paths and protected-file hashes. It does not validate data preparation, GPU execution, complete external-model installs, checkpoint selection or final numerical reproduction. See the [phase validation record](validation.md) for the exact commands run and their outcomes.
+The documentation phase checked CLI/import interfaces, local links, registry paths and protected-file hashes. The structural phase additionally tests exact migrated bytes, historical/canonical launch equivalence and deterministic CPU behavior. See [migration validation](migration_validation.md). It does not validate data preparation, GPU execution, complete external-model installs, checkpoint selection or final numerical reproduction. See the [phase validation record](validation.md) for the exact commands run and their outcomes.

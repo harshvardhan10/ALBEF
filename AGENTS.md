@@ -39,6 +39,6 @@ This is a Master's thesis research repository for anatomy-aware weak localizatio
 - Label values as thesis-reported until regenerated from identified data, config, environment, checkpoint and evaluation records. No fabricated dependency pins, URLs, checkpoint locations or results.
 - Pointing-game guidance and fusion form separate 12-comparison test families. Do not pool them or tune extraction against test hit rates.
 
-## Documentation phase
+## Structural migration phase
 
-The current phase adds navigation and provenance only. Source locations in the guides refer to the current checkout. `docs/repository_architecture.md` describes a proposed future layout; it is not an already-applied migration.
+The approved structural phase moves original Python/config files byte-for-byte and retains historical paths through compatibility loaders/config symlinks. No experiment-body or config-value edits are authorized. Notebooks, outputs, data, bytecode, image assets and resource-coupled vendored tools remain in place. Use `tools/run_experiment.py` for registered canonical entry points from the repository root; preserve legacy module and `__file__` context. Validate applied-migration hashes and numerical compatibility tests before completing changes.

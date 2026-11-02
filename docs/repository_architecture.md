@@ -1,8 +1,8 @@
 # Repository architecture and migration scope
 
-The current phase adds documentation and provenance on `docs/thesis-research-guide`. It does not apply the proposed source layout or delete historical material. The original root README is preserved in [upstream documentation](upstream/README.original.txt).
+Documentation was committed separately on `docs/thesis-research-guide` (`8d82b18`). The structural phase on `refactor/thesis-repository` moves 130 Python implementations and 45 configs byte-for-byte. A pure-move commit (`562bf51`) preserves rename history; compatibility files restore old paths. No historical material was deleted. The original root README is preserved in [upstream documentation](upstream/README.original.txt).
 
-## Proposed next layout
+## Research layout and remaining scope
 
 ```text
 src/cxr_vlm/                       Reusable models, datasets, anatomy and evaluation
@@ -31,15 +31,23 @@ Directory names do not imply missing baseline implementations exist. Do not crea
 
 ## Ordered phases
 
-1. Documentation and experiment registry: explain current paths, known evidence and gaps. This is the current deliverable.
+1. Documentation and experiment registry: completed; source links now point to canonical implementations.
 2. Provenance recovery: historical guidance configurations, target-specific runs, final manifests, checkpoints and evaluation outputs. Missing assets prevent verified reproduction claims, but not navigation improvements.
-3. Mechanical moves: one-to-one old/new map, small reviewable changes, `git mv`, import/reference updates and compatibility entry points. No architecture or training-loop deduplication in this pass.
+3. Mechanical moves: applied to Python/config files; see [applied manifest](audit/applied_migration.csv). No architecture or training-loop deduplication. Legacy source paths are compatibility loaders; legacy config paths are relative symlinks.
 4. Separate environment/path changes: validate each stack and supported overrides; treat behavior corrections as separately reviewed work.
 5. Equivalence checks: transforms, prompts, masks, parameter keys, representative forward/backward outputs, heatmap schemas/geometry and metrics.
 6. Explicit artifact/publication review: preserve securely before any approved deletion/untracking/history rewrite. Never overwrite results/checkpoints.
 7. Reproduce available thesis targets and report missing evidence. Merge/publication are separate actions.
 
-The external review bundle contains a proposed 433-file migration map with hashes. It is not copied into this public-facing documentation because it inventories potentially restricted image/manifest paths. The compact experiment registry and commit lineage contain implementation references only.
+The external review bundle retains the original proposed 433-file migration map with hashes. A [public source/config-only applied manifest](audit/applied_migration.csv) records the 175 completed moves. The original full 433-file map is not copied into this public-facing documentation because it inventories potentially restricted image/manifest paths. The compact experiment registry and commit lineage contain implementation references only.
+
+## Compatibility and held categories
+
+Use `python -B tools/run_experiment.py <canonical-or-legacy-path> [arguments]` from the checkout root. Only manifest-registered entry points are accepted. The launcher preserves legacy script directory, module and `__file__` context; it does not change working directory or reinterpret data arguments. Helper imports continue to use historical names deliberately. `src/__init__.py` bridges historical bare `src` imports that would otherwise be shadowed by the new layout.
+
+For in-checkout reusable imports, set `PYTHONPATH="$PWD:$PWD/src"`. This phase does not create a separately installable distribution or promise canonical scripts support direct deep-path invocation. Use the launcher. Retained loaders preserve historical pickling/module names. Config symlinks preserve root-relative defaults and require symlink support; Linux was validated.
+
+Notebooks, historical results, patient-data artifacts, bytecode, image assets, and RefCOCO/VQA Python/Java resource trees remain at their original paths. Their moves need notebook working-directory/resource-path and redistribution review. Empty future directories in the conceptual tree are not represented as already implemented workflows.
 
 ## Acceptance criteria for later migration
 

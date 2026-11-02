@@ -1,4 +1,6 @@
-# Documentation-phase validation
+# Documentation-phase validation (before source migration)
+
+This is the historical record for documentation commit `8d82b18`; see [migration validation](migration_validation.md) for the subsequent structural phase.
 
 Scope: documentation and provenance only, on branch `docs/thesis-research-guide`, based on `b63533571fe9ca2fb1dd4f1f5978d92eddb9f24b`. Source layout and research behavior are unchanged.
 
