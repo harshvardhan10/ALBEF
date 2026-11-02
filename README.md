@@ -1,113 +1,140 @@
-# Anatomy-aware weak localization in chest X-ray vision–language models
+# Anatomy-Aware Weak Localization in Chest X-Ray Vision–Language Models
 
-Research code for **Improving Weak Localization in Chest X-Ray Vision–Language Models Using Anatomy-Aware Refinement**, a Master's thesis by **Harshvardhan Agarwal**, Friedrich-Alexander-Universität Erlangen-Nürnberg, 2026.
+Research code for **Improving Weak Localization in Chest X-Ray Vision–Language Models Using Anatomy-Aware Refinement**  
+**Harshvardhan Agarwal · Master's thesis · Friedrich-Alexander-Universität Erlangen-Nürnberg · 2026**
 
-This repository extends ALBEF to study whether anatomical guidance and original/lung/heart representations improve recognition and the spatial evidence used by chest X-ray vision–language models. The principal findings are **Cardiomegaly** and **Pleural Effusion**. A strong image-level classifier does not necessarily localize the finding accurately.
+> **`work` is the primary research and development branch.** Use this branch for the organized model implementations, experiment guides and reproduction instructions. The `main` branch preserves the earlier repository state and points here.
 
-The structural migration places 130 original Python implementations and 45 configurations in the research hierarchy below, without changing model/method logic or historical config values. Original IO-helper snapshots are retained for the two optional path-routing revisions. Historical entrypoint names remain accepted by the launcher; helper import paths and config symlinks are retained. Seven output-free notebooks and 34 aggregate historical results are also organized with legacy aliases. Output-bearing notebooks, per-image predictions, data and resource-coupled upstream tools remain in place. Full thesis reproduction remains dependent on the run artifacts listed in [known discrepancies](docs/discrepancies.md).
+## Research motivation
+
+Chest X-ray vision–language models can recognize a finding without grounding their predictions in the relevant anatomy. This thesis investigates whether anatomical guidance and representations of the original image, lungs and heart improve classification and weak localization, with a focus on **Cardiomegaly** and **Pleural Effusion**.
+
+The repository extends ALBEF with anatomy-aware training, anatomical single-view models, late score fusion and six distinct jointly trained fusion architectures. It also contains heatmap extraction, localization evaluation and external baseline comparisons. Classification performance, localization accuracy and qualitative appearance are evaluated separately.
 
 ## Find the model code
 
-**[Open the model-code index](docs/model_code.md)** for direct links to the full implementation of every main experiment. Start here when reading the research code, rather than the compatibility loaders.
+**Start with the [model-code index](docs/model_code.md)** for direct links to full architectures, training logic and experiment-specific differences.
 
-- [A0 baseline](experiments/baseline/README.md)
-- [A1–A4 guidance and A3.1/A3.2](experiments/anatomy_guidance/README.md)
-- [Original/lung/heart models](experiments/single_view/README.md)
-- [FC, mean, gated, residual, Transformer and cross-attention fusion](experiments/joint_fusion/README.md)
-- [Late score fusion](experiments/late_fusion/README.md)
-
-A0–A4 share the ALBEF architecture; their guidance differences are explicitly mapped to trainer/loss code. The six fusion architectures remain separate full source files.
-
-## Start here
-
-| Guide | Contents |
+| Research stage | Implementation guide |
 |---|---|
-| [Methodology](docs/methodology.md) | Anatomical guidance, six fusion models, attribution and evaluation |
-| [Experiments](docs/experiments.md) | Thesis stage to source/configuration mapping and historical variants |
-| [Reproduction](docs/reproduction.md) | Environments, inputs, launch conventions and validation gates |
-| [Local asset/path overrides](docs/local_paths.md) | Optional evaluation assets and new path-bound local config copies |
-| [External dependencies](docs/external_dependencies.md) | Upstream code, pretrained assets, licenses and missing pins |
-| [Data access](docs/data_access.md) | Dataset roles, manifests and restricted artifacts |
-| [Results and provenance](docs/results_provenance.md) | Thesis-reported findings and evidence needed to reproduce them |
-| [Known discrepancies](docs/discrepancies.md) | Thesis, current checkout and historical implementation differences |
-| [Repository architecture](docs/repository_architecture.md) | Applied layout, compatibility and remaining migration scope |
-| [Migration validation](docs/audit/history/migration_validation.md) | Exact-byte preservation and numerical compatibility checks |
-| [Notebook catalog](notebooks/README.md) | Grouped analyses, canonical viewing paths and execution context |
-| [Historical results](results/README.md) | Aggregate summaries and held per-image prediction files |
-| [Agent instructions](AGENTS.md) | Constraints for future automated changes |
+| A0 single-view ALBEF baseline | [Baseline](experiments/baseline/README.md) |
+| A1–A4 anatomical guidance, including A3.1/A3.2 | [Anatomical guidance](experiments/anatomy_guidance/README.md) |
+| Original, lung and heart views | [Single-view models](experiments/single_view/README.md) |
+| Late score fusion | [Late fusion](experiments/late_fusion/README.md) |
+| FC, mean, gated, residual, Transformer and anchored cross-attention fusion | [Joint fusion](experiments/joint_fusion/README.md) |
+| Classification, checkpoint selection, heatmaps and localization evaluation | [Experiment mapping](docs/experiments.md) |
+| BioViL-T integration and supplied CheXzero comparisons | [External dependencies](docs/external_dependencies.md) |
+
+A0–A4 share the ALBEF architecture; their differences are in training and anatomical guidance. The six fusion architectures remain separate implementations. A5/A6 and exploratory FROC work are preserved as historical experiments outside the main thesis workflow. No implemented semi-supervised training stage is claimed.
 
 ## Experimental pipeline
 
-1. **Establish baselines:** original-image ALBEF with positive–negative ITC-margin Grad-CAM; external BioViL-T grounding and supplied CheXzero comparisons.
-2. **Apply direct anatomical guidance:** A0 reference, A1 support guidance, A2 uncertainty weighting, A3 positive-only support and coefficient ablations, and A4 classification preservation. Guidance models are pathology-specific.
-3. **Train anatomical single views:** original radiograph, lung-only and heart-only images from the same radiograph.
-4. **Combine views:** normalized score ensembles or jointly trained FC, mean, gated, residual, two-layer Transformer and anchored cross-attention models.
-5. **Evaluate:** held-out ROC-AUC and validation-thresholded F1; pointing-game peak alignment; matched qualitative figures.
+1. **Establish baselines:** evaluate original-image ALBEF and external comparisons; extract positive–negative ITC-margin Grad-CAM maps.
+2. **Apply anatomical guidance:** compare A0 with support guidance, uncertainty weighting, positive-only support, support-coefficient ablations and classification preservation.
+3. **Train anatomical views:** learn from original, lung-only and heart-only representations of the same radiograph.
+4. **Combine views:** compare late score fusion with jointly trained FC, mean, gated, residual, Transformer and anchored cross-attention models.
+5. **Evaluate classification and localization:** assess ROC-AUC, validation-thresholded F1, pointing-game peak alignment and matched qualitative examples.
 
-A3.1 and A3.2 use support coefficients 0.005 and 0.001; A3 uses 0.01. A5/A6 are preserved historical work outside the main thesis workflow. Their presence does not make them thesis reproduction requirements. No implemented semi-supervised training stage is claimed.
+Guidance experiments are pathology-specific. A3 uses a support coefficient of 0.01; A3.1 and A3.2 use 0.005 and 0.001. A0–A2 reported runs used the full dataset; historical subset settings alone do not establish the cohort used by those runs. See [methodology](docs/methodology.md), [experiment details](docs/experiments.md) and [known discrepancies](docs/discrepancies.md).
 
-## Datasets and assets
+## Datasets and pretrained assets
 
-- **MIMIC-CXR:** paired image–text training records.
-- **VinDr-CXR:** a fixed 2,000-image training-data validation subset and the official 3,000-image test set, as described in the thesis.
-- **CheXmask:** lung and heart masks used to construct anatomical views.
-- **Pretrained assets:** BERT/DeiT/ALBEF assets as required by the particular run; BioViL-T and historical anatomical segmentation have additional model dependencies.
+| Dataset or asset | Role |
+|---|---|
+| MIMIC-CXR | Paired image–text training |
+| VinDr-CXR | Classification and localization evaluation; the thesis describes a fixed 2,000-image validation subset from the training set and the official 3,000-image test set |
+| CheXmask | Lung and heart masks for anatomical guidance and view construction |
+| BERT, DeiT and ALBEF assets | Initialization and tokenization, depending on the experiment |
+| External model assets | Additional requirements for BioViL-T and historical anatomical segmentation |
 
-The original checked-in MIMIC manifest has 215,394 records. History describes excluding 43 missing-mask records for the matched anatomical-view population, consistent with the thesis count of 215,351. The generated manifest itself is not included, so exact run membership still needs verification. A0–A2 used full datasets according to the researcher and historical trainer behavior; old subset YAML settings alone do not describe those earlier runs.
+Obtain datasets through their authorized access procedures and keep local data and checkpoints outside the public repository. Dataset access, manifest roles and cohort uncertainties are documented in [data access](docs/data_access.md). Historical previews, manifests and notebook outputs already tracked in the repository still require redistribution review.
 
-Use authorized local data. **Do not publish patient images, report-bearing manifests, private datasets or checkpoints.** Some historical previews, manifests and notebook outputs are already tracked and require a publication review; this documentation does not certify them as redistributable.
-
-## Current repository layout
+## Repository layout
 
 ```text
-src/cxr_vlm/          Reusable models, datasets, anatomy, evaluation, optimizers
-experiments/         Baseline, guidance, single-view, late/joint fusion and extraction
-configs/historical/  Original configurations preserved verbatim
+src/cxr_vlm/          Reusable models, datasets, anatomy, evaluation and optimization
+experiments/         Baseline, guidance, single-view, fusion and evaluation entry points
+configs/historical/  Original experiment configurations
 configs/models/      BERT architecture configuration
-tools/               Preprocessing, inspection, diagnostics and experiment launcher
-archive/             Preserved A5/A6, exploratory localization and upstream tasks
-notebooks/           Comparisons, evaluation and figures; held outputs remain at old paths
-results/historical/  Aggregate historical outputs, preserved without value changes
-results/             Legacy aliases and held per-image predictions
-docs/                Thesis guides; audit records grouped under docs/audit/
-compatibility/       Grouped root command wrappers; use tools/run_experiment.py
+tools/               Experiment launcher, preprocessing, inspection and diagnostics
+compatibility/       Grouped historical root command wrappers
+notebooks/           Analysis, comparisons, evaluation and figures
+results/             Historical summaries, compatibility aliases and existing outputs
+archive/             Non-thesis experiments, upstream tasks and maintenance history
+docs/                Methodology, experiment mapping, reproduction and provenance
 ```
 
-The generic-looking `Pretrain_A0_multiview_dual_auc.py` trains configurable **single-view** ALBEF. The generic-looking multi-view bare-prompt evaluator currently constructs the **cross-attention** model. See the experiment guide before choosing an entry point.
+The full implementations live in `src/cxr_vlm/` and the experiment directories. Retained helper wrappers and config aliases support historical imports and commands. They are not additional model implementations. Some resource-coupled upstream tools and existing artifacts remain at their original paths; see [repository architecture](docs/repository_architecture.md).
 
-## Installation and execution
+## Installation and quick start
 
-There is no single verified environment covering every historical script. The [reproduction guide](docs/reproduction.md) distinguishes legacy ALBEF, newer fusion, BioViL-T, segmentation and analysis environments.
-
-For a **CPU legacy smoke environment**, Python 3.9.25 with PyTorch 1.8.0+cpu and torchvision 0.9.0+cpu was validated during onboarding. The installation recipe is in the guide. It does not validate GPU training, newer Pillow-dependent transforms or full thesis reproduction.
-
-From the repository root, after activating a compatible environment:
+Clone the primary research branch:
 
 ```bash
-python -B tools/run_experiment.py experiments/baseline/Pretrain.py --help
-python -B tools/run_experiment.py experiments/evaluation/evaluate_zero_shot_f1_from_validation.py --help
+git clone --branch work --single-branch https://github.com/harshvardhan10/ALBEF.git
+cd ALBEF
 ```
 
-These commands check CLI imports, not training. Use the registered launcher from the repository root; directly running a deeply nested canonical file does not restore historical sibling imports. Historical entrypoint names are retained as launcher aliases; root command files now live under `compatibility/entrypoints/`. Configuration symlinks require filesystem/Git symlink support (validated on Linux). Dataset/checkpoint execution templates and required prerequisites are documented separately. Do not launch a large run from an unverified historical YAML: augmentation, checkpoint-selection and prepared-data differences remain unresolved for some reported runs.
+Follow the [installation and reproduction guide](docs/reproduction.md) for the appropriate environment. Legacy ALBEF, newer fusion experiments, BioViL-T, segmentation and analysis do not share one verified dependency stack. Existing requirements are evidence of historical dependencies, not a complete frozen thesis environment.
 
-## Evaluation and reported findings
+A legacy CPU smoke environment was validated with Python 3.9.25, PyTorch 1.8.0+cpu and torchvision 0.9.0+cpu. This does not validate GPU training or newer Pillow-dependent transforms; the guide records these limitations.
 
-The primary quantitative localization endpoint is a **pointing-game hit**: the saved map's selected maximum falls inside a target-pathology box. Classification, peak alignment and visual appearance answer different questions. Historical FROC and anatomy-gating explorations are preserved but are not interchangeable with this endpoint.
+After activating a compatible environment, run from the repository root:
 
-Selected **thesis-reported**, not independently reproduced, outcomes:
+```bash
+# Inspect the baseline training interface.
+python -B tools/run_experiment.py experiments/baseline/Pretrain.py --help
 
-| Outcome | Reported result | Thesis source |
+# Inspect classification evaluation.
+python -B tools/run_experiment.py experiments/evaluation/evaluate_zero_shot_f1_from_validation.py --help
+
+# Run the CPU compatibility checks without private data or checkpoints.
+python -B -m unittest discover -s tests/compatibility -v
+```
+
+The launcher accepts canonical paths and historical entrypoint names. For example, `python tools/run_experiment.py Pretrain.py --help` selects the baseline trainer. Former commands such as `python Pretrain.py` require the launcher prefix. Direct execution of deeply nested implementations does not restore historical sibling imports. Config aliases require filesystem/Git symlink support, validated on Linux.
+
+For actual training and evaluation:
+
+1. Obtain authorized datasets, required masks and pretrained assets.
+2. Identify the experiment, historical configuration and required environment in the [experiment guide](docs/experiments.md).
+3. Bind local paths using the documented [asset overrides and config preparation tool](docs/local_paths.md).
+4. Follow the [reproduction guide](docs/reproduction.md) for training, checkpoint selection, classification, heatmap extraction and localization evaluation.
+5. Save new outputs separately from existing historical results and record the config, code revision, checkpoint and evaluation cohort.
+
+## Evaluation and thesis-reported results
+
+The primary localization endpoint is a **pointing-game hit**: the selected maximum of a saved heatmap falls inside a target-pathology bounding box. Historical FROC analyses are preserved separately and are not interchangeable with this endpoint.
+
+The following values are **reported in the thesis and have not been independently reproduced in this environment**:
+
+| Experiment and endpoint | Reported result | Thesis source |
 |---|---|---|
-| Original A0 Pleural Effusion ROC-AUC | 0.9788 | Table 6.1 |
-| Anchored cross-attention Cardiomegaly ROC-AUC / F1 | 0.9427 / 0.6125 | Table 6.7 |
-| Validation-tuned late-fusion Pleural Effusion F1 | 0.7333 | Table 6.6 |
-| Gated fusion Cardiomegaly pointing-game rate | 82.20% | Table 6.8 |
-| Anchored cross-attention Pleural Effusion pointing-game rate | 17.12% | Table 6.8 |
+| Original A0: Pleural Effusion ROC-AUC | 0.9788 | Table 6.1 |
+| Anchored cross-attention: Cardiomegaly ROC-AUC / F1 | 0.9427 / 0.6125 | Table 6.7 |
+| Validation-tuned late fusion: Pleural Effusion F1 | 0.7333 | Table 6.6 |
+| Gated fusion: Cardiomegaly pointing-game rate | 82.20% | Table 6.8 |
+| Anchored cross-attention: Pleural Effusion pointing-game rate | 17.12% | Table 6.8 |
 
-These observations do not establish a universal advantage of anatomical restriction or fusion. Classification differences are descriptive; the paired localization tests have their own defined scope. See [results provenance](docs/results_provenance.md).
+The results do not establish a universal advantage of anatomical restriction or fusion. Classification differences are descriptive, and the paired localization tests have a defined comparison scope. See [results and provenance](docs/results_provenance.md).
 
-## Thesis reference and upstream attribution
+Final run configurations, prepared manifests, checkpoint-selection logs and evaluation outputs are unavailable here. The repository preserves the implementations and historical evidence, but full numerical thesis reproduction remains pending those assets. Compatibility checks validate selected CPU behavior and structural preservation; CLI help alone does not validate an experiment.
 
-Harshvardhan Agarwal. *Improving Weak Localization in Chest X-Ray Vision–Language Models Using Anatomy-Aware Refinement*. Master's thesis in Computer Science, Friedrich-Alexander-Universität Erlangen-Nürnberg, 2026. The report was supplied privately for this audit; no public thesis URL or DOI has been verified, and the PDF is not added here.
+## Documentation
 
-The inherited ALBEF implementation is associated with Junnan Li et al., *Align before Fuse: Vision and Language Representation Learning with Momentum Distillation*, NeurIPS 2021 ([paper](https://arxiv.org/abs/2107.07651)). Retain its [Salesforce license](LICENSE.txt), source notices and other third-party attributions. The prior root README is preserved verbatim as [historical upstream documentation](docs/upstream/README.original.txt); its task commands are not the thesis run protocol.
+- [Methodology](docs/methodology.md): anatomical guidance, fusion, attribution and evaluation.
+- [Experiments](docs/experiments.md): thesis stages mapped to implementations and configurations.
+- [Reproduction](docs/reproduction.md): environments, data, training, selection and evaluation.
+- [External dependencies](docs/external_dependencies.md): upstream code, pretrained assets, licenses and unverified pins.
+- [Local paths](docs/local_paths.md): optional asset overrides and local configuration preparation.
+- [Notebook catalog](notebooks/README.md) and [historical results](results/README.md): analysis and existing artifacts.
+- [Known discrepancies](docs/discrepancies.md): unresolved differences between thesis, code and run evidence.
+- [Agent instructions](AGENTS.md): repository-specific preservation and verification rules.
+
+## Thesis reference and attribution
+
+Harshvardhan Agarwal. *Improving Weak Localization in Chest X-Ray Vision–Language Models Using Anatomy-Aware Refinement*. Master's thesis in Computer Science, Friedrich-Alexander-Universität Erlangen-Nürnberg, 2026.
+
+The thesis report was supplied privately. No public thesis URL or DOI has been verified, and the PDF is not included in this repository.
+
+This work builds on Junnan Li et al., *Align before Fuse: Vision and Language Representation Learning with Momentum Distillation*, NeurIPS 2021 ([paper](https://arxiv.org/abs/2107.07651)). Preserve the [Salesforce license](LICENSE.txt), source notices and third-party attributions. The original upstream README is retained in [upstream documentation](docs/upstream/README.original.txt).

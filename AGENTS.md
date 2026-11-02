@@ -15,7 +15,7 @@ This is a Master's thesis research repository for anatomy-aware weak localizatio
 
 ## Git and files
 
-- Continue on the current `refactor/thesis-repository` branch. Do not create a PR, merge to `main`/`master`, or switch branches unless the user explicitly asks. Inspect status first and preserve user changes.
+- Continue on the primary research branch `work`. Do not create a PR, merge to `main`/`master`, or switch branches unless the user explicitly asks. Inspect status first and preserve user changes.
 - Cloud tasks already run in an isolated environment; use the existing checkout. Do not create a worktree unless the user explicitly requests one.
 - No deletion, untracking, history rewriting or destructive cleanup without explicit user approval and recoverable preservation.
 - Do not overwrite existing results or checkpoints. Select a new output directory and inspect the script's overwrite behavior.
