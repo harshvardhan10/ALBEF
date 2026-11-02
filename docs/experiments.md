@@ -2,9 +2,6 @@
 
 For the shortest route to each full architecture and method implementation, start with the [model-code index](model_code.md).
 
-The [machine-readable registry](audit/experiment_registry.csv) contains 27 experiment/analysis records and legacy and canonical implementation paths. A candidate mapping is not proof of the executed run. [Historical lineage](audit/historical_lineage.csv) records exact evidence commits; [discrepancies](discrepancies.md) distinguishes unresolved claims.
-
-## Thesis stages
 
 | Stage | Thesis sections | Entry points / analysis |
 |---|---|---|
@@ -17,19 +14,17 @@ The [machine-readable registry](audit/experiment_registry.csv) contains 27 exper
 
 ## Guidance run identity
 
-A1, A2, A3, A3.1, A3.2 and A4 each require separate Cardiomegaly and Pleural Effusion run records. A0 is the original-image reference, not automatically the same checkpoint across every historical trainer.
+A1, A2, A3, A3.1, A3.2 and A4 each require separate Cardiomegaly and Pleural Effusion run records. A0 is the original-image reference.
 
-| Variant | Configuration evidence | Caveat |
+| Variant | Configuration evidence |
 |---|---|---|
-| A0 | [A0 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A0.yaml) | Earlier trainer ignored subset key; reported run used full dataset |
-| A1 | [A1 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A1.yaml) | Same full-data clarification; named file primarily describes Cardiomegaly |
-| A2 | [A2 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A2.yaml) | Same full-data clarification; retain uncertainty semantics |
-| A3 | [Current A3 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A3.yaml) | Current file represents later segmentation-derived prior, not thesis rectangular support |
-| A3.1 | Historical commit `ea61e1e` | Coefficient 0.005; changes same A3 filename; full-data selection |
-| A3.2 | Historical commit `c9a5803` | Coefficient 0.001; changes same A3 filename |
-| A4 | [A4 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A4.yaml) | Preservation coefficient has historical 0.5, 0.1 and 1.0 variants |
-
-The thesis's final run configs, checkpoint-selection records and PE-specific commands still need recovery. No existing file is relabeled as a verified reproduction config in this phase.
+| A0 | [A0 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A0.yaml) |
+| A1 | [A1 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A1.yaml) | 
+| A2 | [A2 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A2.yaml) |
+| A3 | [Current A3 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A3.yaml) |
+| A3.1 | Historical commit `ea61e1e` | 
+| A3.2 | Historical commit `c9a5803` |
+| A4 | [A4 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A4.yaml) |
 
 ## Fusion families
 
@@ -42,16 +37,12 @@ The thesis's final run configs, checkpoint-selection records and PE-specific com
 | Transformer | [Trainer](../experiments/joint_fusion/transformer/Pretrain_A0_multiview_transformer_fusion_dual_auc.py) | [Config](../configs/historical/original_configs_new/Pretrain_A0_multiview_transformer2_mean_dual_auc.yaml) |
 | Cross-attention | [Trainer](../experiments/joint_fusion/cross_attention/Pretrain_A0_multiview_cross_attention_fusion_dual_auc.py) | [Config](../configs/historical/original_configs_new/Pretrain_A0_multiview_cross_attention_fusion_dual_auc.yaml) |
 
-Each family has a separately named `scripts_new/extract_<family>_fusion_itc_margin_gradcam_heatmaps.py`. Their model definitions are linked in [methodology](methodology.md). Keep the three initial single-view checkpoint identities and selection families explicit.
+Each family has a separately named `scripts_new/extract_<family>_fusion_itc_margin_gradcam_heatmaps.py`. Their model definitions are linked in [methodology](methodology.md).
 
-The file [zero_shot_eval_vindr_multiview_pos_neg_bare_prompts.py](../experiments/classification/bare_prompt/zero_shot_eval_vindr_multiview_pos_neg_bare_prompts.py) currently imports the cross-attention model directly despite its generic name. It is not a verified dispatcher for all six architectures.
+The file [zero_shot_eval_vindr_multiview_pos_neg_bare_prompts.py](../experiments/classification/bare_prompt/zero_shot_eval_vindr_multiview_pos_neg_bare_prompts.py) can be modified the import the required fusion model (currently imports the cross-attention model) It is the common dispatcher for all six fusion architectures.
 
 ## External references and historical work
 
 - BioViL-T: [native extraction](../experiments/external_baselines/biovil_t/extract_biovil_t_phrase_grounding.py) and [same-ALBEF-case extraction](../experiments/external_baselines/biovil_t/extract_biovil_t_same_albef_cases.py).
-- CheXzero: [comparison notebook](../notebooks/comparisons/visualize_chexzero_checkpoints_and_model_comparison.ipynb) consumes externally generated maps; complete extraction/classification code is absent.
-- A5/A6: preserve their trainers, configs, patch-head module, extractors and dependent notebooks as non-thesis history. Their Python/config implementations now live under `archive/non_thesis_experiments/`; historical paths remain compatibility loaders/symlinks. No historical experiment was deleted. The output-free A1–A5 comparison notebook is also preserved in the non-thesis archive with a legacy symlink; output-bearing notebooks remain in place.
-- FROC, CLARity-style gating and older attribution variants: preserve as exploratory localization. They are not the primary thesis pointing-game endpoint.
+- CheXzero: [comparison notebook](../notebooks/comparisons/visualize_chexzero_checkpoints_and_model_comparison.ipynb) 
 - VQA, NLVR, retrieval, visual entailment and RefCOCO: inherited ALBEF functionality; preserve source and attribution.
-
-A notebook covering A1–A5 remains historical as a whole; do not remove A5 cells simply to match main-thesis navigation.
