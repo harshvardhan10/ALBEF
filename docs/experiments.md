@@ -17,7 +17,7 @@ For the shortest route to each full architecture and method implementation, star
 A1, A2, A3, A3.1, A3.2 and A4 each require separate Cardiomegaly and Pleural Effusion run records. A0 is the original-image reference.
 
 | Variant | Configuration evidence |
-|---|---|---|
+|---|---|
 | A0 | [A0 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A0.yaml) |
 | A1 | [A1 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A1.yaml) | 
 | A2 | [A2 YAML](../configs/historical/original_configs/Pretrain_anatomy_prior_A2.yaml) |
