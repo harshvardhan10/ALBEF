@@ -1,0 +1,3 @@
+canonical_path,original_snapshot_path,original_sha256,current_sha256,scope
+src/cxr_vlm/evaluation/legacy/src.py,archive/source_snapshots/evaluation/legacy_src.py,81f88624270fa09ad3518540f89807dc2b1284dc1b5be225c3ab9ebdef24a75c,4a59490e773fcc28ccbef380af83d7346f448e00cdd35d5b0a0f0c8b401b3e30,Opt-in tokenizer/text-encoder asset IO; historical defaults and remaining function bodies preserved.
+src/cxr_vlm/evaluation/modern/src.py,archive/source_snapshots/evaluation/modern_src.py,81f88624270fa09ad3518540f89807dc2b1284dc1b5be225c3ab9ebdef24a75c,4a59490e773fcc28ccbef380af83d7346f448e00cdd35d5b0a0f0c8b401b3e30,Opt-in tokenizer/text-encoder asset IO; historical defaults and remaining function bodies preserved.

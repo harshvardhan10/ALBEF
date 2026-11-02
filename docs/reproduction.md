@@ -56,9 +56,9 @@ Onboarding also exercised synthetic image augmentation, a small vision encoder, 
 
 Follow [data access](data_access.md). Recover the exact training/common-valid manifest, frozen validation IDs/labels, official test manifest/annotations/dimensions, and required mask caches. Verify non-overlap and membership from artifacts rather than directory names.
 
-Recover initial and selected checkpoint hashes and the actual BERT tokenizer/model snapshot. `scripts/src.py` and its duplicate hardcode a private local-only tokenizer cache; commands consuming that loader are blocked on this portability issue until separately addressed. Do not create a fake cache or replace tokenizer behavior silently.
+Recover initial and selected checkpoint hashes and the actual BERT tokenizer/model snapshot. The evaluation helpers retain a private local-only tokenizer cache as the historical default, with explicit overrides now available in [local paths](local_paths.md). Supply the actual verified tokenizer/encoder sources; do not create a fake cache or replace tokenizer behavior silently. Other direct asset constructors retain their own interfaces.
 
-Keep private configs and datasets outside the checkout. Portable data/checkpoint/tokenizer/output-root overrides are planned but not implemented in this phase.
+Keep private configs and datasets outside the checkout. Use [the local-config generator](local_paths.md) for approved existing path fields and the evaluation helper asset overrides where applicable. Notebooks, manifest contents and every direct asset constructor are not automatically rewritten.
 
 ## Training entry points
 
@@ -111,7 +111,7 @@ PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}" \
   python -B scripts_new/extract_itc_margin_gradcam_heatmaps.py --help
 ```
 
-An **unexecuted template**, after resolving the tokenizer loader and obtaining verified assets:
+An **unexecuted template**, after explicitly selecting verified tokenizer/model assets and obtaining the matching checkpoint:
 
 ```bash
 PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}" \

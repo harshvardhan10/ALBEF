@@ -29,11 +29,24 @@ class MigrationTests(unittest.TestCase):
             rows = list(csv.DictReader(handle))
         self.assertEqual(len(rows), 175)
         self.assertEqual(len(rows), len({r['canonical_path'] for r in rows}))
+        revised = {r['canonical_path'] for r in rows if r.get('original_snapshot_path')}
+        self.assertEqual(revised, {
+            'src/cxr_vlm/evaluation/legacy/src.py',
+            'src/cxr_vlm/evaluation/modern/src.py',
+        })
+        with (ROOT / 'docs/audit/portability_changes.csv').open() as handle:
+            changes = list(csv.DictReader(handle))
+        self.assertEqual({r['canonical_path'] for r in changes}, revised)
+        self.assertEqual(len(changes), 2)
+        for change in changes:
+            self.assertEqual(hashlib.sha256((ROOT / change['canonical_path']).read_bytes()).hexdigest(),
+                             change['current_sha256'])
         for row in rows:
             with self.subTest(path=row['canonical_path']):
                 source = ROOT / row['canonical_path']
                 self.assertTrue(source.is_file())
-                self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),
+                original = ROOT / (row.get('original_snapshot_path') or row['canonical_path'])
+                self.assertEqual(hashlib.sha256(original.read_bytes()).hexdigest(),
                                  row['original_sha256'])
                 legacy = ROOT / row['legacy_path']
                 self.assertTrue(legacy.is_file())

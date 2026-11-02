@@ -7,6 +7,7 @@ Contains:
 """
 
 from pathlib import Path
+import os
 
 import pandas as pd
 import numpy as np
@@ -31,10 +32,36 @@ def load_config(config_path):
     return config
 
 
+_HISTORICAL_TOKENIZER_PATH = '/home/woody/iwi5/iwi5362h/.cache/huggingface/models--bert-base-uncased/snapshots/86b5e0934494bd15c9632b12f734a8a67f723594'
+
+
+def _resolve_pretrained_sources(*, tokenizer_path=None, text_encoder=None):
+    """Explicit argument > environment > historical asset source; no downloads here."""
+    if tokenizer_path is None:
+        tokenizer_path = os.environ.get('ALBEF_TOKENIZER_PATH', _HISTORICAL_TOKENIZER_PATH)
+    if text_encoder is None:
+        text_encoder = os.environ.get('ALBEF_TEXT_ENCODER', 'bert-base-uncased')
+
+    def source(value, name):
+        try:
+            value = os.fspath(value)
+        except TypeError as error:
+            raise ValueError(name + ' must be a text asset path or identifier') from error
+        if not isinstance(value, str) or not value:
+            raise ValueError(name + ' must not be empty or bytes')
+        return value
+
+    return (source(tokenizer_path, 'ALBEF_TOKENIZER_PATH'),
+            source(text_encoder, 'ALBEF_TEXT_ENCODER'))
+
+
 def build_model_and_tokenizer(
     config_path,
     ckpt_path,
     device = "cuda",
+    *,
+    tokenizer_path=None,
+    text_encoder=None,
 ):
     """
     Build ALBEF + tokenizer and load checkpoint
@@ -43,6 +70,8 @@ def build_model_and_tokenizer(
         model, tokenizer, config, device_torch
     """
     config = load_config(config_path)
+    tokenizer_source, text_encoder_source = _resolve_pretrained_sources(
+        tokenizer_path=tokenizer_path, text_encoder=text_encoder)
 
     # Device
     device_torch = torch.device(device if torch.cuda.is_available() else "cpu")
@@ -50,14 +79,14 @@ def build_model_and_tokenizer(
 
     # Tokenizer
     tokenizer = BertTokenizer.from_pretrained(
-        "/home/woody/iwi5/iwi5362h/.cache/huggingface/models--bert-base-uncased/snapshots/86b5e0934494bd15c9632b12f734a8a67f723594",
+        tokenizer_source,
         local_files_only=True,
     )
 
     print("[Model] Building ALBEF...")
     model = ALBEF(
         config=config,
-        text_encoder="bert-base-uncased",
+        text_encoder=text_encoder_source,
         tokenizer=tokenizer,
         init_deit=False,   # load checkpoint
     )

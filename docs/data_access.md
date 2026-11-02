@@ -30,6 +30,6 @@ The [segmentation-derived heart-prior builder](../tools/preprocessing/build_vind
 
 ## Local paths and publication
 
-Future portable configuration should name separate data, tokenizer, checkpoint and output roots. Such overrides are proposed, not implemented. Historical configs retain their HPC paths for provenance. Put any local config copies outside the checkout until ignored paths are deliberately introduced.
+The [local-config generator](local_paths.md) can bind approved existing data/checkpoint path fields into a new local copy; evaluation asset overrides are separate. This does not rewrite manifest contents or verify asset identity. Historical configs retain their HPC paths for provenance. Put any local config copies outside the checkout until ignored paths are deliberately introduced.
 
 Do not overwrite source images or reports during conversion. Preserve data licenses and access restrictions. Patient-image previews, contact sheets, report-bearing manifests, diagnostic IDs and notebook outputs require explicit review before public distribution. Do not add missing private data to Git to satisfy reproducibility documentation.

@@ -15,11 +15,15 @@ This record separates the thesis/reporting protocol, current code, historical ev
 | D09 | Pointing-game execution | Notebook config contains seven guidance methods, blank checkpoint provenance and a reference to absent `analysis/localization_pointing_game.py`. Fusion-specific execution configuration/output is not checked in. Embedded analysis functions are present; absent module is a documentation gap, not proof the notebook cannot run. |
 | D10 | Final results | Historical output paths are not sufficient to map thesis tables to checkpoints/protocols. Recover saved score/map/protocol/coverage/statistics bundles. |
 | D11 | Legacy environment | Pillow 8.4 lacks `Image.Resampling` used by newer validation transforms. Some inherited task scripts require `ruamel_yaml` while requirements declare `ruamel.yaml`. Keep dependency fixes separate. |
-| D12 | Launch and tokenizer | Bare `src` imports depend on launch directory. Shared helper hardcodes an HPC BERT cache with local-only loading. Record explicit launch conventions and verify assets. |
+| D12 | Launch and tokenizer | Bare `src` imports depend on launch directory. Shared helper retains the HPC BERT cache as its default, with explicit keyword/environment asset overrides now available; see [local paths](local_paths.md). Local-only tokenizer loading remains. Other direct asset constructors keep their own interfaces; verify actual assets. |
 | D13 | HPC jobs | No standalone shell/SLURM file found in 494 distinct paths across available history. Commit messages mention jobs but do not recover original executable scripts. Any future templates must be labeled reconstructed. |
 | D14 | External code | BioViL-T package/weight pins and CheXzero complete execution pipeline are missing. Do not invent repositories, revisions or checkpoint URLs. |
 | D15 | Historical protocol correction | `40c3b56` records correcting test-derived F1 fitting and missing ensemble normalization. Treat preceding outputs as historical until their actual protocol is identified. |
 | D16 | Commit-message ambiguity | `cc5daff` says validation used test data, but introduced config points to train. Follow config evidence; executed job still requires run logs. This message alone does not prove leakage. |
+
+## Available evidence and current priority
+
+The researcher confirmed final run configs, prepared manifests, selection logs and evaluation outputs are unavailable in this environment. Do not repeatedly request them or invent replacements. The immediate priority is the [model-code index](model_code.md) and per-experiment source maps; unavailable run artifacts limit numerical reproduction, not implementation access.
 
 ## Publication review
 

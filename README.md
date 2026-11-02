@@ -4,7 +4,19 @@ Research code for **Improving Weak Localization in Chest X-Ray Vision–Language
 
 This repository extends ALBEF to study whether anatomical guidance and original/lung/heart representations improve recognition and the spatial evidence used by chest X-ray vision–language models. The principal findings are **Cardiomegaly** and **Pleural Effusion**. A strong image-level classifier does not necessarily localize the finding accurately.
 
-The structural migration places 130 original Python implementations and 45 configurations in the research hierarchy below, with their contents unchanged. Historical paths remain available through compatibility loaders and config symlinks. Seven output-free notebooks and 34 aggregate historical results are also organized with legacy aliases. Output-bearing notebooks, per-image predictions, data and resource-coupled upstream tools remain in place. Full thesis reproduction remains dependent on the run artifacts listed in [known discrepancies](docs/discrepancies.md).
+The structural migration places 130 original Python implementations and 45 configurations in the research hierarchy below, without changing model/method logic or historical config values. Original IO-helper snapshots are retained for the two optional path-routing revisions. Historical paths remain available through compatibility loaders and config symlinks. Seven output-free notebooks and 34 aggregate historical results are also organized with legacy aliases. Output-bearing notebooks, per-image predictions, data and resource-coupled upstream tools remain in place. Full thesis reproduction remains dependent on the run artifacts listed in [known discrepancies](docs/discrepancies.md).
+
+## Find the model code
+
+**[Open the model-code index](docs/model_code.md)** for direct links to the full implementation of every main experiment. Start here when reading the research code, rather than the historical root compatibility loaders.
+
+- [A0 baseline](experiments/baseline/README.md)
+- [A1–A4 guidance and A3.1/A3.2](experiments/anatomy_guidance/README.md)
+- [Original/lung/heart models](experiments/single_view/README.md)
+- [FC, mean, gated, residual, Transformer and cross-attention fusion](experiments/joint_fusion/README.md)
+- [Late score fusion](experiments/late_fusion/README.md)
+
+A0–A4 share the ALBEF architecture; their guidance differences are explicitly mapped to trainer/loss code. The six fusion architectures remain separate full source files.
 
 ## Start here
 
@@ -13,6 +25,7 @@ The structural migration places 130 original Python implementations and 45 confi
 | [Methodology](docs/methodology.md) | Anatomical guidance, six fusion models, attribution and evaluation |
 | [Experiments](docs/experiments.md) | Thesis stage to source/configuration mapping and historical variants |
 | [Reproduction](docs/reproduction.md) | Environments, inputs, launch conventions and validation gates |
+| [Local asset/path overrides](docs/local_paths.md) | Optional evaluation assets and new path-bound local config copies |
 | [External dependencies](docs/external_dependencies.md) | Upstream code, pretrained assets, licenses and missing pins |
 | [Data access](docs/data_access.md) | Dataset roles, manifests and restricted artifacts |
 | [Results and provenance](docs/results_provenance.md) | Thesis-reported findings and evidence needed to reproduce them |

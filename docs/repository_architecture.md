@@ -1,6 +1,6 @@
 # Repository architecture and migration scope
 
-Documentation was committed separately on `docs/thesis-research-guide` (`8d82b18`). The structural phase on `refactor/thesis-repository` moves 130 Python implementations and 45 configs byte-for-byte. A pure-move commit (`562bf51`) preserves rename history; compatibility files restore old paths. No historical material was deleted. The original root README is preserved in [upstream documentation](upstream/README.original.txt).
+Documentation was committed separately on `docs/thesis-research-guide` (`8d82b18`). The structural phase on `refactor/thesis-repository` moves 130 Python implementations and 45 configs byte-for-byte. A pure-move commit (`562bf51`) preserves rename history; compatibility files restore old paths. No historical material was deleted. The subsequent [opt-in asset IO revision](local_paths.md) preserves the two original helper snapshots; all model/method implementations remain unchanged. The original root README is preserved in [upstream documentation](upstream/README.original.txt).
 
 ## Research layout and remaining scope
 

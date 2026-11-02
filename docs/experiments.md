@@ -1,5 +1,7 @@
 # Experiment guide
 
+For the shortest route to each full architecture and method implementation, start with the [model-code index](model_code.md).
+
 The [machine-readable registry](audit/experiment_registry.csv) contains 27 experiment/analysis records and legacy and canonical implementation paths. A candidate mapping is not proof of the executed run. [Historical lineage](audit/historical_lineage.csv) records exact evidence commits; [discrepancies](discrepancies.md) distinguishes unresolved claims.
 
 ## Thesis stages
