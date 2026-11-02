@@ -10,8 +10,6 @@ All three views use the [same full ALBEF architecture](../../src/cxr_vlm/models/
 
 ## View construction and training
 
-- [Single-view dual-AUC trainer](Pretrain_A0_multiview_dual_auc.py) — despite “multiview” in its filename, this selects one view rather than fusing three branches.
+- [Single-view dual-AUC trainer](Pretrain_A0_multiview_dual_auc.py)
 - [Cached-mask dataset](../../src/cxr_vlm/datasets/chexmask_cached_mask_dataset.py) and [online mask dataset](../../src/cxr_vlm/datasets/chexmask_view_dataset.py) — preserve these distinct input-generation paths.
 - [Mask-cache trainer](Pretrain_A0_maskcache.py), [online-mask trainer](Pretrain_A0_chexmask.py) and [precomputed-view trainer](Pretrain_A0_precomputed.py) — historical alternatives, not proven interchangeable runs.
-
-The three selected single-view checkpoints initialize joint fusion and provide late-fusion scores. Final checkpoint/run assets are unavailable here. The historical config paths remain visible, but selection/cohort/preprocessing discrepancies must not be silently resolved.
