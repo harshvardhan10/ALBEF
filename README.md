@@ -1,6 +1,7 @@
 # Anatomy-Aware Weak Localization in Chest X-Ray Vision–Language Models
 
-Research code for **Improving Weak Localization in Chest X-Ray Vision–Language Models Using Anatomy-Aware Refinement**  
+Research code for **Improving Weak Localization in Chest X-Ray Vision–Language Models Using Anatomy-Aware Refinement**
+
 **Harshvardhan Agarwal · Master's thesis · Friedrich-Alexander-Universität Erlangen-Nürnberg · 2026**
 
 > **`work` is the primary research and development branch.** Use this branch for the organized model implementations, experiment guides and reproduction instructions. The `main` branch preserves the earlier repository state and points here.
