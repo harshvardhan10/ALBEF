@@ -1,6 +1,6 @@
 # Two-layer anchored cross-attention fusion
 
-**Open the full model code:** [model_pretrain_multiview_cross_attention_fusion.py](../../../src/cxr_vlm/models/model_pretrain_multiview_cross_attention_fusion.py). This is the complete implementation, not an import facade.
+**Open the full model code:** [model_pretrain_multiview_cross_attention_fusion.py](../../../src/cxr_vlm/models/model_pretrain_multiview_cross_attention_fusion.py). 
 
 The original token supplies the query; lung and heart tokens supply auxiliary memory. Two cross-attention layers update the original anchor.
 
@@ -19,8 +19,8 @@ The original token supplies the query; lung and heart tokens supply auxiliary me
 
 ## Experiment identity
 
-Three aligned original/lung/heart image encoders produce one fused token sequence for the ALBEF objectives. Keep this architecture separate from the other five fusion implementations; similar trainer structure is not permission to merge them.
+Three aligned original/lung/heart image encoders produce one fused token sequence for the ALBEF objectives. 
 
-The attribution extractor aggregates positive unnormalized branch maps, then applies one maximum normalization. It is not a fusion-layer attention matrix or a late score ensemble. Final run checkpoints are unavailable here; the linked code/config mapping is not a claim of numerical reproduction.
+The attribution extractor aggregates positive unnormalized branch maps, then applies one maximum normalization. 
 
-Use [the registered launcher](../../../tools/run_experiment.py) from the repository root. The generic-named multi-view classification evaluator currently constructs cross-attention ALBEF only; it must not be assumed valid for every fusion family.
+Use [the registered launcher](../../../tools/run_experiment.py) from the repository root. 
