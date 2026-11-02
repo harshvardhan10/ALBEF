@@ -4,7 +4,7 @@ Research code for **Improving Weak Localization in Chest X-Ray Vision–Language
 
 This repository extends ALBEF to study whether anatomical guidance and original/lung/heart representations improve recognition and the spatial evidence used by chest X-ray vision–language models. The principal findings are **Cardiomegaly** and **Pleural Effusion**. A strong image-level classifier does not necessarily localize the finding accurately.
 
-The structural migration places 130 original Python implementations and 45 configurations in the research hierarchy below, with their contents unchanged. Historical paths remain available through compatibility loaders and config symlinks. Notebooks, results, data and resource-coupled upstream tools remain in place. Full thesis reproduction remains dependent on the run artifacts listed in [known discrepancies](docs/discrepancies.md).
+The structural migration places 130 original Python implementations and 45 configurations in the research hierarchy below, with their contents unchanged. Historical paths remain available through compatibility loaders and config symlinks. Seven output-free notebooks and 34 aggregate historical results are also organized with legacy aliases. Output-bearing notebooks, per-image predictions, data and resource-coupled upstream tools remain in place. Full thesis reproduction remains dependent on the run artifacts listed in [known discrepancies](docs/discrepancies.md).
 
 ## Start here
 
@@ -19,6 +19,8 @@ The structural migration places 130 original Python implementations and 45 confi
 | [Known discrepancies](docs/discrepancies.md) | Thesis, current checkout and historical implementation differences |
 | [Repository architecture](docs/repository_architecture.md) | Applied layout, compatibility and remaining migration scope |
 | [Migration validation](docs/migration_validation.md) | Exact-byte preservation and numerical compatibility checks |
+| [Notebook catalog](notebooks/README.md) | Grouped analyses, canonical viewing paths and execution context |
+| [Historical results](results/README.md) | Aggregate summaries and held per-image prediction files |
 | [Agent instructions](AGENTS.md) | Constraints for future automated changes |
 
 ## Experimental pipeline
@@ -51,8 +53,9 @@ configs/historical/  Original configurations preserved verbatim
 configs/models/      BERT architecture configuration
 tools/               Preprocessing, inspection, diagnostics and experiment launcher
 archive/             Preserved A5/A6, exploratory localization and upstream tasks
-notebooks/           Existing notebooks, retained at original paths for now
-results/             Historical outputs, retained without modification
+notebooks/           Comparisons, evaluation and figures; held outputs remain at old paths
+results/historical/  Aggregate historical outputs, preserved without value changes
+results/             Legacy aliases and held per-image predictions
 docs/                Thesis guides, provenance and applied migration manifest
 Pretrain*.py, etc.    Historical compatibility loaders, not duplicate implementations
 ```

@@ -47,7 +47,7 @@ Use `python -B tools/run_experiment.py <canonical-or-legacy-path> [arguments]` f
 
 For in-checkout reusable imports, set `PYTHONPATH="$PWD:$PWD/src"`. This phase does not create a separately installable distribution or promise canonical scripts support direct deep-path invocation. Use the launcher. Retained loaders preserve historical pickling/module names. Config symlinks preserve root-relative defaults and require symlink support; Linux was validated.
 
-Notebooks, historical results, patient-data artifacts, bytecode, image assets, and RefCOCO/VQA Python/Java resource trees remain at their original paths. Their moves need notebook working-directory/resource-path and redistribution review. Empty future directories in the conceptual tree are not represented as already implemented workflows.
+Seven output-free notebooks and 34 aggregate results are now organized, with old locations retained as symlinks; see [artifact organization](artifact_organization.md). Twenty-one output-bearing notebooks, two per-image prediction files, patient-data artifacts, bytecode, image assets, and RefCOCO/VQA Python/Java resource trees remain at their original paths. Their moves need working-directory/resource-path and redistribution review. Empty future directories in the conceptual tree are not represented as already implemented workflows.
 
 ## Acceptance criteria for later migration
 

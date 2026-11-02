@@ -15,7 +15,7 @@ python -B -m unittest discover -s tests/compatibility -v
 
 The launcher accepts canonical or legacy paths listed as entry points in [the applied manifest](audit/applied_migration.csv), restores historical imports/arguments/`__file__` context and forwards remaining flags unchanged. It rejects unknown paths and invocation outside the repository working directory. Do not substitute direct deep-path execution of canonical files. Legacy commands below remain supported through compatibility loaders; config values/default paths remain unchanged via relative symlinks.
 
-Reusable in-checkout imports need both root and source paths, for example `PYTHONPATH="$PWD:$PWD/src"`. There is no new standalone package installation in this phase. Symlink support is required for old config paths (validated on Linux). Notebooks remain at their old paths and retain their original outputs.
+Reusable in-checkout imports need both root and source paths, for example `PYTHONPATH="$PWD:$PWD/src"`. There is no new standalone package installation in this phase. Symlink support is required for old config paths (validated on Linux). Seven output-free notebooks have canonical viewing locations and legacy symlinks; the others remain in place. All notebook cells/outputs are unchanged. Inspect [notebook context](artifact_organization.md) before interactive execution.
 
 ## Choose the workflow environment
 
@@ -129,9 +129,17 @@ This single-view template is appropriate only when both findings are to be expla
 
 Fusion uses its architecture-specific extractor and branch-composite rule. BioViL-T native grounding requires its separate external environment/assets and spatial valid-region handling.
 
+## Notebook location and working-directory context
+
+```bash
+python -B tools/notebook_context.py notebooks/evaluation/localization_pointing_game.ipynb
+```
+
+This prints canonical/legacy paths and the original file-parent directory; it does not execute cells or prove the final HPC execution directory. Open the legacy alias and verify the kernel cwd before running unchanged cells. Some older extraction notebooks unconditionally execute `os.chdir("..")`; opening a canonical deep path and running cells without checking cwd can change behavior. See the [notebook catalog](../notebooks/README.md).
+
 ## Pointing game and figures
 
-Use [the notebook](../notebooks/localization_pointing_game.ipynb) in a compatible analysis environment. Inspect its protocol and payloads; fill actual checkpoint provenance; confirm full-image geometry and strict coverage before scoring. Its configured sources cover guidance only; fusion requires its separate verified execution configuration and artifact bundle, not an assumption that the current notebook already reproduces Table 6.8.
+Use [the notebook](../notebooks/evaluation/localization_pointing_game.ipynb) in a compatible analysis environment. Inspect its protocol and payloads; fill actual checkpoint provenance; confirm full-image geometry and strict coverage before scoring. Its configured sources cover guidance only; fusion requires its separate verified execution configuration and artifact bundle, not an assumption that the current notebook already reproduces Table 6.8.
 
 Required outputs include protocol/provenance, cohort, coverage, per-image outcomes, hit-rate summary and paired comparisons. Keep missing/invalid, flat and tied maps distinguishable. Do not tune layers or thresholds against test hit rates. Keep guidance and fusion Holm families separate.
 

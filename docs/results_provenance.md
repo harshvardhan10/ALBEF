@@ -1,6 +1,6 @@
 # Results and provenance
 
-All numerical values here are **thesis-reported**, not independently reproduced in this documentation phase. Historical files under `results/` and `vindr_zero_shot_results_a40/` have not been established as the generating records for these tables.
+All numerical values here are **thesis-reported**, not independently reproduced in this documentation phase. Aggregate historical files are organized under `results/historical/`; old result paths remain aliases. Per-image prediction files stay at their original locations. None has been established as the generating records for these tables. See the [result catalog](../results/README.md).
 
 ## Selected reported outcomes
 

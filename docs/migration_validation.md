@@ -1,4 +1,6 @@
-# Structural migration validation
+# Python/config structural migration validation
+
+This is the Python/config phase record; see [artifact organization](artifact_organization.md) for the subsequent notebook/result phase.
 
 Branch: `refactor/thesis-repository`; documentation base: `8d82b18`; byte-for-byte move commit: `562bf51`. No push, merge or publication is implied.
 

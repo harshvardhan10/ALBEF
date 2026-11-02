@@ -15,7 +15,7 @@ This is a Master's thesis research repository for anatomy-aware weak localizatio
 
 ## Git and files
 
-- Work on a dedicated feature branch, never directly on `main` or `master`. Inspect status first and preserve user changes.
+- Continue on the current `refactor/thesis-repository` branch. Do not create a PR, merge to `main`/`master`, or switch branches unless the user explicitly asks. Inspect status first and preserve user changes.
 - Cloud tasks already run in an isolated environment; use the existing checkout. Do not create a worktree unless the user explicitly requests one.
 - No deletion, untracking, history rewriting or destructive cleanup without explicit user approval and recoverable preservation.
 - Do not overwrite existing results or checkpoints. Select a new output directory and inspect the script's overwrite behavior.
@@ -41,4 +41,4 @@ This is a Master's thesis research repository for anatomy-aware weak localizatio
 
 ## Structural migration phase
 
-The approved structural phase moves original Python/config files byte-for-byte and retains historical paths through compatibility loaders/config symlinks. No experiment-body or config-value edits are authorized. Notebooks, outputs, data, bytecode, image assets and resource-coupled vendored tools remain in place. Use `tools/run_experiment.py` for registered canonical entry points from the repository root; preserve legacy module and `__file__` context. Validate applied-migration hashes and numerical compatibility tests before completing changes.
+The approved structural phase moves original Python/config files byte-for-byte and retains historical paths through compatibility loaders/config symlinks. No experiment-body or config-value edits are authorized. Seven output-free notebooks and 34 aggregate result files are also organized byte-for-byte, with legacy symlinks. Output-bearing notebooks, per-image predictions, data, bytecode, image assets and resource-coupled vendored tools remain in place. Use `tools/notebook_context.py` to inspect original notebook-parent context before running cells; a canonical file location does not establish the correct kernel cwd. Use `tools/run_experiment.py` for registered canonical entry points from the repository root; preserve legacy module and `__file__` context. Validate applied-migration hashes and numerical compatibility tests before completing changes.

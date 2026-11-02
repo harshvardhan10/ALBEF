@@ -11,7 +11,7 @@ The [machine-readable registry](audit/experiment_registry.csv) contains 27 exper
 | Anatomical views | 5.5, 6.4 | [Single-view dual-AUC trainer](../experiments/single_view/Pretrain_A0_multiview_dual_auc.py), [mask-cache trainer](../experiments/single_view/Pretrain_A0_maskcache.py), [online-mask trainer](../experiments/single_view/Pretrain_A0_chexmask.py), [precomputed-view trainer](../experiments/single_view/Pretrain_A0_precomputed.py) |
 | Score combination | 5.6.1, 6.5.1 | [Normalized ensembles](../experiments/late_fusion/ensemble_zero_shot_scores.py), [fitted ensemble weights](../experiments/late_fusion/learn_dual_checkpoint_ensemble_weights.py) |
 | Joint fusion | 5.6.2, 6.5.2–6.5.4 | Six trainer/model/extractor families below |
-| Evaluation | 5.7 | [Validation-thresholded F1](../experiments/evaluation/evaluate_zero_shot_f1_from_validation.py), [pointing-game notebook](../notebooks/localization_pointing_game.ipynb) |
+| Evaluation | 5.7 | [Validation-thresholded F1](../experiments/evaluation/evaluate_zero_shot_f1_from_validation.py), [pointing-game notebook](../notebooks/evaluation/localization_pointing_game.ipynb) |
 
 ## Guidance run identity
 
@@ -47,8 +47,8 @@ The file [zero_shot_eval_vindr_multiview_pos_neg_bare_prompts.py](../experiments
 ## External references and historical work
 
 - BioViL-T: [native extraction](../experiments/external_baselines/biovil_t/extract_biovil_t_phrase_grounding.py) and [same-ALBEF-case extraction](../experiments/external_baselines/biovil_t/extract_biovil_t_same_albef_cases.py).
-- CheXzero: [comparison notebook](../notebooks/visualize_chexzero_checkpoints_and_model_comparison.ipynb) consumes externally generated maps; complete extraction/classification code is absent.
-- A5/A6: preserve their trainers, configs, patch-head module, extractors and dependent notebooks as non-thesis history. Their Python/config implementations now live under `archive/non_thesis_experiments/`; historical paths remain compatibility loaders/symlinks. No historical experiment was deleted; dependent notebooks remain in place.
+- CheXzero: [comparison notebook](../notebooks/comparisons/visualize_chexzero_checkpoints_and_model_comparison.ipynb) consumes externally generated maps; complete extraction/classification code is absent.
+- A5/A6: preserve their trainers, configs, patch-head module, extractors and dependent notebooks as non-thesis history. Their Python/config implementations now live under `archive/non_thesis_experiments/`; historical paths remain compatibility loaders/symlinks. No historical experiment was deleted. The output-free A1–A5 comparison notebook is also preserved in the non-thesis archive with a legacy symlink; output-bearing notebooks remain in place.
 - FROC, CLARity-style gating and older attribution variants: preserve as exploratory localization. They are not the primary thesis pointing-game endpoint.
 - VQA, NLVR, retrieval, visual entailment and RefCOCO: inherited ALBEF functionality; preserve source and attribution.
 
