@@ -1,7 +1,5 @@
 # Model code: start here
 
-The links below open the **full implementation files**. They deliberately avoid historical compatibility loaders and do not invent separate architectures where experiments share a model.
-
 ## Main thesis experiments
 
 | Experiment | Full model implementation | Where its method differs | Guide |
@@ -28,14 +26,8 @@ The links below open the **full implementation files**. They deliberately avoid 
 - [XBERT text/image-conditioned encoder](../src/cxr_vlm/models/xbert.py) and [BERT tokenizer](../src/cxr_vlm/models/tokenization_bert.py).
 - [Anatomy attention extraction](../src/cxr_vlm/anatomy/attention_extract.py), [outside-support loss](../src/cxr_vlm/anatomy/losses.py) and [target token selection](../src/cxr_vlm/anatomy/token_utils.py).
 
-A0–A4, including A3.1/A3.2, share ALBEF's architecture. The guidance losses live in the trainer and anatomy helpers; coefficient variants remain distinct experiment identities. Guidance is target-specific for Cardiomegaly and Pleural Effusion. Do not duplicate one architecture into misleading new A1/A2 model classes.
+A0–A4, including A3.1/A3.2, share ALBEF's architecture. The guidance losses live in the trainer and anatomy helpers; coefficient variants remain distinct experiment identities. Guidance is target-specific for Cardiomegaly and Pleural Effusion.
 
 ## External references and historical work
 
-BioViL-T's [native extraction integration](../experiments/external_baselines/biovil_t/extract_biovil_t_phrase_grounding.py) is present; the full pretrained external model architecture is supplied by its external package, not implemented here. CheXzero's [comparison notebook](../notebooks/comparisons/visualize_chexzero_checkpoints_and_model_comparison.ipynb) consumes external outputs; its complete model implementation is absent from this repository. No missing implementation or result is invented.
-
-A5/A6 remain preserved in `archive/non_thesis_experiments/` outside the main-thesis guide. The root `Pretrain*.py`, old `models/`, `scripts/` and `scripts_new/` paths are compatibility loaders; use the full source links above for reading model/method code.
-
-Final run configurations, checkpoints and evaluation outputs are unavailable in this environment. That limits numerical reproduction, not access to the model implementations. Known source/thesis differences remain documented in [the discrepancy record](discrepancies.md).
-
-See the [validation record](audit/history/model_code_validation.md) for navigation checks, source preservation and the limits of runtime validation.
+BioViL-T's [native extraction integration](../experiments/external_baselines/biovil_t/extract_biovil_t_phrase_grounding.py) is present; the full pretrained external model architecture is supplied by its external package.
