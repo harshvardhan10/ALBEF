@@ -38,4 +38,4 @@ A5/A6 remain preserved in `archive/non_thesis_experiments/` outside the main-the
 
 Final run configurations, checkpoints and evaluation outputs are unavailable in this environment. That limits numerical reproduction, not access to the model implementations. Known source/thesis differences remain documented in [the discrepancy record](discrepancies.md).
 
-See the [validation record](model_code_validation.md) for navigation checks, source preservation and the limits of runtime validation.
+See the [validation record](audit/history/model_code_validation.md) for navigation checks, source preservation and the limits of runtime validation.

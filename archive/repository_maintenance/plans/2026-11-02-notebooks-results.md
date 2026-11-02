@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python standard library, CSV/Markdown, existing unittest compatibility suite. No new dependency installs.
 
-**Spec:** [Repository architecture](../../repository_architecture.md), [preservation rules](../../../AGENTS.md) and the user's instruction to continue only on this branch, without a PR to main.
+**Spec:** [Repository architecture](../../../docs/repository_architecture.md), [preservation rules](../../../AGENTS.md) and the user's instruction to continue only on this branch, without a PR to main.
 
 ## Global constraints
 

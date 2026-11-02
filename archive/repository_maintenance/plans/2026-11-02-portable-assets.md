@@ -8,7 +8,7 @@
 
 **Tech Stack:** Existing Python 3.9/PyYAML/legacy ALBEF stack; standard-library unittest; isolated uv environment.
 
-**Spec:** [Reproduction](../../reproduction.md), [discrepancies](../../discrepancies.md), `AGENTS.md`, and the user's instruction to continue on this branch with no PR/main merge.
+**Spec:** [Reproduction](../../../docs/reproduction.md), [discrepancies](../../../docs/discrepancies.md), `AGENTS.md`, and the user's instruction to continue on this branch with no PR/main merge.
 
 ## Global constraints
 

@@ -1,12 +1,12 @@
 # Python/config structural migration validation
 
-This is the Python/config phase record; see [artifact organization](artifact_organization.md) for the subsequent notebook/result phase.
+This is the Python/config phase record; see [artifact organization](../../artifact_organization.md) for the subsequent notebook/result phase.
 
 Branch: `refactor/thesis-repository`; documentation base: `8d82b18`; byte-for-byte move commit: `562bf51`. No push, merge or publication is implied.
 
 ## Applied scope
 
-The [applied manifest](audit/applied_migration.csv) records 175 moves: 130 Python implementations and 45 configurations. Each original content SHA-256 is checked at its canonical destination. Historical Python paths are compatibility loaders; config paths are relative symlinks. The move commit contains zero inserted/deleted content lines and preserves rename history.
+The [applied manifest](../applied_migration.csv) records 175 moves: 130 Python implementations and 45 configurations. Each original content SHA-256 is checked at its canonical destination. Historical Python paths are compatibility loaders; config paths are relative symlinks. The move commit contains zero inserted/deleted content lines and preserves rename history.
 
 Notebooks, results, data, bytecode, image assets and resource-coupled RefCOCO/VQA tools remain at original paths. No restricted artifacts were copied into new source paths. The original README is preserved separately; all original research contents remain accounted for at a canonical or held path.
 

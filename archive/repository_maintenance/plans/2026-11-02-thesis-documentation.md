@@ -8,7 +8,7 @@
 
 **Tech Stack:** Markdown, CSV; Python standard-library validation outside the repository.
 
-**Spec:** [Architecture and scope](../../repository_architecture.md), [experiment mapping](../../experiments.md) and [discrepancies](../../discrepancies.md), implementing the user's thesis/audit request and corrections.
+**Spec:** [Architecture and scope](../../../docs/repository_architecture.md), [experiment mapping](../../../docs/experiments.md) and [discrepancies](../../../docs/discrepancies.md), implementing the user's thesis/audit request and corrections.
 
 ## Global Constraints
 

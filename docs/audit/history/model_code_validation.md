@@ -4,7 +4,7 @@ This phase prioritizes access to the full implementation of each main experiment
 
 ## Navigation
 
-[The model-code index](model_code.md) and guides beside the baseline, guidance, single-view, six fusion and late-fusion entry points link to actual implementation files rather than compatibility loaders. Static checks verify seven full ALBEF model sources, all 38 class/function line anchors, 351 local documentation links and 14 Bash blocks.
+[The model-code index](../../model_code.md) and guides beside the baseline, guidance, single-view, six fusion and late-fusion entry points link to actual implementation files rather than compatibility loaders. Static checks verify seven full ALBEF model sources, all 38 class/function line anchors, 351 local documentation links and 14 Bash blocks.
 
 A0–A4/A3.1/A3.2 share an ALBEF architecture, with support/preservation logic in the trainers and anatomy helpers. Original/lung/heart models differ in input construction. Six fusion implementations remain distinct. Late fusion is score combination, not an invented neural-network architecture.
 

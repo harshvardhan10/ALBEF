@@ -1,4 +1,4 @@
-# New local caches and environments; existing tracked artifacts are not removed.
+# Local caches and environments.
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
@@ -24,3 +24,6 @@ __pycache__/
 /results/runs/
 /data/local/
 /data/private/
+
+# Temporary files produced by the inherited PTB tokenizer.
+/refTools/evaluation/tokenizer/tmp*

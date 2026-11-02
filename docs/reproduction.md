@@ -48,7 +48,7 @@ source "$SETUP_ROOT/venv/bin/activate"
 python -B Pretrain.py --help
 ```
 
-Execute from the checkout root; network access to Python release/package hosts and PyTorch wheels is required. Keep TLS verification enabled. Requirements include historical unpinned transitive dependencies, so this recipe is not a frozen training lock. Current-instance CLI/help checks are recorded in the [validation record](validation.md); no fresh-machine restoration claim is made.
+Execute from the checkout root; network access to Python release/package hosts and PyTorch wheels is required. Keep TLS verification enabled. Requirements include historical unpinned transitive dependencies, so this recipe is not a frozen training lock. Current-instance CLI/help checks are recorded in the [validation record](audit/history/validation.md); no fresh-machine restoration claim is made.
 
 Onboarding also exercised synthetic image augmentation, a small vision encoder, XBERT fusion, masked-language loss and backpropagation. Its helper lives outside the checkout and is not a portable repository test suite.
 
@@ -147,4 +147,4 @@ The four-radiograph qualitative figure series is distinct from full positive-box
 
 ## Validation status
 
-The documentation phase checked CLI/import interfaces, local links, registry paths and protected-file hashes. The structural phase additionally tests exact migrated bytes, historical/canonical launch equivalence and deterministic CPU behavior. See [migration validation](migration_validation.md). It does not validate data preparation, GPU execution, complete external-model installs, checkpoint selection or final numerical reproduction. See the [phase validation record](validation.md) for the exact commands run and their outcomes.
+The documentation phase checked CLI/import interfaces, local links, registry paths and protected-file hashes. The structural phase additionally tests exact migrated bytes, historical/canonical launch equivalence and deterministic CPU behavior. See [migration validation](audit/history/migration_validation.md). It does not validate data preparation, GPU execution, complete external-model installs, checkpoint selection or final numerical reproduction. See the [phase validation record](audit/history/validation.md) for the exact commands run and their outcomes.

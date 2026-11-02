@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.9-compatible standard-library launch/compatibility code; existing research dependencies; unittest.
 
-**Spec:** [Reviewed architecture](../../repository_architecture.md), [methodology constraints](../../methodology.md), and `AGENTS.md` as amended for this approved structural phase.
+**Spec:** [Reviewed architecture](../../../docs/repository_architecture.md), [methodology constraints](../../../docs/methodology.md), and `AGENTS.md` as amended for this approved structural phase.
 
 ## Global constraints
 

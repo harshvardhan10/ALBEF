@@ -31,7 +31,7 @@ A0–A4 share the ALBEF architecture; their guidance differences are explicitly 
 | [Results and provenance](docs/results_provenance.md) | Thesis-reported findings and evidence needed to reproduce them |
 | [Known discrepancies](docs/discrepancies.md) | Thesis, current checkout and historical implementation differences |
 | [Repository architecture](docs/repository_architecture.md) | Applied layout, compatibility and remaining migration scope |
-| [Migration validation](docs/migration_validation.md) | Exact-byte preservation and numerical compatibility checks |
+| [Migration validation](docs/audit/history/migration_validation.md) | Exact-byte preservation and numerical compatibility checks |
 | [Notebook catalog](notebooks/README.md) | Grouped analyses, canonical viewing paths and execution context |
 | [Historical results](results/README.md) | Aggregate summaries and held per-image prediction files |
 | [Agent instructions](AGENTS.md) | Constraints for future automated changes |
@@ -69,7 +69,7 @@ archive/             Preserved A5/A6, exploratory localization and upstream task
 notebooks/           Comparisons, evaluation and figures; held outputs remain at old paths
 results/historical/  Aggregate historical outputs, preserved without value changes
 results/             Legacy aliases and held per-image predictions
-docs/                Thesis guides, provenance and applied migration manifest
+docs/                Thesis guides; audit records grouped under docs/audit/
 Pretrain*.py, etc.    Historical compatibility loaders, not duplicate implementations
 ```
 
