@@ -48,7 +48,7 @@ class MigrationTests(unittest.TestCase):
                 original = ROOT / (row.get('original_snapshot_path') or row['canonical_path'])
                 self.assertEqual(hashlib.sha256(original.read_bytes()).hexdigest(),
                                  row['original_sha256'])
-                legacy = ROOT / row['legacy_path']
+                legacy = ROOT / row.get('compatibility_path', row['legacy_path'])
                 self.assertTrue(legacy.is_file())
                 if row['kind'] == 'config':
                     self.assertTrue(legacy.is_symlink())
@@ -80,11 +80,31 @@ class MigrationTests(unittest.TestCase):
             ('scripts/build_vindr_checkpoint_val_split.py',
              'tools/preprocessing/build_vindr_checkpoint_val_split.py')]:
             with self.subTest(path=old):
-                legacy = self.run_python(ROOT / old, '--help')
+                with (ROOT / 'docs/audit/applied_migration.csv').open() as handle:
+                    physical = next(r.get('compatibility_path', r['legacy_path'])
+                                    for r in csv.DictReader(handle) if r['legacy_path'] == old)
+                legacy = self.run_python(ROOT / physical, '--help')
+                alias = self.run_python(launcher, old, '--help')
+                self.assertEqual(alias.returncode, 0, alias.stderr)
+                self.assertEqual(alias.stdout, legacy.stdout)
                 current = self.run_python(launcher, new, '--help')
                 self.assertEqual(legacy.returncode, 0, legacy.stderr)
                 self.assertEqual(current.returncode, 0, current.stderr)
                 self.assertEqual(current.stdout, legacy.stdout)
+
+    def test_root_entrypoints_are_grouped_without_changing_implementations(self):
+        with (ROOT / 'docs/audit/applied_migration.csv').open() as handle:
+            rows = list(csv.DictReader(handle))
+        grouped = [r for r in rows if '/' not in r['legacy_path'] and r['kind'] == 'entrypoint']
+        self.assertEqual(len(grouped), 23)
+        for row in grouped:
+            with self.subTest(path=row['legacy_path']):
+                self.assertFalse((ROOT / row['legacy_path']).exists())
+                self.assertEqual(row.get('compatibility_path'),
+                                 'compatibility/entrypoints/' + row['legacy_path'])
+                self.assertTrue((ROOT / row['compatibility_path']).is_file())
+                self.assertEqual(hashlib.sha256((ROOT / row['canonical_path']).read_bytes()).hexdigest(),
+                                 row['original_sha256'])
 
     def test_launcher_rejects_unregistered_paths(self):
         launcher = ROOT / 'tools/run_experiment.py'

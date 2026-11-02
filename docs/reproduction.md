@@ -13,7 +13,7 @@ python -B tools/run_experiment.py experiments/localization/itc/extract_itc_margi
 python -B -m unittest discover -s tests/compatibility -v
 ```
 
-The launcher accepts canonical or legacy paths listed as entry points in [the applied manifest](audit/applied_migration.csv), restores historical imports/arguments/`__file__` context and forwards remaining flags unchanged. It rejects unknown paths and invocation outside the repository working directory. Do not substitute direct deep-path execution of canonical files. Legacy commands below remain supported through compatibility loaders; config values/default paths remain unchanged via relative symlinks.
+The launcher accepts canonical or legacy paths listed as entry points in [the applied manifest](audit/applied_migration.csv), restores historical import search paths and forwards remaining flags unchanged. It rejects unknown paths and invocation outside the repository working directory. Do not substitute direct deep-path execution of canonical files. Former root command wrappers are grouped in `compatibility/entrypoints/`; use the launcher prefix shown below rather than `python Pretrain.py`. Imported helper wrappers remain in place. Moved root entrypoints have a new `__file__` location, which their implementations do not use. Historical config values/default paths remain unchanged via relative symlinks.
 
 Reusable in-checkout imports need both root and source paths, for example `PYTHONPATH="$PWD:$PWD/src"`. There is no new standalone package installation in this phase. Symlink support is required for old config paths (validated on Linux). Seven output-free notebooks have canonical viewing locations and legacy symlinks; the others remain in place. All notebook cells/outputs are unchanged. Inspect [notebook context](artifact_organization.md) before interactive execution.
 
@@ -45,7 +45,7 @@ uv pip install --python "$SETUP_ROOT/venv/bin/python" \
   -r requirements_albef_legacy.txt
 uv pip check --python "$SETUP_ROOT/venv/bin/python"
 source "$SETUP_ROOT/venv/bin/activate"
-python -B Pretrain.py --help
+python -B tools/run_experiment.py Pretrain.py --help
 ```
 
 Execute from the checkout root; network access to Python release/package hosts and PyTorch wheels is required. Keep TLS verification enabled. Requirements include historical unpinned transitive dependencies, so this recipe is not a frozen training lock. Current-instance CLI/help checks are recorded in the [validation record](audit/history/validation.md); no fresh-machine restoration claim is made.
@@ -65,11 +65,11 @@ Keep private configs and datasets outside the checkout. Use [the local-config ge
 Start with [experiment mappings](experiments.md). The following are argument-inspection commands, not training validation:
 
 ```bash
-python -B Pretrain.py --help
-python -B Pretrain_anatomy_prior.py --help
-python -B Pretrain_anatomy_prior_A4.py --help
-python -B Pretrain_A0_multiview_dual_auc.py --help
-python -B Pretrain_A0_multiview_cross_attention_fusion_dual_auc.py --help
+python -B tools/run_experiment.py Pretrain.py --help
+python -B tools/run_experiment.py Pretrain_anatomy_prior.py --help
+python -B tools/run_experiment.py Pretrain_anatomy_prior_A4.py --help
+python -B tools/run_experiment.py Pretrain_A0_multiview_dual_auc.py --help
+python -B tools/run_experiment.py Pretrain_A0_multiview_cross_attention_fusion_dual_auc.py --help
 ```
 
 Actual thesis training needs the exact run YAML, input assets, matching GPU stack and launch command. The thesis reports two A40 GPUs, maximum 30 epochs, AdamW at 1e-4 with weight decay 0.02, cosine schedule and 10 warmup epochs; per-GPU batch sizes are 64 for single-view/guidance and 32 for joint fusion. Those reported settings are not a substitute for the unresolved augmentation/selection details.

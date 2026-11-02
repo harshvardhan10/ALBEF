@@ -23,17 +23,18 @@ def main():
     with (ROOT / 'docs/audit/applied_migration.csv').open(newline='') as handle:
         rows = [r for r in csv.DictReader(handle) if r['kind'] == 'entrypoint']
     registered = {name: row for row in rows
-                  for name in (row['canonical_path'], row['legacy_path'])}
+                  for name in (row['canonical_path'], row['legacy_path'], row['compatibility_path'])}
     key = Path(args.experiment).as_posix()
     if key not in registered:
         parser.error('Not a registered experiment entrypoint: ' + args.experiment)
     legacy = ROOT / registered[key]['legacy_path']
+    compatibility = ROOT / registered[key]['compatibility_path']
     # Legacy sibling imports take precedence, followed by root-level historical
     # modules and the reusable source namespace. Preserve existing extra paths.
     for directory in reversed((legacy.parent, ROOT, ROOT / 'src')):
         sys.path.insert(0, str(directory))
     sys.argv = [str(legacy), *args.arguments]
-    runpy.run_path(str(legacy), run_name='__main__')
+    runpy.run_path(str(compatibility), run_name='__main__')
 
 
 if __name__ == '__main__':

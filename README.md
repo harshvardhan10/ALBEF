@@ -4,11 +4,11 @@ Research code for **Improving Weak Localization in Chest X-Ray Vision–Language
 
 This repository extends ALBEF to study whether anatomical guidance and original/lung/heart representations improve recognition and the spatial evidence used by chest X-ray vision–language models. The principal findings are **Cardiomegaly** and **Pleural Effusion**. A strong image-level classifier does not necessarily localize the finding accurately.
 
-The structural migration places 130 original Python implementations and 45 configurations in the research hierarchy below, without changing model/method logic or historical config values. Original IO-helper snapshots are retained for the two optional path-routing revisions. Historical paths remain available through compatibility loaders and config symlinks. Seven output-free notebooks and 34 aggregate historical results are also organized with legacy aliases. Output-bearing notebooks, per-image predictions, data and resource-coupled upstream tools remain in place. Full thesis reproduction remains dependent on the run artifacts listed in [known discrepancies](docs/discrepancies.md).
+The structural migration places 130 original Python implementations and 45 configurations in the research hierarchy below, without changing model/method logic or historical config values. Original IO-helper snapshots are retained for the two optional path-routing revisions. Historical entrypoint names remain accepted by the launcher; helper import paths and config symlinks are retained. Seven output-free notebooks and 34 aggregate historical results are also organized with legacy aliases. Output-bearing notebooks, per-image predictions, data and resource-coupled upstream tools remain in place. Full thesis reproduction remains dependent on the run artifacts listed in [known discrepancies](docs/discrepancies.md).
 
 ## Find the model code
 
-**[Open the model-code index](docs/model_code.md)** for direct links to the full implementation of every main experiment. Start here when reading the research code, rather than the historical root compatibility loaders.
+**[Open the model-code index](docs/model_code.md)** for direct links to the full implementation of every main experiment. Start here when reading the research code, rather than the compatibility loaders.
 
 - [A0 baseline](experiments/baseline/README.md)
 - [A1–A4 guidance and A3.1/A3.2](experiments/anatomy_guidance/README.md)
@@ -70,7 +70,7 @@ notebooks/           Comparisons, evaluation and figures; held outputs remain at
 results/historical/  Aggregate historical outputs, preserved without value changes
 results/             Legacy aliases and held per-image predictions
 docs/                Thesis guides; audit records grouped under docs/audit/
-Pretrain*.py, etc.    Historical compatibility loaders, not duplicate implementations
+compatibility/       Grouped root command wrappers; use tools/run_experiment.py
 ```
 
 The generic-looking `Pretrain_A0_multiview_dual_auc.py` trains configurable **single-view** ALBEF. The generic-looking multi-view bare-prompt evaluator currently constructs the **cross-attention** model. See the experiment guide before choosing an entry point.
@@ -88,7 +88,7 @@ python -B tools/run_experiment.py experiments/baseline/Pretrain.py --help
 python -B tools/run_experiment.py experiments/evaluation/evaluate_zero_shot_f1_from_validation.py --help
 ```
 
-These commands check CLI imports, not training. Use the registered launcher from the repository root; directly running a deeply nested canonical file does not restore historical sibling imports. Legacy commands are retained. Configuration symlinks require filesystem/Git symlink support (validated on Linux). Dataset/checkpoint execution templates and required prerequisites are documented separately. Do not launch a large run from an unverified historical YAML: augmentation, checkpoint-selection and prepared-data differences remain unresolved for some reported runs.
+These commands check CLI imports, not training. Use the registered launcher from the repository root; directly running a deeply nested canonical file does not restore historical sibling imports. Historical entrypoint names are retained as launcher aliases; root command files now live under `compatibility/entrypoints/`. Configuration symlinks require filesystem/Git symlink support (validated on Linux). Dataset/checkpoint execution templates and required prerequisites are documented separately. Do not launch a large run from an unverified historical YAML: augmentation, checkpoint-selection and prepared-data differences remain unresolved for some reported runs.
 
 ## Evaluation and reported findings
 
