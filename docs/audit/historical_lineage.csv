@@ -1,0 +1,12 @@
+event,commit,path,verified_observation
+full_dataset_behavior,1b6a0a5fbb3049402cd2342c49505f6ab0fe065c,Pretrain_anatomy_prior.py,Adds subset selection; predecessor has zero train_subset_size references. Supports user-confirmed earlier full-data behavior.
+A3.1,ea61e1ebe3b3df699df611749f3f1d3c0edbce56,configs/Pretrain_anatomy_prior_A3.yaml,Changes coefficient to 0.005 and selects full dataset.
+A3.2,c9a5803070466625b1cb396b4353cc3d515bab4c,configs/Pretrain_anatomy_prior_A3.yaml,Changes coefficient to 0.001.
+A3_segmentation_prior_non_thesis_variant,7562f6c29636f334b3cca1809633b63bc39405f5,configs/Pretrain_anatomy_prior_A3.yaml,Changes coefficient back to 0.01 and adds segmentation-derived heart prior.
+common_valid_views,452d57ec71e86fe191626ea9b8794470eca40e7d,configs/Pretrain_A0_original_chexmask_common.yaml,Introduces matched view configs excluding 43 missing-mask images according to commit description.
+validation_F1_and_normalization_correction,40c3b56d238e573763f235059dcbbd56ed8b2c4a,scripts/ensemble_zero_shot_scores.py;scripts/evaluate_zero_shot_f1_from_validation.py,Records correction from test-set F1 fitting and missing ensemble normalization.
+validation_cohort_builder,faea40ebac757d7a9484a9ec9b56c72ce633ffcf,scripts/build_vindr_multilabel_val_subset.py,Introduces 2000-image subset from VinDr train.
+dual_AUC_training,cc5daff48a8137997beb877465a85f7a26102c94,Pretrain_A0_multiview_dual_auc.py,Config points to train images despite commit message saying test; 15-label stable macro list.
+A4_preservation_0.5,0eb72541c948b9f3574751025fffbf69013fb787,configs/Pretrain_anatomy_prior_A4.yaml,Initial preservation coefficient 0.5.
+A4_preservation_0.1,3929d637c50870b45664c3542272ca375095033c,configs/Pretrain_anatomy_prior_A4.yaml,Changes preservation coefficient to 0.1.
+A4_preservation_1.0,9020bb0428b0e75ede2c780859d87f887feb1069,configs/Pretrain_anatomy_prior_A4.yaml,Changes preservation coefficient to 1.

@@ -1,110 +1,98 @@
-## Align before Fuse: Vision and Language Representation Learning with Momentum Distillation, NeurIPS 2021 Spotlight (Salesforce Research).
+# Anatomy-aware weak localization in chest X-ray vision–language models
 
-## Announcement: ALBEF is now officially integrated into [LAVIS](https://github.com/salesforce/LAVIS) - a one-stop library for language-and-vision research and applications!
+Research code for **Improving Weak Localization in Chest X-Ray Vision–Language Models Using Anatomy-Aware Refinement**, a Master's thesis by **Harshvardhan Agarwal**, Friedrich-Alexander-Universität Erlangen-Nürnberg, 2026.
 
-This is the official PyTorch implementation of the <a href="https://arxiv.org/abs/2107.07651">ALBEF paper</a> <a href="https://blog.salesforceairesearch.com/align-before-fuse/">[Blog]</a>. 
-This repository supports pre-training on custom datasets, as well as finetuning on VQA, SNLI-VE, NLVR2, Image-Text Retrieval on MSCOCO and Flickr30k,
-and visual grounding on RefCOCO+. Pre-trained and finetuned checkpoints are released.
+This repository extends ALBEF to study whether anatomical guidance and original/lung/heart representations improve recognition and the spatial evidence used by chest X-ray vision–language models. The principal findings are **Cardiomegaly** and **Pleural Effusion**. A strong image-level classifier does not necessarily localize the finding accurately.
 
-<img src="img.png" width="600">
+The source layout is currently historical. This documentation phase adds navigation and provenance; model implementations, configurations, notebooks and results have not been moved or rewritten. Full thesis reproduction remains dependent on the run artifacts listed in [known discrepancies](docs/discrepancies.md).
 
+## Start here
 
-### Requirements:
-* pytorch 1.8.0
-* transformers 4.8.1
-* timm 0.4.9
+| Guide | Contents |
+|---|---|
+| [Methodology](docs/methodology.md) | Anatomical guidance, six fusion models, attribution and evaluation |
+| [Experiments](docs/experiments.md) | Thesis stage to source/configuration mapping and historical variants |
+| [Reproduction](docs/reproduction.md) | Environments, inputs, launch conventions and validation gates |
+| [External dependencies](docs/external_dependencies.md) | Upstream code, pretrained assets, licenses and missing pins |
+| [Data access](docs/data_access.md) | Dataset roles, manifests and restricted artifacts |
+| [Results and provenance](docs/results_provenance.md) | Thesis-reported findings and evidence needed to reproduce them |
+| [Known discrepancies](docs/discrepancies.md) | Thesis, current checkout and historical implementation differences |
+| [Restructuring plan](docs/repository_architecture.md) | Proposed layout and behavior-preserving migration |
+| [Agent instructions](AGENTS.md) | Constraints for future automated changes |
 
-### Download:
+## Experimental pipeline
 
-* Pre-trained checkpoint [[14M](https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/ALBEF.pth)] / [[4M](https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/ALBEF_4M.pth)]
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/data.tar.gz"> Dataset json files for downstream tasks</a>
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/json_pretrain.zip"> Dataset json files for pre-training</a> (the image paths in each json file need to be changed to your own directory)
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/mscoco.pth"> Finetuned checkpoint for retrieval on MSCOCO </a>
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/flickr30k.pth"> Finetuned checkpoint for retrieval on Flickr30k </a>
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/vqa.pth"> Finetuned checkpoint for VQA </a>
-* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/refcoco.pth"> Finetuned checkpoint for visual grounding on RefCOCO+ </a>
+1. **Establish baselines:** original-image ALBEF with positive–negative ITC-margin Grad-CAM; external BioViL-T grounding and supplied CheXzero comparisons.
+2. **Apply direct anatomical guidance:** A0 reference, A1 support guidance, A2 uncertainty weighting, A3 positive-only support and coefficient ablations, and A4 classification preservation. Guidance models are pathology-specific.
+3. **Train anatomical single views:** original radiograph, lung-only and heart-only images from the same radiograph.
+4. **Combine views:** normalized score ensembles or jointly trained FC, mean, gated, residual, two-layer Transformer and anchored cross-attention models.
+5. **Evaluate:** held-out ROC-AUC and validation-thresholded F1; pointing-game peak alignment; matched qualitative figures.
 
-### Visualization:
-We provide code in visualize.ipynb to visualize the important areas in an image for each word in a text. 
-Here is an example visualization using the visual grounding checkpoint.
+A3.1 and A3.2 use support coefficients 0.005 and 0.001; A3 uses 0.01. A5/A6 are preserved historical work outside the main thesis workflow. Their presence does not make them thesis reproduction requirements. No implemented semi-supervised training stage is claimed.
 
-Try the Replicate demo here [![Replicate](https://replicate.com/salesforce/albef/badge)](https://replicate.com/salesforce/albef).
+## Datasets and assets
 
-<img src="examples/visualization.png" width="700">
+- **MIMIC-CXR:** paired image–text training records.
+- **VinDr-CXR:** a fixed 2,000-image training-data validation subset and the official 3,000-image test set, as described in the thesis.
+- **CheXmask:** lung and heart masks used to construct anatomical views.
+- **Pretrained assets:** BERT/DeiT/ALBEF assets as required by the particular run; BioViL-T and historical anatomical segmentation have additional model dependencies.
 
-### Pre-training on custom datasets:
-1. Prepare training json files where each json file contains a list. Each item in the list is a dictonary with two key-value pairs: {'image': path_of_image, 'caption': text_of_image}. 
-2. In configs/Pretrain.yaml, set the paths for the json files.
-3. Pre-train the model using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env Pretrain.py --config ./configs/Pretrain.yaml --output_dir output/Pretrain </pre> 
+The original checked-in MIMIC manifest has 215,394 records. History describes excluding 43 missing-mask records for the matched anatomical-view population, consistent with the thesis count of 215,351. The generated manifest itself is not included, so exact run membership still needs verification. A0–A2 used full datasets according to the researcher and historical trainer behavior; old subset YAML settings alone do not describe those earlier runs.
 
-### Image-Text Retrieval:
+Use authorized local data. **Do not publish patient images, report-bearing manifests, private datasets or checkpoints.** Some historical previews, manifests and notebook outputs are already tracked and require a publication review; this documentation does not certify them as redistributable.
 
-1. Download MSCOCO or Flickr30k datasets from the original websites.
-2. Download and extract the provided dataset json files.
-3. In configs/Retrieval_coco.yaml or configs/Retrieval_flickr.yaml, set the paths for the json files and the image path.
-4. Finetune the pre-trained checkpoint using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env Retrieval.py \
---config ./configs/Retrieval_flickr.yaml \
---output_dir output/Retrieval_flickr \
---checkpoint [Pretrained checkpoint]</pre> 
+## Current repository layout
 
-### VQA:
-1. Download VQA v2 dataset and Visual Genome dataset from the original websites.
-2. Download and extract the provided dataset json files.
-3. In configs/VQA.yaml, set the paths for the json files and the image paths.
-4. Finetune the pre-trained checkpoint using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env VQA.py \
---config ./configs/VQA.yaml \
---output_dir output/vqa \
---checkpoint [Pretrained checkpoint]</pre> 
-5. Evaluate the result using the official evaluation server.
+```text
+Pretrain*.py          Historical training entry points
+models/              ALBEF, local ViT/XBERT and six fusion implementations
+anatomy_prior/       Guidance loss, attention extraction and historical patch head
+dataset/             Dataset loading, view construction and augmentation
+configs/             Baseline, guidance, view and inherited-task configurations
+configs_new/         Newer view/fusion configurations; some exact duplicates
+scripts/             Preprocessing, classification, extraction and older metrics
+scripts_new/         Bare-prompt evaluation, fusion attribution and BioViL-T tools
+notebooks/           Exploration, comparisons, figures and pointing-game analysis
+optim/, scheduler/   Optimizer and schedule implementations
+results/             Historical outputs; not automatically final thesis results
+docs/                Thesis guides, provenance and proposed migration
+```
 
-### Visual Entailment:
-1. Download SNLI-VE dataset from the original website.
-2. Download and extract the provided dataset json files.
-3. In configs/VE.yaml, set the paths for the json files and the image path.
-4. Finetune the pre-trained checkpoint using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env VE.py \
---config ./configs/VE.yaml \
---output_dir output/VE \
---checkpoint [Pretrained checkpoint]</pre> 
+The generic-looking `Pretrain_A0_multiview_dual_auc.py` trains configurable **single-view** ALBEF. The generic-looking multi-view bare-prompt evaluator currently constructs the **cross-attention** model. See the experiment guide before choosing an entry point.
 
-### Visual Grounding on RefCOCO+:
-1. Download MSCOCO dataset from the original website.
-2. Download and extract the provided dataset json files.
-3. In configs/Grounding.yaml, set the paths for the json files and the image path.
-4. Finetune the pre-trained checkpoint using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env Grounding.py \
---config ./configs/Grounding.yaml \
---output_dir output/RefCOCO \
---gradcam_mode itm \ 
---block_num 8 \
---checkpoint [Pretrained checkpoint]</pre> 
+## Installation and execution
 
-### NLVR2:
-NLVR2 requires an additional pre-training step with text-assignment (TA) to adapt the model for image-pair inputs. In order to perform TA, first set the paths for the json training files in configs/NLVR_pretrain.yaml, then run:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env Pretrain_nlvr.py \
---config ./configs/NLVR_pretrain.yaml \
---output_dir output/NLVR_pretrain \
---checkpoint [Pretrained checkpoint]</pre> 
+There is no single verified environment covering every historical script. The [reproduction guide](docs/reproduction.md) distinguishes legacy ALBEF, newer fusion, BioViL-T, segmentation and analysis environments.
 
-We provide the <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/pretrain_model_nlvr.pth"> checkpoint </a> after TA pre-training, which can be fine-tuned with the following steps.
-1. Download NLVR2 dataset from the original website.
-2. Download and extract the provided dataset json files.
-3. In configs/NLVR.yaml, set the paths for the json files and the image path.
-4. Finetune the pre-trained checkpoint using 8 A100 GPUs:
-<pre>python -m torch.distributed.launch --nproc_per_node=8 --use_env NLVR.py \
---config ./configs/NLVR.yaml \
---output_dir output/NLVR \
---checkpoint [TA pretrained checkpoint]</pre> 
+For a **CPU legacy smoke environment**, Python 3.9.25 with PyTorch 1.8.0+cpu and torchvision 0.9.0+cpu was validated during onboarding. The installation recipe is in the guide. It does not validate GPU training, newer Pillow-dependent transforms or full thesis reproduction.
 
-### Citation
-If you find this code to be useful for your research, please consider citing.
-<pre>
-@inproceedings{ALBEF,
-      title={Align before Fuse: Vision and Language Representation Learning with Momentum Distillation}, 
-      author={Junnan Li and Ramprasaath R. Selvaraju and Akhilesh Deepak Gotmare and Shafiq Joty and Caiming Xiong and Steven Hoi},
-      year={2021},
-      booktitle={NeurIPS},
-}</pre>
+From the repository root, after activating a compatible environment:
+
+```bash
+python -B Pretrain.py --help
+python -B scripts/evaluate_zero_shot_f1_from_validation.py --help
+```
+
+The first command checks CLI imports, not training. Dataset/checkpoint execution templates and required prerequisites are documented separately. Do not launch a large run from an unverified historical YAML: augmentation, checkpoint-selection and prepared-data differences remain unresolved for some reported runs.
+
+## Evaluation and reported findings
+
+The primary quantitative localization endpoint is a **pointing-game hit**: the saved map's selected maximum falls inside a target-pathology box. Classification, peak alignment and visual appearance answer different questions. Historical FROC and anatomy-gating explorations are preserved but are not interchangeable with this endpoint.
+
+Selected **thesis-reported**, not independently reproduced, outcomes:
+
+| Outcome | Reported result | Thesis source |
+|---|---|---|
+| Original A0 Pleural Effusion ROC-AUC | 0.9788 | Table 6.1 |
+| Anchored cross-attention Cardiomegaly ROC-AUC / F1 | 0.9427 / 0.6125 | Table 6.7 |
+| Validation-tuned late-fusion Pleural Effusion F1 | 0.7333 | Table 6.6 |
+| Gated fusion Cardiomegaly pointing-game rate | 82.20% | Table 6.8 |
+| Anchored cross-attention Pleural Effusion pointing-game rate | 17.12% | Table 6.8 |
+
+These observations do not establish a universal advantage of anatomical restriction or fusion. Classification differences are descriptive; the paired localization tests have their own defined scope. See [results provenance](docs/results_provenance.md).
+
+## Thesis reference and upstream attribution
+
+Harshvardhan Agarwal. *Improving Weak Localization in Chest X-Ray Vision–Language Models Using Anatomy-Aware Refinement*. Master's thesis in Computer Science, Friedrich-Alexander-Universität Erlangen-Nürnberg, 2026. The report was supplied privately for this audit; no public thesis URL or DOI has been verified, and the PDF is not added here.
+
+The inherited ALBEF implementation is associated with Junnan Li et al., *Align before Fuse: Vision and Language Representation Learning with Momentum Distillation*, NeurIPS 2021 ([paper](https://arxiv.org/abs/2107.07651)). Retain its [Salesforce license](LICENSE.txt), source notices and other third-party attributions. The prior root README is preserved verbatim as [historical upstream documentation](docs/upstream/README.original.txt); its task commands are not the thesis run protocol.
