@@ -26,4 +26,4 @@ git fetch origin
 git switch work
 ```
 
-The `work` branch contains single-view ALBEF, anatomical guidance, original/lung/heart representations, late score fusion, six joint fusion architectures, heatmap extraction and evaluation. Its documentation distinguishes thesis-reported results from independently verified behavior and records the assets still required for full reproduction.
+The `work` branch contains single-view ALBEF, anatomical guidance, original/lung/heart representations, late score fusion, six joint fusion architectures, heatmap extraction and evaluation.
