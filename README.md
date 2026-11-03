@@ -16,18 +16,6 @@ The repository extends ALBEF with anatomy-aware training, anatomical single-view
 
 **Start with the [model-code index](docs/model_code.md)** for direct links to full architectures, training logic and experiment-specific differences.
 
-| Research stage | Implementation guide |
-|---|---|
-| A0 single-view ALBEF baseline | [Baseline](experiments/baseline/README.md) |
-| A1–A4 anatomical guidance, including A3.1/A3.2 | [Anatomical guidance](experiments/anatomy_guidance/README.md) |
-| Original, lung and heart views | [Single-view models](experiments/single_view/README.md) |
-| Late score fusion | [Late fusion](experiments/late_fusion/README.md) |
-| FC, mean, gated, residual, Transformer and anchored cross-attention fusion | [Joint fusion](experiments/joint_fusion/README.md) |
-| Classification, checkpoint selection, heatmaps and localization evaluation | [Experiment mapping](docs/experiments.md) |
-| BioViL-T integration and supplied CheXzero comparisons | [External dependencies](docs/external_dependencies.md) |
-
-A0–A4 share the ALBEF architecture; their differences are in training and anatomical guidance. The six fusion architectures remain separate implementations. A5/A6 and exploratory FROC work are preserved as historical experiments outside the main thesis workflow. No implemented semi-supervised training stage is claimed.
-
 ## Experimental pipeline
 
 1. **Establish baselines:** evaluate original-image ALBEF and external comparisons; extract positive–negative ITC-margin Grad-CAM maps.
