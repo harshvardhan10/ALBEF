@@ -10,4 +10,4 @@
 | [XBERT](../../src/cxr_vlm/models/xbert.py) | Text and image-conditioned BERT |
 | [Historical baseline trainer](Pretrain.py) | Training/checkpoint orchestration |
 
-For anatomical-view training, continue to the [original/lung/heart guide](../single_view/README.md). For A0–A4 guidance, use the [guidance guide](../anatomy_guidance/README.md). The different historical trainers are not asserted to identify one final A0 checkpoint.
+For anatomical-view training, continue to the [original/lung/heart guide](../single_view/README.md). For A0–A4 guidance, use the [guidance guide](../anatomy_guidance/README.md).
