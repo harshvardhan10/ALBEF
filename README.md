@@ -11,7 +11,6 @@ The Git branch named `main` retains the earlier repository state. Use `work` for
 - **[Read the full project README](https://github.com/harshvardhan10/ALBEF/blob/work/README.md)**
 - [Find the model code for each main experiment](https://github.com/harshvardhan10/ALBEF/blob/work/docs/model_code.md)
 - [Explore the experiment mapping](https://github.com/harshvardhan10/ALBEF/blob/work/docs/experiments.md)
-- [Follow the installation and reproduction guide](https://github.com/harshvardhan10/ALBEF/blob/work/docs/reproduction.md)
 
 ## Get the research code
 
